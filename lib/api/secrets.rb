@@ -6,11 +6,8 @@ module API
       end
 
       post do
-        required_attributes! [:title, :required, :split, :parts]
-
-        attrs = attributes_for_keys [:title, :required, :split, :parts]
-        secret = Secret.create attrs
-        attrs.parts.each_with_index do |part, index|
+        secret = Secret.create({title: params.title, required: params.required, split: params.split})
+        params.parts.each_with_index do |part, index|
           secret_part = SecretPart.create({index: index, secret: secret})
           part.each do |key, value|
             user = User.get(key)

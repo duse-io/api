@@ -1,0 +1,44 @@
+module API
+  module APIHelpers
+    # error helpers
+
+    def forbidden!
+      render_api_error!('403 Forbidden', 403)
+    end
+
+    def bad_request!(attribute)
+      message = ["400 (Bad request)"]
+      message << "\"" + attribute.to_s + "\" not given"
+      render_api_error!(message.join(' '), 400)
+    end
+
+    def not_found!(resource = nil)
+      message = ["404"]
+      message << resource if resource
+      message << "Not Found"
+      render_api_error!(message.join(' '), 404)
+    end
+
+    def unauthorized!
+      render_api_error!('401 Unauthorized', 401)
+    end
+
+    def not_allowed!
+      render_api_error!('405 Method Not Allowed', 405)
+    end
+
+    def conflict!(message = nil)
+      render_api_error!(message || '409 Conflict', 409)
+    end
+
+    def render_validation_error!(model)
+      unless model.valid?
+        render_api_error!(model.errors.messages || '400 Bad Request', 400)
+      end
+    end
+
+    def render_api_error!(message, status)
+      error!({'message' => message}, status)
+    end
+  end
+end

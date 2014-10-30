@@ -1,3 +1,5 @@
+require 'grape-swagger'
+
 require 'api/helpers'
 require 'api/secrets'
 
@@ -28,5 +30,7 @@ module API
     helpers APIHelpers
 
     mount Secrets
+
+    add_swagger_documentation
   end
 end

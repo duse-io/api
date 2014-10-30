@@ -1,4 +1,13 @@
+require 'grape'
 require 'grape-swagger'
+require 'data_mapper'
+
+DataMapper.setup(:default, ENV['DATABASE_URL'] || 'sqlite::memory:')
+require 'models/user'
+require 'models/secret'
+require 'models/secret_part'
+require 'models/share'
+DataMapper.finalize.auto_upgrade!
 
 require 'api/helpers'
 require 'api/secrets'

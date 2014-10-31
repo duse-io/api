@@ -6,11 +6,17 @@ module API
       end
 
       post do
-        secret = Secret.create({title: params.title, required: params.required, split: params.split})
-        params.parts.each_with_index do |part, index|
+        secret_params = extract_params! [:title, :required, :split]
+        secret = Secret.create(secret_params)
+        secret_parts = extract_param! :parts
+        secret_parts.each_with_index do |part, index|
           secret_part = SecretPart.create({index: index, secret: secret})
           part.each do |key, value|
-            user = User.get(key)
+            begin
+              user = User.get!(key)
+            rescue DataMapper::ObjectNotFoundError
+              render_api_error! 'One of the provided users does not exist', 422
+            end
             Share.create({user: user, secret_part: secret_part, content: value})
           end
         end

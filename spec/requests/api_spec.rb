@@ -9,9 +9,9 @@ describe API do
   end
 
   it 'persists a new secret correctly' do
-    server = User.create({username: 'server'})
-    adracus = User.create({username: 'adracus'})
-    flowerpot = User.create({username: 'flower-pot'})
+    server = User.create({username: 'server', api_key: 'test123'})
+    adracus = User.create({username: 'adracus', api_key: 'test123'})
+    flowerpot = User.create({username: 'flower-pot', api_key: 'test123'})
     users = [server, adracus, flowerpot]
 
     secret = {
@@ -28,9 +28,10 @@ describe API do
 
     post '/v1/secrets', secret, 'CONTENT_TYPE' => 'application/json'
 
-    p User.all
-    p Secret.all
-    p SecretPart.all
-    p Share.all
+    expect(last_response.status).to eq(201)
+    expect(User.all.count).to eq(3)
+    expect(Secret.all.count).to eq(1)
+    expect(SecretPart.all.count).to eq(4)
+    expect(Share.all.count).to eq(12)
   end
 end

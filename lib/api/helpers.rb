@@ -40,5 +40,22 @@ module API
     def render_api_error!(message, status)
       error!({'message' => message}, status)
     end
+
+    # params extraction & validation
+
+    def extract_params!(keys)
+      attrs = {}
+
+      keys.each do |key|
+        attrs[key] = extract_param! key
+      end
+
+      attrs
+    end
+
+    def extract_param!(key)
+      bad_request!(key) unless params[key].present?
+      params[key]
+    end
   end
 end

@@ -1,6 +1,7 @@
 require 'grape'
 require 'grape-swagger'
 require 'data_mapper'
+require 'warden'
 
 DataMapper.setup(:default, ENV['DATABASE_URL'] || 'sqlite::memory:')
 require 'models/user'
@@ -31,6 +32,17 @@ module API
 
       API.logger.add Logger::FATAL, message
       rack_response({'message' => '500 Internal Server Error'}, 500)
+    end
+
+    use Warden::Manager do |config|
+      config.default_scope = :api
+
+      config.scope_defaults(
+        :api,
+        strategies: [:api_token],
+        store: false,
+        action: "unauthenticated_api"
+      )
     end
 
     format :json

@@ -11,7 +11,7 @@ describe API do
   def secret(options = {})
     {
       title: options[:title] || 'my secret',
-      required: options[:required] || "2",
+      required: options[:required] || 2,
       split: options[:split] || 4,
       parts: options[:parts] || [
         {"#{1}" => "1-19810ad8", "#{2}" => "2-2867e0bd", "#{3}" => "3-374eb6a2"},
@@ -44,6 +44,7 @@ describe API do
 
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
+    p last_response
     expect(last_response.status).to eq(201)
     expect(User.all.count).to eq(3)
     expect(Secret.all.count).to eq(1)
@@ -58,9 +59,7 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect(JSON.parse(last_response.body)).to eq({
-      "message" => ["Title must not be blank"]
-    })
+    expect(JSON.parse(last_response.body)["message"].include? "Title must not be blank").to be_truthy
     expect(User.all.count).to eq(3)
     expect(Secret.all.count).to eq(0)
     expect(SecretPart.all.count).to eq(0)

@@ -9,6 +9,8 @@ gem 'grape-swagger'
 gem 'data_mapper'
 gem 'dm-postgres-adapter', group: :production
 gem 'dm-sqlite-adapter', group: [:development, :test]
+gem 'dm-transactions'
 gem 'warden'
 gem 'rspec', group: :test
 gem 'rack-test', group: :test
+gem 'database_cleaner', group: :test

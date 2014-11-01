@@ -17,6 +17,9 @@
 
 require_relative '../config/environment'
 require 'api'
+require 'database_cleaner'
+
+DatabaseCleaner[:data_mapper].strategy = :transaction
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

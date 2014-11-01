@@ -7,5 +7,8 @@ class Secret
   # max length of a secret part
   property :split, Integer, required: true
 
+  validates_numericality_of :required, gte: 2
+  validates_numericality_of :split, gte: 1
+
   has n, :secret_parts
 end

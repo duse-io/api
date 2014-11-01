@@ -47,7 +47,7 @@ describe API do
     users = create_users!
     secret_json = secret(title: '').to_json
 
-    post '/v1/secrets', secret.to_json, 'CONTENT_TYPE' => 'application/json'
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
     expect(User.all.count).to eq(0)
@@ -60,7 +60,7 @@ describe API do
     users = create_users!
     secret_json = secret(required: 1).to_json
 
-    post '/v1/secrets', secret.to_json, 'CONTENT_TYPE' => 'application/json'
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
     expect(User.all.count).to eq(0)
@@ -73,7 +73,7 @@ describe API do
     users = create_users!
     secret_json = secret(split: 0).to_json
 
-    post '/v1/secrets', secret.to_json, 'CONTENT_TYPE' => 'application/json'
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
     expect(User.all.count).to eq(0)
@@ -86,7 +86,7 @@ describe API do
     users = create_users!
     secret_json = secret(required: 5).to_json
 
-    post '/v1/secrets', secret.to_json, 'CONTENT_TYPE' => 'application/json'
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
     expect(User.all.count).to eq(0)
@@ -99,7 +99,7 @@ describe API do
     # we're not creating the users on purpose, to trigger this behaviour
     secret_json = secret
 
-    post '/v1/secrets', secret.to_json, 'CONTENT_TYPE' => 'application/json'
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
     expect(User.all.count).to eq(0)
@@ -118,7 +118,7 @@ describe API do
     ]
     secret_json = secret parts: parts
 
-    post '/v1/secrets', secret.to_json, 'CONTENT_TYPE' => 'application/json'
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
     expect(User.all.count).to eq(0)
@@ -137,7 +137,7 @@ describe API do
     ]
     secret_json = secret parts: parts
 
-    post '/v1/secrets', secret.to_json, 'CONTENT_TYPE' => 'application/json'
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
     expect(User.all.count).to eq(0)

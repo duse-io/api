@@ -34,4 +34,32 @@ describe API do
     expect(SecretPart.all.count).to eq(4)
     expect(Share.all.count).to eq(12)
   end
+
+  it 'should error when title is empty' do
+
+  end
+
+  it 'should only accept required >= 2' do
+
+  end
+
+  it 'should only accept split >= 1' do
+
+  end
+
+  it 'should only persist parts if the number of parts is >= required' do
+
+  end
+
+  it 'should error if the provided users don\'t exist' do
+
+  end
+
+  it 'should error if there is no part for the server' do
+
+  end
+
+  it 'should error when not all parts have shares for the same users' do
+
+  end
 end

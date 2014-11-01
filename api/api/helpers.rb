@@ -33,7 +33,7 @@ module API
 
     def render_validation_error!(model)
       unless model.valid?
-        render_api_error!(model.errors.messages || '400 Bad Request', 400)
+        render_api_error!(model.errors.full_messages || '422 Unprocessable Entity', 422)
       end
     end
 
@@ -43,18 +43,17 @@ module API
 
     # params extraction & validation
 
-    def extract_params!(keys)
+    def extract_params(keys)
       attrs = {}
 
       keys.each do |key|
-        attrs[key] = extract_param! key
+        attrs[key] = extract_param key
       end
 
       attrs
     end
 
-    def extract_param!(key)
-      bad_request!(key) unless params[key].present?
+    def extract_param(key)
       params[key]
     end
   end

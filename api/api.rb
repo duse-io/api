@@ -9,6 +9,7 @@ require 'models/secret'
 require 'models/secret_part'
 require 'models/share'
 DataMapper.finalize.auto_upgrade!
+DataMapper::Model.raise_on_save_failure = true
 
 require 'api/helpers'
 require 'api/secrets'

@@ -6,9 +6,9 @@ module API
       end
 
       post do
-        secret_params = extract_params! [:title, :required, :split]
-        secret = Secret.create(secret_params)
-        secret_parts = extract_param! :parts
+        secret = Secret.new(extract_params [:title, :required, :split])
+        render_validation_error! secret
+        secret_parts = extract_param :parts
         secret_parts.each_with_index do |part, index|
           secret_part = SecretPart.create({index: index, secret: secret})
           part.each do |key, value|

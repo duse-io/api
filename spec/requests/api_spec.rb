@@ -50,7 +50,10 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect(User.all.count).to eq(0)
+    expect(JSON.parse(last_response.body)).to eq({
+      "message" => ["Title must not be blank"]
+    })
+    expect(User.all.count).to eq(3)
     expect(Secret.all.count).to eq(0)
     expect(SecretPart.all.count).to eq(0)
     expect(Share.all.count).to eq(0)

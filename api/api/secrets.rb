@@ -24,6 +24,8 @@ module API
         end
 
         keys = parts.first.keys
+        secret_parts = []
+        shares = []
         parts.each_with_index do |part, index|
           secret_part = SecretPart.new({index: index, secret: secret})
           unless secret_part.valid?
@@ -31,6 +33,9 @@ module API
           end
           unless keys - part.keys
             errors << 'Users referenced in secret parts do not match in all parts'
+          end
+          unless part.has_key? "1"
+            errors << 'Shares for the server must be present'
           end
           part.each do |key, value|
             begin
@@ -42,12 +47,19 @@ module API
             unless share.valid?
               errors += share.errors.full_messages
             end
+            shares << share
           end
+          secret_parts << secret_part
         end
 
+        errors -= ['Secret must not be blank', 'Secret part must not be blank']
         unless errors.empty?
           render_api_error! errors.uniq, 422
         end
+        secret.save
+        secret_parts.each(&:save)
+        shares.each(&:save)
+        status 201
       end
     end
   end

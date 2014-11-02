@@ -44,7 +44,6 @@ describe API do
 
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
-    p last_response
     expect(last_response.status).to eq(201)
     expect(User.all.count).to eq(3)
     expect(Secret.all.count).to eq(1)
@@ -107,7 +106,7 @@ describe API do
 
   it 'should error if the provided users don\'t exist' do
     # we're not creating the users on purpose, to trigger this behaviour
-    secret_json = secret
+    secret_json = secret.to_json
 
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -126,7 +125,7 @@ describe API do
       {"#{4}" => "1-3e8f8a59", "#{2}" => "2-70f6da4d", "#{3}" => "3-235e2a42"},
       {"#{4}" => "1-117c3",    "#{2}" => "2-1f592",    "#{3}" => "3-d362"}
     ]
-    secret_json = secret parts: parts
+    secret_json = secret(parts: parts).to_json
 
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -145,12 +144,32 @@ describe API do
       {"#{1}" => "1-3e8f8a59", "#{2}" => "2-70f6da4d", "#{3}" => "3-235e2a42"},
       {"#{1}" => "1-117c3",    "#{2}" => "2-1f592",    "#{3}" => "3-d362"}
     ]
-    secret_json = secret parts: parts
+    secret_json = secret(parts: parts).to_json
 
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
     expect(User.all.count).to eq(4)
+    expect(Secret.all.count).to eq(0)
+    expect(SecretPart.all.count).to eq(0)
+    expect(Share.all.count).to eq(0)
+  end
+
+  it 'should error when at least one of the provided users do not exist' do
+    users = create_users!
+    parts = [
+      {"#{4}" => "1-19810ad8", "#{2}" => "2-2867e0bd", "#{3}" => "3-374eb6a2"},
+      {"#{1}" => "1-940cc79",  "#{2}" => "2-e671f52",  "#{3}" => "3-138d722b"},
+      {"#{1}" => "1-3e8f8a59", "#{2}" => "2-70f6da4d", "#{3}" => "3-235e2a42"},
+      {"#{1}" => "1-117c3",    "#{2}" => "2-1f592",    "#{3}" => "3-d362"}
+    ]
+    secret_json = secret(parts: parts).to_json
+
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    p last_response
+    expect(last_response.status).to eq(422)
+    expect(User.all.count).to eq(3)
     expect(Secret.all.count).to eq(0)
     expect(SecretPart.all.count).to eq(0)
     expect(Share.all.count).to eq(0)

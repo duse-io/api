@@ -9,7 +9,11 @@ module API
 
       get '/:id/users' do
         authenticate!
-        Secret.get(params[:id]).secret_parts.shares.user
+        secret = Secret.get(params[:id])
+        if secret.nil?
+          return status 404
+        end
+        secret.secret_parts.shares.user
       end
 
       post do

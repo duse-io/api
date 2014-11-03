@@ -201,4 +201,22 @@ describe API do
     expect(SecretPart.all.count).to eq(0)
     expect(Share.all.count).to eq(0)
   end
+
+  it 'should not error when listing a users secret but a users has none' do
+    User.create(username: 'test', api_token: 'test123')
+
+    header 'Authorization', 'test123'
+    get '/v1/secrets'
+
+    expect(JSON.parse(last_response.body)).to eq([])
+  end
+
+  it 'should error with 404 when a users for a secret that does not exist are requested' do
+    User.create(username: 'test', api_token: 'test123')
+
+    header 'Authorization', 'test123'
+    get '/v1/secrets/1/users'
+
+    expect(last_response.status).to eq(404)
+  end
 end

@@ -3,11 +3,12 @@ module API
     resource :secrets do
 
       get do
-        Secret.all
+        authenticate!
+        Share.all(user: current_user).secret_part.secret
       end
 
       post do
-        env['warden'].authenticate!
+        authenticate!
 
         secret = Secret.new(extract_params [:title, :required, :split])
 

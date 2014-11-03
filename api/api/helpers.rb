@@ -56,5 +56,15 @@ module API
     def extract_param(key)
       params[key]
     end
+
+    # user & authentication
+    
+    def current_user
+      env['warden'].user
+    end
+
+    def authenticate!
+      env['warden'].authenticate!
+    end
   end
 end

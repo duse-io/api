@@ -24,8 +24,8 @@ describe API do
 
   def create_users!(usernames = [])
     usernames += ['server', 'adracus', 'flower-pot']
-    usernames.each do |username|
-      User.create({username: username, api_key: 'test123'})
+    usernames.each_with_index do |username, index|
+      User.create({username: username, api_token: "test#{index}"})
     end
     User.all
   end
@@ -42,6 +42,7 @@ describe API do
     users = create_users!
     secret_json = secret.to_json
 
+    header 'Authorization', 'test1'
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
@@ -55,6 +56,7 @@ describe API do
     users = create_users!
     secret_json = secret(title: '').to_json
 
+    header 'Authorization', 'test1'
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -69,6 +71,7 @@ describe API do
     users = create_users!
     secret_json = secret(required: 1).to_json
 
+    header 'Authorization', 'test1'
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -82,6 +85,7 @@ describe API do
     users = create_users!
     secret_json = secret(split: 0).to_json
 
+    header 'Authorization', 'test1'
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -95,6 +99,7 @@ describe API do
     users = create_users!
     secret_json = secret(required: 5).to_json
 
+    header 'Authorization', 'test1'
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -106,12 +111,14 @@ describe API do
 
   it 'should error if the provided users don\'t exist' do
     # we're not creating the users on purpose, to trigger this behaviour
+    User.create(username: 'user123', api_token: 'test1')
     secret_json = secret.to_json
 
+    header 'Authorization', 'test1'
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect(User.all.count).to eq(0)
+    expect(User.all.count).to eq(1)
     expect(Secret.all.count).to eq(0)
     expect(SecretPart.all.count).to eq(0)
     expect(Share.all.count).to eq(0)
@@ -127,6 +134,7 @@ describe API do
     ]
     secret_json = secret(parts: parts).to_json
 
+    header 'Authorization', 'test1'
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -146,6 +154,7 @@ describe API do
     ]
     secret_json = secret(parts: parts).to_json
 
+    header 'Authorization', 'test1'
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -165,10 +174,20 @@ describe API do
     ]
     secret_json = secret(parts: parts).to_json
 
+    header 'Authorization', 'test1'
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
     expect(User.all.count).to eq(3)
+    expect(Secret.all.count).to eq(0)
+    expect(SecretPart.all.count).to eq(0)
+    expect(Share.all.count).to eq(0)
+  end
+
+  it 'should error with 401 if the user does not provide an auth header' do
+    post '/v1/secrets', secret.to_json, 'CONTENT_TYPE' => 'application/json'
+    expect(last_response.status).to eq(401)
+    expect(User.all.count).to eq(0)
     expect(Secret.all.count).to eq(0)
     expect(SecretPart.all.count).to eq(0)
     expect(Share.all.count).to eq(0)

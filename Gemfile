@@ -11,6 +11,7 @@ gem 'dm-postgres-adapter', group: :production
 gem 'dm-sqlite-adapter', group: [:development, :test]
 gem 'dm-transactions'
 gem 'warden'
+gem 'bcrypt'
 gem 'rspec', group: :test
 gem 'rack-test', group: :test
 gem 'database_cleaner', group: :test

@@ -37,6 +37,7 @@ module API
 
     use Warden::Manager do |config|
       config.default_scope = :api
+      config.failure_app = -> env{ [401, {'Content-Length' => '0'}, ['']] }
 
       config.scope_defaults(
         :api,
@@ -56,3 +57,26 @@ module API
     add_swagger_documentation
   end
 end
+
+class APITokenStrategy < ::Warden::Strategies::Base
+  def valid?
+    !api_token.blank?
+  end
+
+  def authenticate!
+    user = User.first(api_token: api_token)
+    if user.nil?
+      fail! 'Unauthenticated'
+    else
+      success! user
+    end
+  end
+
+  private
+
+  def api_token
+    env['HTTP_AUTHORIZATION']
+  end
+end
+
+Warden::Strategies.add(:api_token, APITokenStrategy)

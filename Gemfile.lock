@@ -176,6 +176,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bcrypt
   bundler (~> 1.6)
   coveralls
   data_mapper

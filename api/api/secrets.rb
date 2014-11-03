@@ -1,11 +1,14 @@
 module API
   class Secrets < Grape::API
     resource :secrets do
+
       get do
         Secret.all
       end
 
       post do
+        env['warden'].authenticate!
+
         secret = Secret.new(extract_params [:title, :required, :split])
 
         errors = []

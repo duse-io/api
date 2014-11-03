@@ -38,6 +38,7 @@ describe API do
     DatabaseCleaner.clean
   end
 
+  # big integration test, testing usual workflow
   it 'persists a new secret correctly' do
     users = create_users!
     secret_json = secret.to_json
@@ -50,6 +51,14 @@ describe API do
     expect(Secret.all.count).to eq(1)
     expect(SecretPart.all.count).to eq(4)
     expect(Share.all.count).to eq(12)
+
+    header 'Authorization', 'test1'
+    get '/v1/secrets/1/users'
+    expect(last_response.body).to eq(users.to_json)
+
+    header 'Authorization', 'test1'
+    get '/v1/secrets'
+    expect(last_response.body).to eq([Secret.first].to_json)
   end
 
   it 'should error when title is empty' do

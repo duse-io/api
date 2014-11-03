@@ -7,6 +7,11 @@ module API
         Share.all(user: current_user).secret_part.secret
       end
 
+      get '/:id/users' do
+        authenticate!
+        Secret.get(params[:id]).secret_parts.shares.user
+      end
+
       post do
         authenticate!
 

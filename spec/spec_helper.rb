@@ -15,6 +15,16 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
+unless ENV['CI']
+  require 'simplecov'
+  SimpleCov.start
+end
+
+if ENV['CI']
+  require 'coveralls'
+  Coveralls.wear!
+end
+
 require_relative '../config/environment'
 require 'api'
 require 'database_cleaner'

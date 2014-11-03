@@ -167,7 +167,6 @@ describe API do
 
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
-    p last_response
     expect(last_response.status).to eq(422)
     expect(User.all.count).to eq(3)
     expect(Secret.all.count).to eq(0)

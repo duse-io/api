@@ -1,19 +1,17 @@
 module API
   class Secrets < Grape::API
-    resource :secrets do
+    before { authenticate! }
 
+    resource :secrets do
       get do
-        authenticate!
         Share.all(user: current_user).secret_part.secret
       end
 
       get '/:id/users' do
-        authenticate!
         Secret.get!(params[:id]).secret_parts.shares.user
       end
 
       get '/:id/shares' do
-        authenticate!
         secret = Secret.get!(params[:id])
         secret.secret_parts(order: [:index.asc]).map do |part|
           part.shares(user: [User.get(1), current_user]).map do |share|
@@ -23,8 +21,6 @@ module API
       end
 
       post do
-        authenticate!
-
         secret = Secret.new(extract_params [:title, :required, :split])
 
         errors = []

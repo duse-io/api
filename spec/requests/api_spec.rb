@@ -57,6 +57,16 @@ describe API do
     expect(last_response.body).to eq(users.to_json)
 
     header 'Authorization', 'test1'
+    get '/v1/secrets/1/shares'
+    result = [
+      ["1-19810ad8", "2-2867e0bd"],
+      ["1-940cc79",  "2-e671f52"],
+      ["1-3e8f8a59", "2-70f6da4d"],
+      ["1-117c3",    "2-1f592"]
+    ]
+    expect(last_response.body).to eq(result.to_json)
+
+    header 'Authorization', 'test1'
     get '/v1/secrets'
     expect(last_response.body).to eq([Secret.first].to_json)
   end

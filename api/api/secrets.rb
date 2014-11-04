@@ -16,6 +16,19 @@ module API
         secret.secret_parts.shares.user
       end
 
+      get '/:id/shares' do
+        authenticate!
+        secret = Secret.get(params[:id])
+        if secret.nil?
+          return status 404
+        end
+        secret.secret_parts(order: [:index.asc]).map do |part|
+          part.shares(user: [User.get(1), current_user]).map do |share|
+            share.content
+          end
+        end
+      end
+
       post do
         authenticate!
 

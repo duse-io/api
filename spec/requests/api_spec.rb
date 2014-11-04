@@ -229,4 +229,13 @@ describe API do
 
     expect(last_response.status).to eq(404)
   end
+
+  it 'should error with 404 when retrieving shares for a not existing secret' do
+    User.create(username: 'test', api_token: 'test123')
+
+    header 'Authorization', 'test123'
+    get '/v1/secrets/1/shares'
+
+    expect(last_response.status).to eq(404)
+  end
 end

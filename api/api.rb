@@ -13,6 +13,7 @@ DataMapper::Model.raise_on_save_failure = true
 
 require 'api/helpers'
 require 'api/secrets'
+require 'api/users'
 
 module API
   class API < Grape::API
@@ -53,6 +54,7 @@ module API
     helpers APIHelpers
 
     mount Secrets
+    mount Users
 
     add_swagger_documentation
   end

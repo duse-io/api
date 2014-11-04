@@ -69,6 +69,10 @@ describe API do
     header 'Authorization', 'test1'
     get '/v1/secrets'
     expect(last_response.body).to eq([Secret.first].to_json)
+
+    header 'Authorization', 'test1'
+    get '/v1/users/1'
+    expect(last_response.body).to eq(User.first.to_json)
   end
 
   it 'should error when title is empty' do
@@ -235,6 +239,15 @@ describe API do
 
     header 'Authorization', 'test123'
     get '/v1/secrets/1/shares'
+
+    expect(last_response.status).to eq(404)
+  end
+
+  it 'should error with 404 when retrieving shares for a not existing secret' do
+    User.create(username: 'test', api_token: 'test123')
+
+    header 'Authorization', 'test123'
+    get '/v1/users/2'
 
     expect(last_response.status).to eq(404)
   end

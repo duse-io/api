@@ -3,7 +3,6 @@ require 'grape-swagger'
 require 'data_mapper'
 require 'warden'
 
-puts ENV['DATABASE_URL']
 DataMapper.setup(:default, ENV['DATABASE_URL'])
 require 'models/user'
 require 'models/secret'
@@ -12,6 +11,7 @@ require 'models/share'
 DataMapper.finalize.auto_upgrade!
 DataMapper::Model.raise_on_save_failure = true
 
+require 'warden_strategies/api_token'
 require 'api/helpers'
 require 'api/secrets'
 require 'api/users'
@@ -60,26 +60,3 @@ module API
     add_swagger_documentation
   end
 end
-
-class APITokenStrategy < ::Warden::Strategies::Base
-  def valid?
-    !api_token.blank?
-  end
-
-  def authenticate!
-    user = User.first(api_token: api_token)
-    if user.nil?
-      fail! 'Unauthenticated'
-    else
-      success! user
-    end
-  end
-
-  private
-
-  def api_token
-    env['HTTP_AUTHORIZATION']
-  end
-end
-
-Warden::Strategies.add(:api_token, APITokenStrategy)

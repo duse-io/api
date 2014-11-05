@@ -186,6 +186,7 @@ DEPENDENCIES
   dm-transactions
   foreman
   grape
+  grape-entity
   grape-swagger
   rack-test
   rake

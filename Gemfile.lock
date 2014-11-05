@@ -63,9 +63,6 @@ GEM
       json (~> 1.6)
       json_pure (~> 1.6)
       multi_json (~> 1.0)
-    dm-sqlite-adapter (1.2.0)
-      dm-do-adapter (~> 1.2.0)
-      do_sqlite3 (~> 0.10.6)
     dm-timestamps (1.2.0)
       dm-core (~> 1.2.0)
     dm-transactions (1.2.0)
@@ -81,8 +78,6 @@ GEM
     dm-validations (1.2.0)
       dm-core (~> 1.2.0)
     do_postgres (0.10.14)
-      data_objects (= 0.10.14)
-    do_sqlite3 (0.10.14)
       data_objects (= 0.10.14)
     docile (1.1.5)
     equalizer (0.0.9)
@@ -182,7 +177,6 @@ DEPENDENCIES
   data_mapper
   database_cleaner
   dm-postgres-adapter
-  dm-sqlite-adapter
   dm-transactions
   grape
   grape-swagger

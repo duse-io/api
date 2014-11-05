@@ -13,7 +13,7 @@ DataMapper.finalize.auto_upgrade!
 DataMapper::Model.raise_on_save_failure = true
 
 require 'warden_strategies/api_token'
-#require 'api/entities'
+require 'api/entities'
 require 'api/helpers'
 require 'api/secrets'
 require 'api/users'

@@ -1,10 +1,12 @@
-class SecretPart
-  include DataMapper::Resource
+module Model
+  class SecretPart
+    include DataMapper::Resource
 
-  property :id,    Serial
-  property :index, Integer
-  
-  has n, :shares, constraint: :destroy
+    property :id,    Serial
+    property :index, Integer
+    
+    has n, :shares, constraint: :destroy
 
-  belongs_to :secret
+    belongs_to :secret
+  end
 end

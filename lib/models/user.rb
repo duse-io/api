@@ -1,10 +1,12 @@
-class User
-  include DataMapper::Resource
+module Model
+  class User
+    include DataMapper::Resource
 
-  property :id,         Serial
-  property :username,   String
-  property :api_token,  String, index: true
-  property :public_key, Text
+    property :id,         Serial
+    property :username,   String
+    property :api_token,  String, index: true
+    property :public_key, Text
 
-  has n, :shares
+    has n, :shares
+  end
 end

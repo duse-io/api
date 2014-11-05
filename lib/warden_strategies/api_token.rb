@@ -4,7 +4,7 @@ class APITokenStrategy < ::Warden::Strategies::Base
   end
 
   def authenticate!
-    user = User.first(api_token: api_token)
+    user = Model::User.first(api_token: api_token)
     if user.nil?
       fail! 'Unauthenticated'
     else

@@ -4,11 +4,11 @@ module API
 
     resource :users do
       get do
-        User.all
+        Model::User.all
       end
 
       get '/:id' do
-        User.get! params[:id]
+        Model::User.get! params[:id]
       end
     end
   end

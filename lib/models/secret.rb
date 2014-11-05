@@ -10,5 +10,5 @@ class Secret
   validates_numericality_of :required, gte: 2
   validates_numericality_of :split, gte: 1
 
-  has n, :secret_parts
+  has n, :secret_parts, constraint: :destroy
 end

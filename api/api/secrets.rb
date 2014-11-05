@@ -7,6 +7,11 @@ module API
         Share.all(user: current_user).secret_part.secret
       end
 
+      delete '/:id' do
+        Secret.get!(params[:id]).destroy
+        status 204
+      end
+
       get '/:id/users' do
         Secret.get!(params[:id]).secret_parts.shares.user
       end
@@ -14,7 +19,7 @@ module API
       get '/:id/shares' do
         secret = Secret.get!(params[:id])
         secret.secret_parts(order: [:index.asc]).map do |part|
-          part.shares(user: [User.get(1), current_user]).map do |share|
+          part.shares(user: [User.first(username: 'server'), current_user]).map do |share|
             share.content
           end
         end
@@ -49,7 +54,7 @@ module API
           unless keys - part.keys
             errors << 'Users referenced in secret parts do not match in all parts'
           end
-          unless part.has_key? "1"
+          unless part.has_key? User.first(username: 'server').id.to_s
             errors << 'Shares for the server must be present'
           end
           part.each do |key, value|

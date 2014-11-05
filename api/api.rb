@@ -3,7 +3,8 @@ require 'grape-swagger'
 require 'data_mapper'
 require 'warden'
 
-DataMapper.setup(:default, ENV['DATABASE_URL'] || 'sqlite::memory:')
+puts ENV['DATABASE_URL']
+DataMapper.setup(:default, ENV['DATABASE_URL'])
 require 'models/user'
 require 'models/secret'
 require 'models/secret_part'

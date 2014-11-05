@@ -27,42 +27,29 @@ module API
       end
 
       post do
+        errors = SecretValidator.validate_json(params)
         secret = Model::Secret.new(extract_params [:title, :required, :split])
+        entities = [secret]
 
-        errors = []
-        errors += secret.errors.full_messages unless secret.valid?
-
-        secret_parts = params[:parts]
-
-        errors << 'Secret parts must be an array' unless secret_parts.is_a? Array
-        errors << 'Amount of secret parts is smaller than required to decrypt' if secret_parts.length < params[:required]
-
-        keys = secret_parts.first.keys
-        shares = []
-        secret_parts.map.with_index do |part, index|
+        params[:parts].each_with_index do |part, index|
           secret_part = Model::SecretPart.new({index: index, secret: secret})
-          errors += secret_part.errors.full_messages unless secret_part.valid?
-          errors << 'Users referenced in secret parts do not match in all parts' unless (keys - part.keys).empty?
-          errors << 'Shares for the server must be present' unless part.has_key? Model::User.first(username: 'server').id.to_s
 
-          part.each do |key, value|
-            user = Model::User.get key
-            errors << 'One or more of the provided users do not exist' if user.nil?
-            share = Model::Share.new({user: user, secret_part: secret_part, content: value})
-            errors += share.errors.full_messages unless share.valid?
-            shares << share
+          part.each do |user_id, share|
+            user = Model::User.get(user_id)
+            entities << Model::Share.new({user: user, secret_part: secret_part, content: share})
           end
 
-          secret_part
+          entities << secret_part
         end
 
+        entities.each do |entity|
+          errors += entity.errors.full_messages unless entity.valid?
+        end
         errors -= ['Secret must not be blank', 'Secret part must not be blank']
         unless errors.empty?
           render_api_error! errors.uniq, 422
         end
-        secret.save
-        secret_parts.each(&:save)
-        shares.each(&:save)
+        entities.each(&:save)
         status 201
       end
     end

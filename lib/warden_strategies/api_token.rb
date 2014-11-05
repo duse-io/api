@@ -15,7 +15,7 @@ class APITokenStrategy < ::Warden::Strategies::Base
   private
 
   def api_token
-    env['HTTP_AUTHORIZATION']
+    request.env['HTTP_AUTHORIZATION']
   end
 end
 

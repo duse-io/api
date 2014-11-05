@@ -29,47 +29,30 @@ module API
         secret = Secret.new(extract_params [:title, :required, :split])
 
         errors = []
+        errors += secret.errors.full_messages unless secret.valid?
 
-        unless secret.valid?
-          errors += secret.errors.full_messages
-        end
+        secret_parts = params[:parts]
 
-        parts = extract_param(:parts)
+        errors << 'Secret parts must be an array' unless secret_parts.is_a? Array
+        errors << 'Amount of secret parts is smaller than required to decrypt' if secret_parts.length < params[:required]
 
-        unless parts.is_a? Array
-          errors << 'Secret parts must be an array'
-        end
-        if parts.length < extract_param(:required)
-          errors << 'Amount of secret parts is smaller than required to decrypt'
-        end
-
-        keys = parts.first.keys
-        secret_parts = []
+        keys = secret_parts.first.keys
         shares = []
-        parts.each_with_index do |part, index|
+        secret_parts.map.with_index do |part, index|
           secret_part = SecretPart.new({index: index, secret: secret})
-          unless secret_part.valid?
-            errors += secret_part.errors.full_messages
-          end
-          unless keys - part.keys
-            errors << 'Users referenced in secret parts do not match in all parts'
-          end
-          unless part.has_key? User.first(username: 'server').id.to_s
-            errors << 'Shares for the server must be present'
-          end
+          errors += secret_part.errors.full_messages unless secret_part.valid?
+          errors << 'Users referenced in secret parts do not match in all parts' unless (keys - part.keys).empty?
+          errors << 'Shares for the server must be present' unless part.has_key? User.first(username: 'server').id.to_s
+
           part.each do |key, value|
-            begin
-              user = User.get!(key)
-            rescue DataMapper::ObjectNotFoundError
-              errors << 'One or more of the provided users do not exist'
-            end
+            user = User.get key
+            errors << 'One or more of the provided users do not exist' if user.nil?
             share = Share.new({user: user, secret_part: secret_part, content: value})
-            unless share.valid?
-              errors += share.errors.full_messages
-            end
+            errors += share.errors.full_messages unless share.valid?
             shares << share
           end
-          secret_parts << secret_part
+
+          secret_part
         end
 
         errors -= ['Secret must not be blank', 'Secret part must not be blank']

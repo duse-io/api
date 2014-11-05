@@ -45,12 +45,12 @@ module API
         :api,
         strategies: [:api_token],
         store: false,
-        action: "unauthenticated_api"
+        action: '/unauthenticated'
       )
     end
 
     format :json
-    content_type :txt, "text/plain"
+    content_type :txt, 'text/plain'
 
     helpers APIHelpers
 

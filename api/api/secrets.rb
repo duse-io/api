@@ -4,7 +4,8 @@ module API
 
     resource :secrets do
       get do
-        Model::Share.all(user: current_user).secret_part.secret
+        secrets = Model::Share.all(user: current_user).secret_part.secret
+        present secrets, with: Entities::Secret
       end
 
       delete '/:id' do

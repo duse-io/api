@@ -70,7 +70,7 @@ describe API do
 
     header 'Authorization', 'test1'
     get '/v1/secrets'
-    expect(last_response.body).to eq([Model::Secret.first].to_json)
+    expect(last_response.body).to eq([{title: 'my secret', required: 2, split: 4}].to_json)
 
     header 'Authorization', 'test1'
     get "/v1/users/#{Model::User.first.id}"

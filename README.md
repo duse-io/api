@@ -15,16 +15,11 @@ Requirements
 
 - Ubuntu 14.04
 - Ruby 2.1.3
-- Postgres (Production)
-- SQLite (Development & Testing)
+- Postgres
 
 Ruby
 
-	\curl -sSL https://get.rvm.io | bash -s -- --version ruby-2.1.3
-
-SQLite
-
-	sudo apt-get install libsqlite3-dev
+	\curl -sSL https://get.rvm.io | bash -s stable --ruby
 
 PostgreSQL
 

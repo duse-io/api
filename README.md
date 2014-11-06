@@ -23,7 +23,7 @@ Ruby
 
 PostgreSQL
 
-	sudo apt-get install libpq-dev
+	sudo apt-get install postgresql libpq-dev postgresql-server-dev-all
 
 Clone and install dependencies
 

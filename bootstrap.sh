@@ -2,7 +2,7 @@
 
 sudo apt-get update -q -y
 
-sudo apt-get -y --quiet install postgresql postgresql-contrib libpq-dev postgresql-server-dev-9.3
+sudo apt-get -y --quiet install postgresql libpq-dev postgresql-server-dev-all
 
 su -l vagrant -c "gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3"
 su -l vagrant -c "curl -L https://get.rvm.io | bash -s stable"

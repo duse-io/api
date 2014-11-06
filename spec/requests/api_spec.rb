@@ -17,10 +17,26 @@ describe API do
       required: options[:required] || 2,
       split: options[:split] || 4,
       parts: options[:parts] || [
-        {"#{users[0].id}" => "1-19810ad8", "#{users[1].id}" => "2-2867e0bd", "#{users[2].id}" => "3-374eb6a2"},
-        {"#{users[0].id}" => "1-940cc79",  "#{users[1].id}" => "2-e671f52",  "#{users[2].id}" => "3-138d722b"},
-        {"#{users[0].id}" => "1-3e8f8a59", "#{users[1].id}" => "2-70f6da4d", "#{users[2].id}" => "3-235e2a42"},
-        {"#{users[0].id}" => "1-117c3",    "#{users[1].id}" => "2-1f592",    "#{users[2].id}" => "3-d362"}
+        {
+          "#{users[0].id}" => '1-19810ad8',
+          "#{users[1].id}" => '2-2867e0bd',
+          "#{users[2].id}" => '3-374eb6a2'
+        },
+        {
+          "#{users[0].id}" => '1-940cc79',
+          "#{users[1].id}" => '2-e671f52',
+          "#{users[2].id}" => '3-138d722b'
+        },
+        {
+          "#{users[0].id}" => '1-3e8f8a59',
+          "#{users[1].id}" => '2-70f6da4d',
+          "#{users[2].id}" => '3-235e2a42'
+        },
+        {
+          "#{users[0].id}" => '1-117c3',
+          "#{users[1].id}" => '2-1f592',
+          "#{users[2].id}" => '3-d362'
+        }
       ]
     }
   end
@@ -28,7 +44,7 @@ describe API do
   def create_users!(usernames = [])
     usernames += ['server', 'adracus', 'flower-pot']
     usernames.each_with_index do |username, index|
-      Model::User.create({username: username, api_token: "test#{index}"})
+      Model::User.create(username: username, api_token: "test#{index}")
     end
     Model::User.all
   end
@@ -61,16 +77,18 @@ describe API do
     header 'Authorization', 'test1'
     get "/v1/secrets/#{Model::Secret.first.id}/shares"
     result = [
-      ["1-19810ad8", "2-2867e0bd"],
-      ["1-940cc79",  "2-e671f52"],
-      ["1-3e8f8a59", "2-70f6da4d"],
-      ["1-117c3",    "2-1f592"]
+      ['1-19810ad8', '2-2867e0bd'],
+      ['1-940cc79',  '2-e671f52'],
+      ['1-3e8f8a59', '2-70f6da4d'],
+      ['1-117c3',    '2-1f592']
     ]
     expect(last_response.body).to eq(result.to_json)
 
     header 'Authorization', 'test1'
     get '/v1/secrets'
-    expect(last_response.body).to eq([{title: 'my secret', required: 2, split: 4}].to_json)
+    expect(last_response.body).to eq(
+      [{ title: 'my secret', required: 2, split: 4 }].to_json
+    )
 
     header 'Authorization', 'test1'
     get "/v1/users/#{Model::User.first.id}"
@@ -92,7 +110,11 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect(JSON.parse(last_response.body)["message"].include? "Title must not be blank").to be_truthy
+    expect(
+      JSON.parse(last_response.body)['message'].include?(
+        'Title must not be blank'
+      )
+    ).to be_truthy
     expect(Model::User.all.count).to eq(3)
     expect(Model::Secret.all.count).to eq(0)
     expect(Model::SecretPart.all.count).to eq(0)
@@ -143,10 +165,10 @@ describe API do
     user = Model::User.create(username: 'user123', api_token: 'test1')
     # we're not creating user #3, which trigger this behaviour
     parts = [
-      {"#{user.id}" => "1-19810ad8", "#{2}" => "2-2867e0bd", "#{3}" => "3-374eb6a2"},
-      {"#{user.id}" => "1-940cc79",  "#{2}" => "2-e671f52",  "#{3}" => "3-138d722b"},
-      {"#{user.id}" => "1-3e8f8a59", "#{2}" => "2-70f6da4d", "#{3}" => "3-235e2a42"},
-      {"#{user.id}" => "1-117c3",    "#{2}" => "2-1f592",    "#{3}" => "3-d362"}
+      { "#{user.id}" => '1-9810ad8', '2' => '2-867e0bd', '3' => '3-74eb6a2' },
+      { "#{user.id}" => '1-40cc79',  '2' => '2-671f52',  '3' => '3-38d722b' },
+      { "#{user.id}" => '1-e8f8a59', '2' => '2-0f6da4d', '3' => '3-35e2a42' },
+      { "#{user.id}" => '1-17c3',    '2' => '2-f592',    '3' => '3-362' }
     ]
     secret_json = secret(users: [], parts: parts).to_json
 
@@ -163,10 +185,10 @@ describe API do
   it 'should error if there is no part for the server' do
     users = create_users!(['testuser'])
     parts = [
-      {"#{4}" => "1-19810ad8", "#{2}" => "2-2867e0bd", "#{3}" => "3-374eb6a2"},
-      {"#{4}" => "1-940cc79",  "#{2}" => "2-e671f52",  "#{3}" => "3-138d722b"},
-      {"#{4}" => "1-3e8f8a59", "#{2}" => "2-70f6da4d", "#{3}" => "3-235e2a42"},
-      {"#{4}" => "1-117c3",    "#{2}" => "2-1f592",    "#{3}" => "3-d362"}
+      { '4' => '1-19810ad8', '2' => '2-2867e0bd', '3' => '3-374eb6a2' },
+      { '4' => '1-940cc79',  '2' => '2-e671f52',  '3' => '3-138d722b' },
+      { '4' => '1-3e8f8a59', '2' => '2-70f6da4d', '3' => '3-235e2a42' },
+      { '4' => '1-117c3',    '2' => '2-1f592',    '3' => '3-d362' }
     ]
     secret_json = secret(parts: parts, users: users).to_json
 
@@ -183,10 +205,10 @@ describe API do
   it 'should error when not all parts have shares for the same users' do
     users = create_users!(['testuser'])
     parts = [
-      {"#{4}" => "1-19810ad8", "#{2}" => "2-2867e0bd", "#{3}" => "3-374eb6a2"},
-      {"#{1}" => "1-940cc79",  "#{2}" => "2-e671f52",  "#{3}" => "3-138d722b"},
-      {"#{1}" => "1-3e8f8a59", "#{2}" => "2-70f6da4d", "#{3}" => "3-235e2a42"},
-      {"#{1}" => "1-117c3",    "#{2}" => "2-1f592",    "#{3}" => "3-d362"}
+      { '4' => '1-19810ad8', '2' => '2-2867e0bd', '3' => '3-374eb6a2' },
+      { '1' => '1-940cc79',  '2' => '2-e671f52',  '3' => '3-138d722b' },
+      { '1' => '1-3e8f8a59', '2' => '2-70f6da4d', '3' => '3-235e2a42' },
+      { '1' => '1-117c3',    '2' => '2-1f592',    '3' => '3-d362' }
     ]
     secret_json = secret(parts: parts, users: users).to_json
 
@@ -203,10 +225,10 @@ describe API do
   it 'should error when at least one of the provided users do not exist' do
     users = create_users!
     parts = [
-      {"#{4}" => "1-19810ad8", "#{2}" => "2-2867e0bd", "#{3}" => "3-374eb6a2"},
-      {"#{1}" => "1-940cc79",  "#{2}" => "2-e671f52",  "#{3}" => "3-138d722b"},
-      {"#{1}" => "1-3e8f8a59", "#{2}" => "2-70f6da4d", "#{3}" => "3-235e2a42"},
-      {"#{1}" => "1-117c3",    "#{2}" => "2-1f592",    "#{3}" => "3-d362"}
+      { '4' => '1-19810ad8', '2' => '2-2867e0bd', '3' => '3-374eb6a2' },
+      { '1' => '1-940cc79',  '2' => '2-e671f52',  '3' => '3-138d722b' },
+      { '1' => '1-3e8f8a59', '2' => '2-70f6da4d', '3' => '3-235e2a42' },
+      { '1' => '1-117c3',    '2' => '2-1f592',    '3' => '3-d362' }
     ]
     secret_json = secret(parts: parts, users: users).to_json
 

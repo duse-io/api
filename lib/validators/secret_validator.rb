@@ -1,6 +1,6 @@
 class SecretValidator
   def self.validate_json(secret)
-    errors = []
+    errors = Set.new
 
     secret_parts = secret[:parts]
 
@@ -16,11 +16,12 @@ class SecretValidator
       # check for malformed when secret_part is not an array
 
       secret_part.each do |user_id, share|
-        user = Model::User.get user_id
-        errors << 'One or more of the provided users do not exist' if user.nil?
+        if Model::User.get(user_id).nil?
+          errors << 'One or more of the provided users do not exist'
+        end
       end
     end
 
-    errors.uniq
+    errors
   end
 end

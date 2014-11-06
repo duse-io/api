@@ -31,12 +31,11 @@ module API
         entities = Model::Secret.new_full(params)
 
         entities.each do |entity|
-          errors += entity.errors.full_messages unless entity.valid?
+          errors = errors.merge entity.errors.full_messages unless entity.valid?
         end
-        errors -= ['Secret must not be blank', 'Secret part must not be blank']
-        unless errors.empty?
-          render_api_error! errors.uniq, 422
-        end
+
+        errors = errors.subtract ['Secret must not be blank', 'Secret part must not be blank']
+        render_api_error! errors.to_a, 422 unless errors.empty?
         entities.each(&:save)
         status 201
       end

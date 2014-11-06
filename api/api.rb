@@ -28,7 +28,7 @@ module API
 
       message = "\n#{exception.class} (#{exception.message}):\n"
       message << exception.annoted_source_code.to_s if exception.respond_to?(:annoted_source_code)
-      message << "  " << trace.join("\n  ")
+      message << '  ' << trace.join("\n  ")
 
       API.logger.add Logger::FATAL, message
       rack_response({ message: '500 Internal Server Error' }, 500)
@@ -36,7 +36,7 @@ module API
 
     use Warden::Manager do |config|
       config.default_scope = :api
-      config.failure_app = -> env{ [401, {'Content-Length' => '0'}, ['']] }
+      config.failure_app = -> _env { [401, { 'Content-Length' => '0' }, ['']] }
 
       config.scope_defaults(
         :api,

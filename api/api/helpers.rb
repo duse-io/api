@@ -7,15 +7,15 @@ module API
     end
 
     def bad_request!(attribute)
-      message = ["400 (Bad request)"]
+      message = ['400 (Bad request)']
       message << "\"" + attribute.to_s + "\" not given"
       render_api_error!(message.join(' '), 400)
     end
 
     def not_found!(resource = nil)
-      message = ["404"]
+      message = ['404']
       message << resource if resource
-      message << "Not Found"
+      message << 'Not Found'
       render_api_error!(message.join(' '), 404)
     end
 
@@ -31,14 +31,8 @@ module API
       render_api_error!(message || '409 Conflict', 409)
     end
 
-    def render_validation_error!(model)
-      unless model.valid?
-        render_api_error!(model.errors.full_messages || '422 Unprocessable Entity', 422)
-      end
-    end
-
     def render_api_error!(message, status)
-      error!({'message' => message}, status)
+      error!({ message: message }, status)
     end
 
     def aggregate_secret_errors(accumulator, entities)
@@ -66,7 +60,7 @@ module API
     end
 
     # user & authentication
-    
+
     def current_user
       env['warden'].user
     end

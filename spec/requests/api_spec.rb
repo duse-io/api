@@ -294,4 +294,20 @@ describe API do
 
     expect(last_response.status).to eq(404)
   end
+
+  it 'should persist the user correctly' do
+    user_json = { username: 'test', api_token: 'test1' }.to_json
+    post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(201)
+    expect(Model::User.all.count).to eq(1)
+  end
+
+  it 'should error when a username is not given' do
+    user_json = { api_token: 'test1' }.to_json
+    post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(422)
+    expect(Model::User.all.count).to eq(0)
+  end
 end

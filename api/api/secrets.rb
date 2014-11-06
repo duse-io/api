@@ -27,12 +27,7 @@ module API
       post do
         errors = SecretValidator.validate_json(params)
         entities = Model::Secret.new_full(params)
-
-        entities.each do |entity|
-          errors = errors.merge entity.errors.full_messages unless entity.valid?
-        end
-
-        errors = errors.subtract ['Secret must not be blank', 'Secret part must not be blank']
+        aggregate_secret_errors(errors, entities)
         render_api_error! errors.to_a, 422 unless errors.empty?
         entities.each(&:save)
         status 201

@@ -14,7 +14,7 @@ Requirements
 ------------
 
 - Ubuntu 14.04
-- Ruby 2.1.3
+- Ruby 2.1.4
 - Postgres
 
 Ruby

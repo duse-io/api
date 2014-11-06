@@ -28,19 +28,7 @@ module API
 
       post do
         errors = SecretValidator.validate_json(params)
-        secret = Model::Secret.new(extract_params [:title, :required, :split])
-        entities = [secret]
-
-        params[:parts].each_with_index do |part, index|
-          secret_part = Model::SecretPart.new({index: index, secret: secret})
-
-          part.each do |user_id, share|
-            user = Model::User.get(user_id)
-            entities << Model::Share.new({user: user, secret_part: secret_part, content: share})
-          end
-
-          entities << secret_part
-        end
+        entities = Model::Secret.new_full(params)
 
         entities.each do |entity|
           errors += entity.errors.full_messages unless entity.valid?

@@ -20,9 +20,7 @@ module API
       get '/:id/shares' do
         secret = Model::Secret.get!(params[:id])
         secret.secret_parts(order: [:index.asc]).map do |part|
-          part.shares(user: [Model::User.first(username: 'server'), current_user]).map do |share|
-            share.content
-          end
+          part.raw_shares_from current_user
         end
       end
 

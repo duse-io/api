@@ -30,6 +30,7 @@ require 'api'
 require 'database_cleaner'
 
 DatabaseCleaner[:data_mapper].strategy = :transaction
+DatabaseCleaner.clean # start with a clean database
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

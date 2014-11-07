@@ -30,6 +30,12 @@ Clone and install dependencies
 	git clone
 	bundle install
 
+Docker Setup
+------------
+
+	sudo docker run --name duse-postgres -d postgres
+	sudo docker run -p 5000:5000 --name duse-api --link duse-postgres:postgres -d duseio/api sh -c 'sudo DATABASE_URL=postgres://postgres@$POSTGRES_PORT_5432_TCP_ADDR/postgres foreman start'
+
 API Documentation
 -----------------
 

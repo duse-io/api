@@ -91,8 +91,9 @@ describe API do
     )
 
     header 'Authorization', 'test1'
-    get "/v1/users/#{Model::User.first.id}"
-    expect(last_response.body).to eq(Model::User.first.to_json)
+    user = Model::User.first
+    get "/v1/users/#{user.id}"
+    expect(last_response.body).to eq({id: user.id, username: user.username}.to_json)
 
     header 'Authorization', 'test1'
     delete "/v1/secrets/#{Model::Secret.first.id}"
@@ -309,5 +310,25 @@ describe API do
 
     expect(last_response.status).to eq(422)
     expect(Model::User.all.count).to eq(0)
+  end
+
+  it 'should not put the api token in the json response' do
+    user = Model::User.create username: 'test', api_token: 'test1'
+
+    header 'Authorization', 'test1'
+    get "/v1/users/#{user.id}", 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(200)
+    expect(JSON.parse(last_response.body).key? "api_token").to eq(false)
+  end
+
+  it 'should respond to listing users correctly' do
+    user = Model::User.create username: 'test', api_token: 'test1'
+
+    header 'Authorization', 'test1'
+    get "/v1/users", 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(200)
+    expect(last_response.body).to eq([{id: user.id, username: user.username}].to_json)
   end
 end

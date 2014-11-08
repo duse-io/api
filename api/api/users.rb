@@ -3,12 +3,12 @@ module API
     resource :users do
       get do
         authenticate!
-        Model::User.all
+        present Model::User.all, with: Entities::User
       end
 
       get '/:id' do
         authenticate!
-        Model::User.get! params[:id]
+        present Model::User.get!(params[:id]), with: Entities::User
       end
 
       post do

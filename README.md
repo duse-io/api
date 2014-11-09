@@ -35,22 +35,3 @@ Docker Setup
 
 	sudo docker run --name duse-postgres -d postgres
 	sudo docker run -p 5000:5000 --name duse-api --link duse-postgres:postgres -d duseio/api sh -c 'sudo DATABASE_URL=postgres://postgres@$POSTGRES_PORT_5432_TCP_ADDR/postgres foreman start'
-
-API Documentation
------------------
-
-The api is self documenting and generates browsable [swagger
-documentation](http://swagger.io/).
-
-To check out the api documentation clone the repository and start the
-application with
-
-	foreman start
-
-Then the generated (json) documentation can be found under
-
-	http://localhost:5000/v1/swagger_doc.json
-
-Use that link to display it in the
-[swagger-ui](https://github.com/swagger-api/swagger-ui) or use the [swagger-ui
-demo](http://petstore.swagger.wordnik.com/).

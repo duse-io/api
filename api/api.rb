@@ -51,9 +51,15 @@ module API
 
     helpers APIHelpers
 
+    desc 'API Root'
+    get do
+      {
+        secrets_url: '/secrets',
+        users_url:   '/users'
+      }
+    end
+
     mount Secrets
     mount Users
-
-    add_swagger_documentation
   end
 end

@@ -65,7 +65,15 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
-    expect(last_response.body).to eq({id: Model::Secret.first.id, title: 'my secret', required: 2, split: 4}.to_json)
+    expect(last_response.body).to eq({
+      id: Model::Secret.first.id,
+      title: 'my secret',
+      required: 2,
+      split: 4,
+      url: "http://example.org/v1/secrets/#{Model::Secret.first.id}",
+      users_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/users",
+      shares_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/shares"
+    }.to_json)
     expect(Model::User.all.count).to eq(3)
     expect(Model::Secret.all.count).to eq(1)
     expect(Model::SecretPart.all.count).to eq(4)
@@ -73,7 +81,13 @@ describe API do
 
     header 'Authorization', 'test1'
     get "/v1/secrets/#{Model::Secret.first.id}/users"
-    users = Model::User.all.map { |user| { id: user.id, username: user.username } }
+    users = Model::User.all.map do |user|
+      {
+        id: user.id,
+        username: user.username,
+        url: "http://example.org/v1/users/#{user.id}"
+      }
+    end
     expect(last_response.body).to eq(users.to_json)
 
     header 'Authorization', 'test1'
@@ -89,13 +103,29 @@ describe API do
     header 'Authorization', 'test1'
     get '/v1/secrets'
     expect(last_response.body).to eq(
-      [{ id: Model::Secret.first.id, title: 'my secret', required: 2, split: 4 }].to_json
+      [
+        {
+          id: Model::Secret.first.id,
+          title: 'my secret',
+          required: 2,
+          split: 4,
+          url: "http://example.org/v1/secrets/#{Model::Secret.first.id}",
+          users_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/users",
+          shares_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/shares"
+        }
+      ].to_json
     )
 
     header 'Authorization', 'test1'
     user = Model::User.first
     get "/v1/users/#{user.id}"
-    expect(last_response.body).to eq({id: user.id, username: user.username}.to_json)
+    expect(last_response.body).to eq(
+      {
+        id: user.id,
+        username: user.username,
+        url: "http://example.org/v1/users/#{user.id}"
+      }.to_json
+    )
 
     header 'Authorization', 'test1'
     delete "/v1/secrets/#{Model::Secret.first.id}"
@@ -304,7 +334,13 @@ describe API do
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
-    expect(last_response.body).to eq({ id: Model::User.first.id, username: 'test' }.to_json)
+    expect(last_response.body).to eq(
+      {
+        id: Model::User.first.id,
+        username: 'test',
+        url: "http://example.org/v1/users/#{Model::User.first.id}"
+      }.to_json
+    )
     expect(Model::User.all.count).to eq(1)
   end
 
@@ -323,16 +359,22 @@ describe API do
     get "/v1/users/#{user.id}", 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(200)
-    expect(JSON.parse(last_response.body).key? "api_token").to eq(false)
+    expect(JSON.parse(last_response.body).key? 'api_token').to eq(false)
   end
 
   it 'should respond to listing users correctly' do
     user = Model::User.create username: 'test', api_token: 'test1'
 
     header 'Authorization', 'test1'
-    get "/v1/users", 'CONTENT_TYPE' => 'application/json'
+    get '/v1/users', 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(200)
-    expect(last_response.body).to eq([{id: user.id, username: user.username}].to_json)
+    expect(last_response.body).to eq(
+      [{
+        id: user.id,
+        username: user.username,
+        url: "http://example.org/v1/users/#{user.id}"
+      }].to_json
+    )
   end
 end

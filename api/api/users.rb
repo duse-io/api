@@ -22,6 +22,7 @@ module API
         render_api_error! user.errors, 422 unless user.valid?
         user.save
         status 201
+        present user, with: Entities::User
       end
     end
   end

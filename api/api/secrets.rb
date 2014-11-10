@@ -17,7 +17,7 @@ module API
 
       desc 'Retrieve all users that have access to a secret.'
       get '/:id/users' do
-        Model::Secret.get!(params[:id]).secret_parts.shares.user
+        present Model::Secret.get!(params[:id]).secret_parts.shares.user, with: Entities::User
       end
 
       desc 'Retrieve the neccessary shares to reconstruct a secret.'
@@ -32,10 +32,12 @@ module API
       post do
         errors = SecretValidator.validate_json(params)
         entities = Model::Secret.new_full(params)
+        secret = entities[0]
         aggregate_secret_errors(errors, entities)
         render_api_error! errors.to_a, 422 unless errors.empty?
         entities.each(&:save)
         status 201
+        present secret, with: Entities::Secret
       end
     end
   end

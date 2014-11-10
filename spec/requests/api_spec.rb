@@ -65,6 +65,7 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
+    expect(last_response.body).to eq({id: Model::Secret.first.id, title: 'my secret', required: 2, split: 4}.to_json)
     expect(Model::User.all.count).to eq(3)
     expect(Model::Secret.all.count).to eq(1)
     expect(Model::SecretPart.all.count).to eq(4)
@@ -72,7 +73,8 @@ describe API do
 
     header 'Authorization', 'test1'
     get "/v1/secrets/#{Model::Secret.first.id}/users"
-    expect(last_response.body).to eq(Model::User.all.to_json)
+    users = Model::User.all.map { |user| { id: user.id, username: user.username } }
+    expect(last_response.body).to eq(users.to_json)
 
     header 'Authorization', 'test1'
     get "/v1/secrets/#{Model::Secret.first.id}/shares"
@@ -87,7 +89,7 @@ describe API do
     header 'Authorization', 'test1'
     get '/v1/secrets'
     expect(last_response.body).to eq(
-      [{ title: 'my secret', required: 2, split: 4 }].to_json
+      [{ id: Model::Secret.first.id, title: 'my secret', required: 2, split: 4 }].to_json
     )
 
     header 'Authorization', 'test1'
@@ -98,6 +100,7 @@ describe API do
     header 'Authorization', 'test1'
     delete "/v1/secrets/#{Model::Secret.first.id}"
     expect(last_response.status).to eq(204)
+    expect(last_response.body).to eq('')
 
     expect(Model::Secret.all.count).to eq(0)
     expect(Model::SecretPart.all.count).to eq(0)
@@ -301,6 +304,7 @@ describe API do
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
+    expect(last_response.body).to eq({ id: Model::User.first.id, username: 'test' }.to_json)
     expect(Model::User.all.count).to eq(1)
   end
 

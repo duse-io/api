@@ -2,6 +2,8 @@
 
 sudo apt-get update -q -y
 
+su -l vagrant -c "wget -qO- https://raw.githubusercontent.com/flower-pot/desktop-install/master/install.sh | sudo bash -s -- --silent --dotfiles"
+
 sudo apt-get -y --quiet install postgresql libpq-dev postgresql-server-dev-all
 
 su -l vagrant -c "gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3"

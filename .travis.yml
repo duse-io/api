@@ -1,11 +1,14 @@
 language: ruby
 rvm: 2.1.4
 cache: bundler
-bundler_args: --without development
+bundler_args: "--without development"
 env: DATABASE_URL=postgres://postgres@localhost/duse_api_test
 before_script:
-  - psql -c 'create database duse_api_test;' -U postgres
+- psql -c 'create database duse_api_test;' -U postgres
 before_install:
-  - sudo apt-get install -qq libpq-dev postgresql-server-dev-9.3
+- sudo apt-get install -qq libpq-dev postgresql-server-dev-9.3
 addons:
-  postgresql: "9.3"
+  postgresql: '9.3'
+notifications:
+  slack:
+    secure: V8a+rUco+dyagwWUObjlM+k+YLKSfdAmmhOBiJEtN3qHcYC9cVpuHJUJzYUakQyHcOA9R0/Ob8JUQoMO4plhwttlqhFpQq1FIJD+goEGI8eECdd267Yhofa3nAMP4oqmKVcC9NOXHcqtP8Xi2tVPq3hypgt10jcpDQUBXU/l7Gc=

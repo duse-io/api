@@ -17,15 +17,13 @@ module API
 
       desc 'Retrieve all users that have access to a secret.'
       get '/:id/users' do
-        present Model::Secret.get!(params[:id]).secret_parts.shares.user, with: Entities::User
+        present Model::Secret.get!(params[:id]).users, with: Entities::User
       end
 
       desc 'Retrieve the neccessary shares to reconstruct a secret.'
       get '/:id/shares' do
         secret = Model::Secret.get!(params[:id])
-        secret.secret_parts(order: [:index.asc]).map do |part|
-          part.raw_shares_from current_user
-        end
+        secret.secret_parts_for [current_user]
       end
 
       desc 'Create a new secret.'

@@ -30,8 +30,9 @@ require 'api'
 require 'database_cleaner'
 
 DataMapper.auto_upgrade!
-DatabaseCleaner[:data_mapper].strategy = :transaction
+DatabaseCleaner[:data_mapper].strategy = :truncation
 DatabaseCleaner.clean # start with a clean database
+DatabaseCleaner[:data_mapper].strategy = :transaction
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

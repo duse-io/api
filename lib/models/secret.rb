@@ -13,6 +13,16 @@ module Model
 
     has n, :secret_parts, constraint: :destroy
 
+    def users
+      secret_parts.shares.user
+    end
+
+    def secret_parts_for(users)
+      secret_parts(order: [:index.asc]).map do |part|
+        part.raw_shares_from users
+      end
+    end
+
     def self.new_full(params)
       secret = Model::Secret.new(
         title: params[:title],

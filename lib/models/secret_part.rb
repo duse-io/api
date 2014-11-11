@@ -9,9 +9,9 @@ module Model
 
     belongs_to :secret
 
-    def raw_shares_from(user)
-      users = [Model::User.first(username: 'server'), user]
-      shares(user: users).map(&:content)
+    def raw_shares_from(users)
+      secret_users = [Model::User.first(username: 'server')] + users
+      shares(user: secret_users).map(&:content)
     end
   end
 end

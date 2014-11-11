@@ -17,7 +17,7 @@ deploy:
   api_key:
     secure: EBb54/sfFUppPtekHCXH9gKnt4DXFlmYuP1FvR2PPXZAMAOImkCIPgkHB22tpl2DUIsQh0W/yL0QTQb1RJOo2LLVRKspzmyvQjPd9Sxvd2iBa/D4Qj9QgS4K7XufIJXQw2bdU1RMygAqh7Hubl13jnjdb3sm24CyTJChmlleE3w=
   app: duse
-  run:
-    - "rake migrate"
+  run: "rake migrate"
+  strategy: git
   on:
     repo: duse-io/api

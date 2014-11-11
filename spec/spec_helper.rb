@@ -29,6 +29,7 @@ require_relative '../config/environment'
 require 'api'
 require 'database_cleaner'
 
+DataMapper.auto_upgrade!
 DatabaseCleaner[:data_mapper].strategy = :transaction
 DatabaseCleaner.clean # start with a clean database
 

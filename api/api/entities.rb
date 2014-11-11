@@ -5,6 +5,7 @@ module API
       expose :title, documentation: { type: 'string', desc: 'Title for the secret.' }
       expose :required, documentation: { type: 'integer', desc: 'Number of shares required to reconstruct this secret.' }
       expose :split, documentation: { type: 'integer', desc: 'Number of chars the secret was split into before applying Shamir\'s Secret Sharing' }
+      expose :users, using: "API::Entities::User", if: { type: :full }
       expose :url do |secret, opts|
         secret_url secret, opts
       end

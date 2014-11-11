@@ -80,7 +80,7 @@ describe API do
     expect(Model::Share.all.count).to eq(12)
 
     header 'Authorization', 'test1'
-    get "/v1/secrets/#{Model::Secret.first.id}/users"
+    get "/v1/secrets/#{Model::Secret.first.id}"
     users = Model::User.all.map do |user|
       {
         id: user.id,
@@ -88,7 +88,16 @@ describe API do
         url: "http://example.org/v1/users/#{user.id}"
       }
     end
-    expect(last_response.body).to eq(users.to_json)
+    expect(last_response.body).to eq({
+      id: Model::Secret.first.id,
+      title: 'my secret',
+      required: 2,
+      split: 4,
+      users: users,
+      url: "http://example.org/v1/secrets/#{Model::Secret.first.id}",
+      users_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/users",
+      shares_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/shares"
+    }.to_json)
 
     header 'Authorization', 'test1'
     get "/v1/secrets/#{Model::Secret.first.id}/shares"

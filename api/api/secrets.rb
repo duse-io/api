@@ -9,15 +9,15 @@ module API
         present secrets, with: Entities::Secret
       end
 
+      desc 'Retrieve a secret with more detail than when retrieving all secrets'
+      get '/:id' do
+        present Model::Secret.get!(params[:id]), with: Entities::Secret, type: :full
+      end
+
       desc 'Delete a secret.'
       delete '/:id' do
         Model::Secret.get!(params[:id]).destroy
         status 204
-      end
-
-      desc 'Retrieve all users that have access to a secret.'
-      get '/:id/users' do
-        present Model::Secret.get!(params[:id]).users, with: Entities::User
       end
 
       desc 'Retrieve the neccessary shares to reconstruct a secret.'

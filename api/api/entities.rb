@@ -30,6 +30,7 @@ module API
       expose :url do |user, opts|
         user_url user, opts
       end
+      expose :public_key, if: ->(user, opts) { !user.public_key.nil? && opts[:type] == :full }
 
       private
 

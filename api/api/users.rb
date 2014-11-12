@@ -10,7 +10,8 @@ module API
       desc 'Retrieve a single user'
       get '/:id' do
         authenticate!
-        present Model::User.get!(params[:id]), with: Entities::User
+        user = Model::User.get!(params[:id])
+        present user, with: Entities::User, type: :full
       end
 
       desc 'Create a new user'
@@ -22,7 +23,7 @@ module API
         render_api_error! user.errors, 422 unless user.valid?
         user.save
         status 201
-        present user, with: Entities::User
+        present user, with: Entities::User, type: :full
       end
     end
   end

@@ -71,7 +71,6 @@ describe API do
       required: 2,
       split: 4,
       url: "http://example.org/v1/secrets/#{Model::Secret.first.id}",
-      users_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/users",
       shares_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/shares"
     }.to_json)
     expect(Model::User.all.count).to eq(3)
@@ -95,7 +94,6 @@ describe API do
       split: 4,
       users: users,
       url: "http://example.org/v1/secrets/#{Model::Secret.first.id}",
-      users_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/users",
       shares_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/shares"
     }.to_json)
 
@@ -119,7 +117,6 @@ describe API do
           required: 2,
           split: 4,
           url: "http://example.org/v1/secrets/#{Model::Secret.first.id}",
-          users_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/users",
           shares_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/shares"
         }
       ].to_json

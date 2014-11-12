@@ -9,9 +9,6 @@ module API
       expose :url do |secret, opts|
         secret_url secret, opts
       end
-      expose :users_url do |secret, opts|
-        users_url secret, opts
-      end
       expose :shares_url do |secret, opts|
         shares_url secret, opts
       end
@@ -20,10 +17,6 @@ module API
 
       def secret_url(secret, opts)
         "http://#{opts[:env]['HTTP_HOST']}/v1/secrets/#{secret.id}"
-      end
-
-      def users_url(secret, opts)
-        secret_url(secret, opts) + '/users'
       end
 
       def shares_url(secret, opts)

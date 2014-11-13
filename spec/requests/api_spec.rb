@@ -18,31 +18,32 @@ describe API do
       split: options[:split] || 4,
       parts: options[:parts] || [
         {
-          "#{users[0].id}" => '1-19810ad8',
-          "#{users[1].id}" => '2-2867e0bd',
-          "#{users[2].id}" => '3-374eb6a2'
+          "server" => '1-19810ad8',
+          "#{users[0].id}" => '2-2867e0bd',
+          "#{users[1].id}" => '3-374eb6a2'
         },
         {
-          "#{users[0].id}" => '1-940cc79',
-          "#{users[1].id}" => '2-e671f52',
-          "#{users[2].id}" => '3-138d722b'
+          "server" => '1-940cc79',
+          "#{users[0].id}" => '2-e671f52',
+          "#{users[1].id}" => '3-138d722b'
         },
         {
-          "#{users[0].id}" => '1-3e8f8a59',
-          "#{users[1].id}" => '2-70f6da4d',
-          "#{users[2].id}" => '3-235e2a42'
+          "server" => '1-3e8f8a59',
+          "#{users[0].id}" => '2-70f6da4d',
+          "#{users[1].id}" => '3-235e2a42'
         },
         {
-          "#{users[0].id}" => '1-117c3',
-          "#{users[1].id}" => '2-1f592',
-          "#{users[2].id}" => '3-d362'
+          "server" => '1-117c3',
+          "#{users[0].id}" => '2-1f592',
+          "#{users[1].id}" => '3-d362'
         }
       ]
     }
   end
 
   def create_users!(usernames = [])
-    usernames += ['server', 'adracus', 'flower-pot']
+    usernames += ['adracus', 'flower-pot']
+    users = []
     usernames.each_with_index do |username, index|
       user = Model::User.new(
         username: username,
@@ -51,12 +52,14 @@ describe API do
       )
       p user.errors unless user.valid?
       user.save
+      users << user
     end
-    Model::User.all
+    users
   end
 
   before :each do
     DatabaseCleaner.start
+    Model::User.create(username: 'server', api_token: 'irsndnafdnwfndnw', password: 'rstnioerndordnior')
   end
 
   after :each do
@@ -103,7 +106,7 @@ describe API do
       shares_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/shares"
     }.to_json)
 
-    header 'Authorization', 'test1'
+    header 'Authorization', 'test0'
     get "/v1/secrets/#{Model::Secret.first.id}/shares"
     result = [
       ['1-19810ad8', '2-2867e0bd'],
@@ -207,14 +210,13 @@ describe API do
   end
 
   it 'should error if the provided users don\'t exist' do
-    Model::User.create(username: 'server', api_token: 'test2', password: 'password')
     user = Model::User.create(username: 'user123', api_token: 'test1', password: 'password')
     # we're not creating user #3, which trigger this behaviour
     parts = [
-      { "#{user.id}" => '1-9810ad8', '2' => '2-867e0bd', '3' => '3-74eb6a2' },
-      { "#{user.id}" => '1-40cc79',  '2' => '2-671f52',  '3' => '3-38d722b' },
-      { "#{user.id}" => '1-e8f8a59', '2' => '2-0f6da4d', '3' => '3-35e2a42' },
-      { "#{user.id}" => '1-17c3',    '2' => '2-f592',    '3' => '3-362' }
+      { "server" => '1-9810ad8', '2' => '2-867e0bd', '3' => '3-74eb6a2' },
+      { "server" => '1-40cc79',  '2' => '2-671f52',  '3' => '3-38d722b' },
+      { "server" => '1-e8f8a59', '2' => '2-0f6da4d', '3' => '3-35e2a42' },
+      { "server" => '1-17c3',    '2' => '2-f592',    '3' => '3-362' }
     ]
     secret_json = secret(users: [], parts: parts).to_json
 
@@ -348,12 +350,12 @@ describe API do
     expect(last_response.status).to eq(201)
     expect(last_response.body).to eq(
       {
-        id: Model::User.first.id,
+        id: Model::User.first(username: 'test').id,
         username: 'test',
-        url: "http://example.org/v1/users/#{Model::User.first.id}"
+        url: "http://example.org/v1/users/#{Model::User.first(username: 'test').id}"
       }.to_json
     )
-    expect(Model::User.all.count).to eq(1)
+    expect(Model::User.all.count).to eq(2)
   end
 
   it 'should error when a username is not given' do
@@ -361,7 +363,7 @@ describe API do
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect(Model::User.all.count).to eq(0)
+    expect(Model::User.all.count).to eq(1)
   end
 
   it 'should not put the api token in the json response' do
@@ -383,6 +385,11 @@ describe API do
     expect(last_response.status).to eq(200)
     expect(last_response.body).to eq(
       [{
+        id: Model::User.first('server').id,
+        username: Model::User.first('server').username,
+        url: "http://example.org/v1/users/#{Model::User.first('server').id}"
+      },
+      {
         id: user.id,
         username: user.username,
         url: "http://example.org/v1/users/#{user.id}"

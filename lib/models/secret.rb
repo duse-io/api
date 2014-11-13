@@ -35,7 +35,10 @@ module Model
         secret_part = Model::SecretPart.new(index: index, secret: secret)
 
         part.each do |user_id, share|
-          user = Model::User.get(user_id)
+          user = Model::User.first(username: 'server')
+          unless user_id == 'server'
+            user = Model::User.get(user_id)
+          end
           entities << Model::Share.new(
             user: user,
             secret_part: secret_part,

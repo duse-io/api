@@ -11,12 +11,12 @@ class SecretValidator
     keys = secret_parts.first.keys
     secret_parts.each do |secret_part|
       errors << 'Users referenced in secret parts do not match in all parts' unless (keys - secret_part.keys).empty?
-      errors << 'Shares for the server must be present' unless secret_part.key? Model::User.first(username: 'server').id.to_s
+      errors << 'Shares for the server must be present' unless secret_part.key? 'server'
 
       # check for malformed when secret_part is not an array
 
       secret_part.keys.each do |user_id|
-        if Model::User.get(user_id).nil?
+        if 'server' != user_id && Model::User.get(user_id).nil?
           errors << 'One or more of the provided users do not exist'
         end
       end

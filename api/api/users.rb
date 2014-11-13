@@ -20,6 +20,7 @@ module API
           username: params[:username],
           api_token: params[:api_token]
         )
+        user.password = params[:password]
         render_api_error! user.errors, 422 unless user.valid?
         user.save
         status 201

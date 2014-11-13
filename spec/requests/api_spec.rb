@@ -44,7 +44,13 @@ describe API do
   def create_users!(usernames = [])
     usernames += ['server', 'adracus', 'flower-pot']
     usernames.each_with_index do |username, index|
-      Model::User.create(username: username, api_token: "test#{index}")
+      user = Model::User.new(
+        username: username,
+        password: 'password',
+        api_token: "test#{index}"
+      )
+      p user.errors unless user.valid?
+      user.save
     end
     Model::User.all
   end
@@ -201,8 +207,8 @@ describe API do
   end
 
   it 'should error if the provided users don\'t exist' do
-    Model::User.create(username: 'server', api_token: 'test2')
-    user = Model::User.create(username: 'user123', api_token: 'test1')
+    Model::User.create(username: 'server', api_token: 'test2', password: 'password')
+    user = Model::User.create(username: 'user123', api_token: 'test1', password: 'password')
     # we're not creating user #3, which trigger this behaviour
     parts = [
       { "#{user.id}" => '1-9810ad8', '2' => '2-867e0bd', '3' => '3-74eb6a2' },
@@ -291,7 +297,7 @@ describe API do
   end
 
   it 'should not error when listing a users secret but a users has none' do
-    Model::User.create(username: 'test', api_token: 'test123')
+    Model::User.create(username: 'test', api_token: 'test123', password: 'password')
 
     header 'Authorization', 'test123'
     get '/v1/secrets'
@@ -300,7 +306,7 @@ describe API do
   end
 
   it 'should error with 404 when a users for a secret that does not exist are requested' do
-    Model::User.create(username: 'test', api_token: 'test123')
+    Model::User.create(username: 'test', api_token: 'test123', password: 'password')
 
     header 'Authorization', 'test123'
     get '/v1/secrets/1/users'
@@ -309,7 +315,7 @@ describe API do
   end
 
   it 'should error with 404 when retrieving shares for a not existing secret' do
-    Model::User.create(username: 'test', api_token: 'test123')
+    Model::User.create(username: 'test', api_token: 'test123', password: 'password')
 
     header 'Authorization', 'test123'
     get '/v1/secrets/1/shares'
@@ -318,7 +324,7 @@ describe API do
   end
 
   it 'should error with 404 when retrieving shares for a not existing secret' do
-    Model::User.create(username: 'test', api_token: 'test123')
+    Model::User.create(username: 'test', api_token: 'test123', password: 'password')
 
     header 'Authorization', 'test123'
     get '/v1/users/2'
@@ -327,7 +333,7 @@ describe API do
   end
 
   it 'should error with 404 when deleting a not existing secret' do
-    Model::User.create(username: 'test', api_token: 'test123')
+    Model::User.create(username: 'test', api_token: 'test123', password: 'password')
 
     header 'Authorization', 'test123'
     delete '/v1/secrets/1'
@@ -336,7 +342,7 @@ describe API do
   end
 
   it 'should persist the user correctly' do
-    user_json = { username: 'test', api_token: 'test1' }.to_json
+    user_json = { username: 'test', api_token: 'test1', password: 'password' }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
@@ -359,7 +365,7 @@ describe API do
   end
 
   it 'should not put the api token in the json response' do
-    user = Model::User.create username: 'test', api_token: 'test1'
+    user = Model::User.create username: 'test', api_token: 'test1', password: 'password'
 
     header 'Authorization', 'test1'
     get "/v1/users/#{user.id}", 'CONTENT_TYPE' => 'application/json'
@@ -369,7 +375,7 @@ describe API do
   end
 
   it 'should respond to listing users correctly' do
-    user = Model::User.create username: 'test', api_token: 'test1'
+    user = Model::User.create username: 'test', api_token: 'test1', password: 'password'
 
     header 'Authorization', 'test1'
     get '/v1/users', 'CONTENT_TYPE' => 'application/json'

@@ -47,8 +47,7 @@ describe API do
     usernames.each_with_index do |username, index|
       user = Model::User.new(
         username: username,
-        password: 'password',
-        api_token: "test#{index}"
+        password: 'password'
       )
       p user.errors unless user.valid?
       user.save
@@ -59,7 +58,7 @@ describe API do
 
   before :each do
     DatabaseCleaner.start
-    Model::User.create(username: 'server', api_token: 'irsndnafdnwfndnw', password: 'rstnioerndordnior')
+    Model::User.create(username: 'server', password: 'rstnioerndordnior')
   end
 
   after :each do
@@ -70,7 +69,8 @@ describe API do
   it 'persists a new secret correctly' do
     secret_json = secret.to_json
 
-    header 'Authorization', 'test1'
+    token = Model::User.first(username: 'flower-pot').api_token
+    header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
@@ -87,7 +87,7 @@ describe API do
     expect(Model::SecretPart.all.count).to eq(4)
     expect(Model::Share.all.count).to eq(12)
 
-    header 'Authorization', 'test1'
+    header 'Authorization', token
     get "/v1/secrets/#{Model::Secret.first.id}"
     users = Model::User.all.map do |user|
       {
@@ -106,7 +106,7 @@ describe API do
       shares_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/shares"
     }.to_json)
 
-    header 'Authorization', 'test0'
+    header 'Authorization', Model::User.first(username: 'adracus').api_token
     get "/v1/secrets/#{Model::Secret.first.id}/shares"
     result = [
       ['1-19810ad8', '2-2867e0bd'],
@@ -116,7 +116,7 @@ describe API do
     ]
     expect(last_response.body).to eq(result.to_json)
 
-    header 'Authorization', 'test1'
+    header 'Authorization', token
     get '/v1/secrets'
     expect(last_response.body).to eq(
       [
@@ -131,7 +131,7 @@ describe API do
       ].to_json
     )
 
-    header 'Authorization', 'test1'
+    header 'Authorization', token
     user = Model::User.first
     get "/v1/users/#{user.id}"
     expect(last_response.body).to eq(
@@ -142,7 +142,7 @@ describe API do
       }.to_json
     )
 
-    header 'Authorization', 'test1'
+    header 'Authorization', token
     delete "/v1/secrets/#{Model::Secret.first.id}"
     expect(last_response.status).to eq(204)
     expect(last_response.body).to eq('')
@@ -155,7 +155,8 @@ describe API do
   it 'should error when title is empty' do
     secret_json = secret(title: '').to_json
 
-    header 'Authorization', 'test1'
+    token = Model::User.first(username: 'flower-pot').api_token
+    header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -173,7 +174,8 @@ describe API do
   it 'should only accept required >= 2' do
     secret_json = secret(required: 1).to_json
 
-    header 'Authorization', 'test1'
+    token = Model::User.first(username: 'flower-pot').api_token
+    header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -186,7 +188,8 @@ describe API do
   it 'should only accept split >= 1' do
     secret_json = secret(split: 0).to_json
 
-    header 'Authorization', 'test1'
+    token = Model::User.first(username: 'flower-pot').api_token
+    header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -199,7 +202,8 @@ describe API do
   it 'should only persist parts if the number of parts is >= required' do
     secret_json = secret(required: 5).to_json
 
-    header 'Authorization', 'test1'
+    token = Model::User.first(username: 'flower-pot').api_token
+    header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -210,8 +214,9 @@ describe API do
   end
 
   it 'should error if the provided users don\'t exist' do
-    user = Model::User.create(username: 'user123', api_token: 'test1', password: 'password')
-    # we're not creating user #3, which trigger this behaviour
+    user = Model::User.new username: 'user123', password: 'password'
+    user.save
+    # we're not creating user #3, which triggers this behaviour
     parts = [
       { "server" => '1-9810ad8', '2' => '2-867e0bd', '3' => '3-74eb6a2' },
       { "server" => '1-40cc79',  '2' => '2-671f52',  '3' => '3-38d722b' },
@@ -220,7 +225,7 @@ describe API do
     ]
     secret_json = secret(users: [], parts: parts).to_json
 
-    header 'Authorization', 'test1'
+    header 'Authorization', user.api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -240,7 +245,7 @@ describe API do
     ]
     secret_json = secret(parts: parts, users: users).to_json
 
-    header 'Authorization', 'test1'
+    header 'Authorization', users[1].api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -260,7 +265,7 @@ describe API do
     ]
     secret_json = secret(parts: parts, users: users).to_json
 
-    header 'Authorization', 'test1'
+    header 'Authorization', users[1].api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -280,7 +285,7 @@ describe API do
     ]
     secret_json = secret(parts: parts, users: users).to_json
 
-    header 'Authorization', 'test1'
+    header 'Authorization', users[1].api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -299,16 +304,16 @@ describe API do
   end
 
   it 'should not error when listing a users secret but a users has none' do
-    Model::User.create(username: 'test', api_token: 'test123', password: 'password')
+    user = Model::User.create(username: 'test', password: 'password')
 
-    header 'Authorization', 'test123'
+    header 'Authorization', user.api_token
     get '/v1/secrets'
 
     expect(JSON.parse(last_response.body)).to eq([])
   end
 
   it 'should error with 404 when a users for a secret that does not exist are requested' do
-    Model::User.create(username: 'test', api_token: 'test123', password: 'password')
+    Model::User.create(username: 'test', password: 'password')
 
     header 'Authorization', 'test123'
     get '/v1/secrets/1/users'
@@ -317,34 +322,34 @@ describe API do
   end
 
   it 'should error with 404 when retrieving shares for a not existing secret' do
-    Model::User.create(username: 'test', api_token: 'test123', password: 'password')
+    user = Model::User.create(username: 'test', password: 'password')
 
-    header 'Authorization', 'test123'
+    header 'Authorization', user.api_token
     get '/v1/secrets/1/shares'
 
     expect(last_response.status).to eq(404)
   end
 
   it 'should error with 404 when retrieving shares for a not existing secret' do
-    Model::User.create(username: 'test', api_token: 'test123', password: 'password')
+    user = Model::User.create(username: 'test', password: 'password')
 
-    header 'Authorization', 'test123'
+    header 'Authorization', user.api_token
     get '/v1/users/2'
 
     expect(last_response.status).to eq(404)
   end
 
   it 'should error with 404 when deleting a not existing secret' do
-    Model::User.create(username: 'test', api_token: 'test123', password: 'password')
+    user = Model::User.create(username: 'test', password: 'password')
 
-    header 'Authorization', 'test123'
+    header 'Authorization', user.api_token
     delete '/v1/secrets/1'
 
     expect(last_response.status).to eq(404)
   end
 
   it 'should persist the user correctly' do
-    user_json = { username: 'test', api_token: 'test1', password: 'password' }.to_json
+    user_json = { username: 'test', password: 'password' }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
@@ -359,7 +364,7 @@ describe API do
   end
 
   it 'should error when a username is not given' do
-    user_json = { api_token: 'test1' }.to_json
+    user_json = { password: 'test1' }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -367,9 +372,9 @@ describe API do
   end
 
   it 'should not put the api token in the json response' do
-    user = Model::User.create username: 'test', api_token: 'test1', password: 'password'
+    user = Model::User.create username: 'test', password: 'password'
 
-    header 'Authorization', 'test1'
+    header 'Authorization', user.api_token
     get "/v1/users/#{user.id}", 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(200)
@@ -377,9 +382,9 @@ describe API do
   end
 
   it 'should respond to listing users correctly' do
-    user = Model::User.create username: 'test', api_token: 'test1', password: 'password'
+    user = Model::User.create username: 'test', password: 'password'
 
-    header 'Authorization', 'test1'
+    header 'Authorization', user.api_token
     get '/v1/users', 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(200)
@@ -398,13 +403,13 @@ describe API do
   end
 
   it 'should return the users api token correctly' do
-    Model::User.create username: 'test', password: 'test-password', api_token: 'test123'
+    user = Model::User.create username: 'test', password: 'test-password'
     post '/v1/users/token', {username: 'test', password: 'test-password'}.to_json, 'CONTENT_TYPE' => 'application/json'
-    expect(JSON.parse(last_response.body)).to eq({'api_token' => 'test123'})
+    expect(JSON.parse(last_response.body)).to eq({'api_token' => user.api_token})
   end
 
   it 'should return unauthenticated on wrong password' do
-    Model::User.create username: 'test', password: 'test-password', api_token: 'test123'
+    Model::User.create username: 'test', password: 'test-password'
     post '/v1/users/token', {username: 'test', password: 'wrong-password'}.to_json, 'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq(401)
   end

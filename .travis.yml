@@ -1,5 +1,5 @@
 language: ruby
-rvm: 2.1.4
+rvm: 2.1.5
 cache: bundler
 bundler_args: "--without development"
 env: DATABASE_URL=postgres://postgres@localhost/duse_api_test

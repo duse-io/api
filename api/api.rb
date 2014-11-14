@@ -1,4 +1,5 @@
 require 'warden_strategies/api_token'
+require 'warden_strategies/password'
 require 'validators/secret_validator'
 require 'api/entities'
 require 'api/helpers'
@@ -29,12 +30,18 @@ module API
     use Warden::Manager do |config|
       config.default_scope = :api
       config.failure_app = -> _env { [401, { 'Content-Length' => '0' }, ['']] }
+      config.scope_defaults(
+        :password,
+        strategies: [:password],
+        store: false,
+        action: "unauthenticated"
+      )
 
       config.scope_defaults(
         :api,
         strategies: [:api_token],
         store: false,
-        action: '/unauthenticated'
+        action: 'unauthenticated'
       )
     end
 

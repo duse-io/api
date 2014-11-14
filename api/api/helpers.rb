@@ -65,8 +65,8 @@ module API
       env['warden'].user
     end
 
-    def authenticate!
-      env['warden'].authenticate!
+    def authenticate!(scope = :api_token)
+      env['warden'].authenticate!(scope)
     end
   end
 end

@@ -396,4 +396,16 @@ describe API do
       }].to_json
     )
   end
+
+  it 'should return the users api token correctly' do
+    Model::User.create username: 'test', password: 'test-password', api_token: 'test123'
+    post '/v1/users/token', {username: 'test', password: 'test-password'}.to_json, 'CONTENT_TYPE' => 'application/json'
+    expect(JSON.parse(last_response.body)).to eq({'api_token' => 'test123'})
+  end
+
+  it 'should return unauthenticated on wrong password' do
+    Model::User.create username: 'test', password: 'test-password', api_token: 'test123'
+    post '/v1/users/token', {username: 'test', password: 'wrong-password'}.to_json, 'CONTENT_TYPE' => 'application/json'
+    expect(last_response.status).to eq(401)
+  end
 end

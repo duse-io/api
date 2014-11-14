@@ -14,6 +14,12 @@ module API
         present user, with: Entities::User, type: :full
       end
 
+      desc 'Retrieve a users api token'
+      post '/token' do
+        authenticate! :password
+        {api_token: current_user.api_token}
+      end
+
       desc 'Create a new user'
       post do
         user = Model::User.new(

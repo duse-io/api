@@ -14,3 +14,6 @@
 .vagrant
 .env
 coverage
+
+/vendor/bundle/
+/vendor/ruby/

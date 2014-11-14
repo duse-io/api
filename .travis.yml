@@ -12,7 +12,6 @@ addons:
 notifications:
   slack:
     secure: V8a+rUco+dyagwWUObjlM+k+YLKSfdAmmhOBiJEtN3qHcYC9cVpuHJUJzYUakQyHcOA9R0/Ob8JUQoMO4plhwttlqhFpQq1FIJD+goEGI8eECdd267Yhofa3nAMP4oqmKVcC9NOXHcqtP8Xi2tVPq3hypgt10jcpDQUBXU/l7Gc=
-before_deploy: git clean
 deploy:
   provider: heroku
   api_key:

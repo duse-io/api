@@ -14,7 +14,7 @@ Requirements
 ------------
 
 - Ubuntu 14.04
-- Ruby 2.1.4
+- Ruby 2.1.5
 - Postgres
 
 Ruby
@@ -29,6 +29,17 @@ Clone and install dependencies
 
 	git clone
 	bundle install
+
+Start
+-----
+
+In development you can simply start the server with
+
+	foreman start
+
+In production it can be started with the rackup command
+
+	rackup
 
 Docker Setup
 ------------

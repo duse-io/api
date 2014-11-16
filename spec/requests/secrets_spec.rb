@@ -18,22 +18,22 @@ describe API do
       split: options[:split] || 4,
       parts: options[:parts] || [
         {
-          "server" => '1-19810ad8',
+          'server' => '1-19810ad8',
           "#{users[0].id}" => '2-2867e0bd',
           "#{users[1].id}" => '3-374eb6a2'
         },
         {
-          "server" => '1-940cc79',
+          'server' => '1-940cc79',
           "#{users[0].id}" => '2-e671f52',
           "#{users[1].id}" => '3-138d722b'
         },
         {
-          "server" => '1-3e8f8a59',
+          'server' => '1-3e8f8a59',
           "#{users[0].id}" => '2-70f6da4d',
           "#{users[1].id}" => '3-235e2a42'
         },
         {
-          "server" => '1-117c3',
+          'server' => '1-117c3',
           "#{users[0].id}" => '2-1f592',
           "#{users[1].id}" => '3-d362'
         }
@@ -44,12 +44,11 @@ describe API do
   def create_users!(usernames = [])
     usernames += ['adracus', 'flower-pot']
     users = []
-    usernames.each_with_index do |username, index|
+    usernames.each do |username|
       user = Model::User.new(
         username: username,
         password: 'password'
       )
-      p user.errors unless user.valid?
       user.save
       users << user
     end
@@ -207,10 +206,10 @@ describe API do
     user.save
     # we're not creating user #3, which triggers this behaviour
     parts = [
-      { "server" => '1-9810ad8', '2' => '2-867e0bd', '3' => '3-74eb6a2' },
-      { "server" => '1-40cc79',  '2' => '2-671f52',  '3' => '3-38d722b' },
-      { "server" => '1-e8f8a59', '2' => '2-0f6da4d', '3' => '3-35e2a42' },
-      { "server" => '1-17c3',    '2' => '2-f592',    '3' => '3-362' }
+      { 'server' => '1-9810ad8', '2' => '2-867e0bd', '3' => '3-74eb6a2' },
+      { 'server' => '1-40cc79',  '2' => '2-671f52',  '3' => '3-38d722b' },
+      { 'server' => '1-e8f8a59', '2' => '2-0f6da4d', '3' => '3-35e2a42' },
+      { 'server' => '1-17c3',    '2' => '2-f592',    '3' => '3-362' }
     ]
     secret_json = secret(users: [], parts: parts).to_json
 
@@ -276,50 +275,5 @@ describe API do
     post '/v1/secrets', secret.to_json, 'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq(401)
     expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
-  end
-
-  it 'should not error when listing a users secret but a users has none' do
-    user = Model::User.create(username: 'test', password: 'password')
-
-    header 'Authorization', user.api_token
-    get '/v1/secrets'
-
-    expect(JSON.parse(last_response.body)).to eq([])
-  end
-
-  it 'should error with 404 when a users for a secret that does not exist are requested' do
-    Model::User.create(username: 'test', password: 'password')
-
-    header 'Authorization', 'test123'
-    get '/v1/secrets/1/users'
-
-    expect(last_response.status).to eq(404)
-  end
-
-  it 'should error with 404 when retrieving shares for a not existing secret' do
-    user = Model::User.create(username: 'test', password: 'password')
-
-    header 'Authorization', user.api_token
-    get '/v1/secrets/1/shares'
-
-    expect(last_response.status).to eq(404)
-  end
-
-  it 'should error with 404 when retrieving shares for a not existing secret' do
-    user = Model::User.create(username: 'test', password: 'password')
-
-    header 'Authorization', user.api_token
-    get '/v1/users/2'
-
-    expect(last_response.status).to eq(404)
-  end
-
-  it 'should error with 404 when deleting a not existing secret' do
-    user = Model::User.create(username: 'test', password: 'password')
-
-    header 'Authorization', user.api_token
-    delete '/v1/secrets/1'
-
-    expect(last_response.status).to eq(404)
   end
 end

@@ -21,11 +21,12 @@ describe API do
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
+    user_id = Model::User.first(username: 'test').id
     expect(last_response.body).to eq(
       {
-        id: Model::User.first(username: 'test').id,
+        id: user_id,
         username: 'test',
-        url: "http://example.org/v1/users/#{Model::User.first(username: 'test').id}"
+        url: "http://example.org/v1/users/#{user_id}"
       }.to_json
     )
     expect(Model::User.all.count).to eq(1)
@@ -68,10 +69,9 @@ describe API do
   it 'should return the users api token correctly' do
     user = Model::User.create username: 'test', password: 'test-password'
     post '/v1/users/token', {
-        username: 'test',
-        password: 'test-password'
-      }.to_json,
-      'CONTENT_TYPE' => 'application/json'
+      username: 'test',
+      password: 'test-password'
+    }.to_json, 'CONTENT_TYPE' => 'application/json'
     expect(last_response.body).to eq(
       { 'api_token' => user.api_token }.to_json
     )
@@ -82,8 +82,7 @@ describe API do
     post '/v1/users/token', {
       username: 'test',
       password: 'wrong-password'
-    }.to_json,
-    'CONTENT_TYPE' => 'application/json'
+    }.to_json, 'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq(401)
   end
 end

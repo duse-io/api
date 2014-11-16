@@ -45,7 +45,7 @@ describe API do
     usernames += ['adracus', 'flower-pot']
     users = []
     usernames.each do |username|
-      user = Model::User.new(
+      user = User.new(
         username: username,
         password: 'password'
       )
@@ -56,15 +56,15 @@ describe API do
   end
 
   def expect_count(entities)
-    expect(Model::User.all.count).to eq(entities[:user])
-    expect(Model::Secret.all.count).to eq(entities[:secret])
-    expect(Model::SecretPart.all.count).to eq(entities[:secret_part])
-    expect(Model::Share.all.count).to eq(entities[:share])
+    expect(User.all.count).to eq(entities[:user])
+    expect(Secret.all.count).to eq(entities[:secret])
+    expect(SecretPart.all.count).to eq(entities[:secret_part])
+    expect(Share.all.count).to eq(entities[:share])
   end
 
   before :each do
     DatabaseCleaner.start
-    Model::User.create(username: 'server', password: 'rstnioerndordnior')
+    User.create(username: 'server', password: 'rstnioerndordnior')
   end
 
   after :each do
@@ -75,12 +75,12 @@ describe API do
   it 'persists a new secret correctly' do
     secret_json = secret.to_json
 
-    token = Model::User.first(username: 'flower-pot').api_token
+    token = User.first(username: 'flower-pot').api_token
     header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
-    secret_id = Model::Secret.first.id
+    secret_id = Secret.first.id
     expect(last_response.body).to eq({
       id: secret_id,
       title: 'my secret',
@@ -93,7 +93,7 @@ describe API do
 
     header 'Authorization', token
     get "/v1/secrets/#{secret_id}"
-    users = Model::User.all.map do |user|
+    users = User.all.map do |user|
       {
         id: user.id,
         username: user.username,
@@ -110,7 +110,7 @@ describe API do
       shares_url: "http://example.org/v1/secrets/#{secret_id}/shares"
     }.to_json)
 
-    header 'Authorization', Model::User.first(username: 'adracus').api_token
+    header 'Authorization', User.first(username: 'adracus').api_token
     get "/v1/secrets/#{secret_id}/shares"
     result = [
       ['1-19810ad8', '2-2867e0bd'],
@@ -136,7 +136,7 @@ describe API do
     )
 
     header 'Authorization', token
-    user = Model::User.first
+    user = User.first
     get "/v1/users/#{user.id}"
     expect(last_response.body).to eq(
       {
@@ -157,7 +157,7 @@ describe API do
   it 'should error when title is empty' do
     secret_json = secret(title: '').to_json
 
-    token = Model::User.first(username: 'flower-pot').api_token
+    token = User.first(username: 'flower-pot').api_token
     header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -171,7 +171,7 @@ describe API do
   it 'should only accept required >= 2' do
     secret_json = secret(required: 1).to_json
 
-    token = Model::User.first(username: 'flower-pot').api_token
+    token = User.first(username: 'flower-pot').api_token
     header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -182,7 +182,7 @@ describe API do
   it 'should only accept split >= 1' do
     secret_json = secret(split: 0).to_json
 
-    token = Model::User.first(username: 'flower-pot').api_token
+    token = User.first(username: 'flower-pot').api_token
     header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -193,7 +193,7 @@ describe API do
   it 'should only persist parts if the number of parts is >= required' do
     secret_json = secret(required: 5).to_json
 
-    token = Model::User.first(username: 'flower-pot').api_token
+    token = User.first(username: 'flower-pot').api_token
     header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -202,7 +202,7 @@ describe API do
   end
 
   it 'should error if the provided users don\'t exist' do
-    user = Model::User.new username: 'user123', password: 'password'
+    user = User.new username: 'user123', password: 'password'
     user.save
     # we're not creating user #3, which triggers this behaviour
     parts = [

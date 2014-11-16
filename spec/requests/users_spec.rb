@@ -21,7 +21,7 @@ describe API do
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
-    user_id = Model::User.first(username: 'test').id
+    user_id = User.first(username: 'test').id
     expect(last_response.body).to eq(
       {
         id: user_id,
@@ -29,7 +29,7 @@ describe API do
         url: "http://example.org/v1/users/#{user_id}"
       }.to_json
     )
-    expect(Model::User.all.count).to eq(1)
+    expect(User.all.count).to eq(1)
   end
 
   it 'should error when a username is not given' do
@@ -37,11 +37,11 @@ describe API do
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect(Model::User.all.count).to eq(0)
+    expect(User.all.count).to eq(0)
   end
 
   it 'should not put the api token in the json response' do
-    user = Model::User.create username: 'test', password: 'password'
+    user = User.create username: 'test', password: 'password'
 
     header 'Authorization', user.api_token
     get "/v1/users/#{user.id}", 'CONTENT_TYPE' => 'application/json'
@@ -51,7 +51,7 @@ describe API do
   end
 
   it 'should respond to listing users correctly' do
-    user = Model::User.create username: 'test', password: 'password'
+    user = User.create username: 'test', password: 'password'
 
     header 'Authorization', user.api_token
     get '/v1/users', 'CONTENT_TYPE' => 'application/json'
@@ -67,7 +67,7 @@ describe API do
   end
 
   it 'should return the users api token correctly' do
-    user = Model::User.create username: 'test', password: 'test-password'
+    user = User.create username: 'test', password: 'test-password'
     post '/v1/users/token', {
       username: 'test',
       password: 'test-password'
@@ -78,7 +78,7 @@ describe API do
   end
 
   it 'should return unauthenticated on wrong password' do
-    Model::User.create username: 'test', password: 'test-password'
+    User.create username: 'test', password: 'test-password'
     post '/v1/users/token', {
       username: 'test',
       password: 'wrong-password'

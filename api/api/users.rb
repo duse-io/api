@@ -4,13 +4,13 @@ module API
       desc 'Retrieve all users.'
       get do
         authenticate!
-        present Model::User.all, with: Entities::User
+        present User.all, with: Entities::User
       end
 
       desc 'Retrieve a single user'
       get '/:id' do
         authenticate!
-        user = Model::User.get!(params[:id])
+        user = User.get!(params[:id])
         present user, with: Entities::User, type: :full
       end
 
@@ -22,7 +22,7 @@ module API
 
       desc 'Create a new user'
       post do
-        user = Model::User.new(
+        user = User.new(
           username: params[:username],
           api_token: params[:api_token]
         )

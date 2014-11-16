@@ -5,31 +5,31 @@ module API
     resource :secrets do
       desc 'Retrieve all secrets the user has access to.'
       get do
-        secrets = Model::Share.all(user: current_user).secret_part.secret
+        secrets = Share.all(user: current_user).secret_part.secret
         present secrets, with: Entities::Secret
       end
 
       desc 'Retrieve a secret with more detail than when retrieving all secrets'
       get '/:id' do
-        present Model::Secret.get!(params[:id]), with: Entities::Secret, type: :full
+        present Secret.get!(params[:id]), with: Entities::Secret, type: :full
       end
 
       desc 'Delete a secret.'
       delete '/:id' do
-        Model::Secret.get!(params[:id]).destroy
+        Secret.get!(params[:id]).destroy
         status 204
       end
 
       desc 'Retrieve the neccessary shares to reconstruct a secret.'
       get '/:id/shares' do
-        secret = Model::Secret.get!(params[:id])
+        secret = Secret.get!(params[:id])
         secret.secret_parts_for [current_user]
       end
 
       desc 'Create a new secret.'
       post do
         errors = SecretValidator.validate_json(params)
-        entities = Model::Secret.new_full(params)
+        entities = Secret.new_full(params)
         secret = entities[0]
         aggregate_secret_errors(errors, entities)
         render_api_error! errors.to_a, 422 unless errors.empty?

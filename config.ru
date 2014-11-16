@@ -1,7 +1,7 @@
 require_relative 'config/environment'
 
-if Model::User.first(username: 'server').nil?
-  user = Model::User.create(username: 'server', api_token: 'irsndnafdnwfndnw', password: 'rstnioerndordnior')
+if User.first(username: 'server').nil?
+  user = User.create(username: 'server', password: 'rstnioerndordnior')
 end
 
 require 'api'

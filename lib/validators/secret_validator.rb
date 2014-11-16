@@ -16,7 +16,7 @@ class SecretValidator
       # check for malformed when secret_part is not an array
 
       secret_part.keys.each do |user_id|
-        if 'server' != user_id && Model::User.get(user_id).nil?
+        if 'server' != user_id && User.get(user_id).nil?
           errors << 'One or more of the provided users do not exist'
         end
       end

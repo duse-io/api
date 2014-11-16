@@ -4,7 +4,7 @@ class PasswordStrategy < ::Warden::Strategies::Base
   end
 
   def authenticate!
-    user = Model::User.first(username: params['username'])
+    user = User.first(username: params['username'])
     if !user.nil? && user.password == params['password']
       return success! user
     end

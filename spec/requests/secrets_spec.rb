@@ -56,6 +56,13 @@ describe API do
     users
   end
 
+  def expect_count(entities)
+    expect(Model::User.all.count).to eq(entities[:user])
+    expect(Model::Secret.all.count).to eq(entities[:secret])
+    expect(Model::SecretPart.all.count).to eq(entities[:secret_part])
+    expect(Model::Share.all.count).to eq(entities[:share])
+  end
+
   before :each do
     DatabaseCleaner.start
     Model::User.create(username: 'server', password: 'rstnioerndordnior')
@@ -74,21 +81,19 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
+    secret_id = Model::Secret.first.id
     expect(last_response.body).to eq({
-      id: Model::Secret.first.id,
+      id: secret_id,
       title: 'my secret',
       required: 2,
       split: 4,
-      url: "http://example.org/v1/secrets/#{Model::Secret.first.id}",
-      shares_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/shares"
+      url: "http://example.org/v1/secrets/#{secret_id}",
+      shares_url: "http://example.org/v1/secrets/#{secret_id}/shares"
     }.to_json)
-    expect(Model::User.all.count).to eq(3)
-    expect(Model::Secret.all.count).to eq(1)
-    expect(Model::SecretPart.all.count).to eq(4)
-    expect(Model::Share.all.count).to eq(12)
+    expect_count(user: 3, secret: 1, secret_part: 4, share: 12)
 
     header 'Authorization', token
-    get "/v1/secrets/#{Model::Secret.first.id}"
+    get "/v1/secrets/#{secret_id}"
     users = Model::User.all.map do |user|
       {
         id: user.id,
@@ -97,17 +102,17 @@ describe API do
       }
     end
     expect(last_response.body).to eq({
-      id: Model::Secret.first.id,
+      id: secret_id,
       title: 'my secret',
       required: 2,
       split: 4,
       users: users,
-      url: "http://example.org/v1/secrets/#{Model::Secret.first.id}",
-      shares_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/shares"
+      url: "http://example.org/v1/secrets/#{secret_id}",
+      shares_url: "http://example.org/v1/secrets/#{secret_id}/shares"
     }.to_json)
 
     header 'Authorization', Model::User.first(username: 'adracus').api_token
-    get "/v1/secrets/#{Model::Secret.first.id}/shares"
+    get "/v1/secrets/#{secret_id}/shares"
     result = [
       ['1-19810ad8', '2-2867e0bd'],
       ['1-940cc79',  '2-e671f52'],
@@ -121,12 +126,12 @@ describe API do
     expect(last_response.body).to eq(
       [
         {
-          id: Model::Secret.first.id,
+          id: secret_id,
           title: 'my secret',
           required: 2,
           split: 4,
-          url: "http://example.org/v1/secrets/#{Model::Secret.first.id}",
-          shares_url: "http://example.org/v1/secrets/#{Model::Secret.first.id}/shares"
+          url: "http://example.org/v1/secrets/#{secret_id}",
+          shares_url: "http://example.org/v1/secrets/#{secret_id}/shares"
         }
       ].to_json
     )
@@ -143,13 +148,11 @@ describe API do
     )
 
     header 'Authorization', token
-    delete "/v1/secrets/#{Model::Secret.first.id}"
+    delete "/v1/secrets/#{secret_id}"
     expect(last_response.status).to eq(204)
     expect(last_response.body).to eq('')
 
-    expect(Model::Secret.all.count).to eq(0)
-    expect(Model::SecretPart.all.count).to eq(0)
-    expect(Model::Share.all.count).to eq(0)
+    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
   end
 
   it 'should error when title is empty' do
@@ -160,15 +163,10 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect(
-      JSON.parse(last_response.body)['message'].include?(
-        'Title must not be blank'
-      )
-    ).to be_truthy
-    expect(Model::User.all.count).to eq(3)
-    expect(Model::Secret.all.count).to eq(0)
-    expect(Model::SecretPart.all.count).to eq(0)
-    expect(Model::Share.all.count).to eq(0)
+    expect(last_response.body).to eq(
+      { 'message' => ['Title must not be blank'] }.to_json
+    )
+    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
   end
 
   it 'should only accept required >= 2' do
@@ -179,10 +177,7 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect(Model::User.all.count).to eq(3)
-    expect(Model::Secret.all.count).to eq(0)
-    expect(Model::SecretPart.all.count).to eq(0)
-    expect(Model::Share.all.count).to eq(0)
+    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
   end
 
   it 'should only accept split >= 1' do
@@ -193,10 +188,7 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect(Model::User.all.count).to eq(3)
-    expect(Model::Secret.all.count).to eq(0)
-    expect(Model::SecretPart.all.count).to eq(0)
-    expect(Model::Share.all.count).to eq(0)
+    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
   end
 
   it 'should only persist parts if the number of parts is >= required' do
@@ -207,10 +199,7 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect(Model::User.all.count).to eq(3)
-    expect(Model::Secret.all.count).to eq(0)
-    expect(Model::SecretPart.all.count).to eq(0)
-    expect(Model::Share.all.count).to eq(0)
+    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
   end
 
   it 'should error if the provided users don\'t exist' do
@@ -229,10 +218,7 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect(Model::User.all.count).to eq(2)
-    expect(Model::Secret.all.count).to eq(0)
-    expect(Model::SecretPart.all.count).to eq(0)
-    expect(Model::Share.all.count).to eq(0)
+    expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
   end
 
   it 'should error if there is no part for the server' do
@@ -249,10 +235,7 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect(Model::User.all.count).to eq(4)
-    expect(Model::Secret.all.count).to eq(0)
-    expect(Model::SecretPart.all.count).to eq(0)
-    expect(Model::Share.all.count).to eq(0)
+    expect_count(user: 4, secret: 0, secret_part: 0, share: 0)
   end
 
   it 'should error when not all parts have shares for the same users' do
@@ -269,10 +252,7 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect(Model::User.all.count).to eq(4)
-    expect(Model::Secret.all.count).to eq(0)
-    expect(Model::SecretPart.all.count).to eq(0)
-    expect(Model::Share.all.count).to eq(0)
+    expect_count(user: 4, secret: 0, secret_part: 0, share: 0)
   end
 
   it 'should error when at least one of the provided users do not exist' do
@@ -289,18 +269,13 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect(Model::User.all.count).to eq(3)
-    expect(Model::Secret.all.count).to eq(0)
-    expect(Model::SecretPart.all.count).to eq(0)
-    expect(Model::Share.all.count).to eq(0)
+    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
   end
 
   it 'should error with 401 if the user does not provide an auth header' do
     post '/v1/secrets', secret.to_json, 'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq(401)
-    expect(Model::Secret.all.count).to eq(0)
-    expect(Model::SecretPart.all.count).to eq(0)
-    expect(Model::Share.all.count).to eq(0)
+    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
   end
 
   it 'should not error when listing a users secret but a users has none' do

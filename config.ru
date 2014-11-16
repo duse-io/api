@@ -1,3 +1,4 @@
+#\ -s puma
 require_relative 'config/environment'
 
 if User.first(username: 'server').nil?

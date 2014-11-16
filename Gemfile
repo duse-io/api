@@ -11,6 +11,7 @@ gem 'dm-postgres-adapter'
 gem 'dm-transactions'
 gem 'warden'
 gem 'bcrypt'
+gem 'puma'
 
 group :test do
   gem 'rspec'

@@ -1,6 +1,3 @@
-require 'rack/test'
-require 'json'
-
 describe API do
   include Rack::Test::Methods
 
@@ -48,7 +45,7 @@ describe API do
       user = User.new(
         username: username,
         password: 'password',
-        public_key: 'testtesttest'
+        public_key: generate_public_key
       )
       user.save
       users << user
@@ -65,7 +62,7 @@ describe API do
 
   before :each do
     DatabaseCleaner.start
-    User.create(username: 'server', password: 'rstnioerndordnior', public_key: 'testtesttest')
+    User.create username: 'server', password: 'rstnioerndordnior', public_key: generate_public_key
   end
 
   after :each do
@@ -98,7 +95,7 @@ describe API do
       {
         id: user.id,
         username: user.username,
-        public_key: 'testtesttest',
+        public_key: user.public_key,
         url: "http://example.org/v1/users/#{user.id}"
       }
     end
@@ -144,7 +141,7 @@ describe API do
       {
         id: user.id,
         username: user.username,
-        public_key: 'testtesttest',
+        public_key: user.public_key,
         url: "http://example.org/v1/users/#{user.id}"
       }.to_json
     )
@@ -205,7 +202,7 @@ describe API do
   end
 
   it 'should error if the provided users don\'t exist' do
-    user = User.create username: 'user123', password: 'password', public_key: 'testtesttest'
+    user = User.create username: 'user123', password: 'password', public_key: generate_public_key
     # we're not creating user #3, which triggers this behaviour
     parts = [
       { 'server' => '1-9810ad8', '2' => '2-867e0bd', '3' => '3-74eb6a2' },

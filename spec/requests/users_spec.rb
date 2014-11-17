@@ -1,6 +1,3 @@
-require 'rack/test'
-require 'json'
-
 describe API do
   include Rack::Test::Methods
 
@@ -17,7 +14,8 @@ describe API do
   end
 
   it 'should persist the user correctly' do
-    user_json = { username: 'test', password: 'password', public_key: 'testtesttest' }.to_json
+    pub_key = generate_public_key
+    user_json = { username: 'test', password: 'password', public_key: pub_key }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
@@ -26,7 +24,7 @@ describe API do
       {
         id: user_id,
         username: 'test',
-        public_key: 'testtesttest',
+        public_key: pub_key,
         url: "http://example.org/v1/users/#{user_id}"
       }.to_json
     )
@@ -34,7 +32,7 @@ describe API do
   end
 
   it 'should error when a username is not given' do
-    user_json = { password: 'test1' }.to_json
+    user_json = { password: 'test1', public_key: generate_public_key }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -42,7 +40,7 @@ describe API do
   end
 
   it 'should not put the api token in the json response' do
-    user = User.create username: 'test', password: 'password', public_key: 'testtesttest'
+    user = User.create username: 'test', password: 'password', public_key: generate_public_key
 
     header 'Authorization', user.api_token
     get "/v1/users/#{user.id}", 'CONTENT_TYPE' => 'application/json'
@@ -52,7 +50,7 @@ describe API do
   end
 
   it 'should respond to listing users correctly' do
-    user = User.create username: 'test', password: 'password', public_key: 'testtesttest'
+    user = User.create username: 'test', password: 'password', public_key: generate_public_key
 
     header 'Authorization', user.api_token
     get '/v1/users', 'CONTENT_TYPE' => 'application/json'
@@ -68,7 +66,7 @@ describe API do
   end
 
   it 'should return the users api token correctly' do
-    user = User.create username: 'test', password: 'test-password', public_key: 'testtesttest'
+    user = User.create username: 'test', password: 'test-password', public_key: generate_public_key
     post '/v1/users/token', {
       username: 'test',
       password: 'test-password'
@@ -79,7 +77,7 @@ describe API do
   end
 
   it 'should return unauthenticated on wrong password' do
-    User.create username: 'test', password: 'test-password', public_key: 'testtesttest'
+    User.create username: 'test', password: 'test-password', public_key: generate_public_key
     post '/v1/users/token', {
       username: 'test',
       password: 'wrong-password'

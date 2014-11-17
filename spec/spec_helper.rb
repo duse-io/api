@@ -28,11 +28,18 @@ end
 require_relative '../config/environment'
 require 'api'
 require 'database_cleaner'
+require 'rack/test'
+require 'json'
+require 'openssl'
 
 DataMapper.auto_upgrade!
 DatabaseCleaner[:data_mapper].strategy = :truncation
 DatabaseCleaner.clean # start with a clean database
 DatabaseCleaner[:data_mapper].strategy = :transaction
+
+def generate_public_key(size = 1024)
+  OpenSSL::PKey::RSA.generate(size).public_key.to_s
+end
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

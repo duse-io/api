@@ -1,4 +1,4 @@
-require 'bcrypt'
+require 'openssl'
 require 'securerandom'
 
 class User
@@ -15,6 +15,8 @@ class User
 
   has n, :shares
 
+  validates_with_method :public_key, method: :validate_public_key
+
   private
 
   def set_token
@@ -26,5 +28,15 @@ class User
 
   def generate_token
     SecureRandom.urlsafe_base64(15).tr('lIO0', 'sxyz')
+  end
+
+  def validate_public_key
+    begin
+      key = OpenSSL::PKey::RSA.new self.public_key
+      fail OpenSSL::PKey::RSAError unless key.public?
+      return true
+    rescue OpenSSL::PKey::RSAError
+      return [false, 'Public key is not a valid RSA Public Key.']
+    end
   end
 end

@@ -47,7 +47,8 @@ describe API do
     usernames.each do |username|
       user = User.new(
         username: username,
-        password: 'password'
+        password: 'password',
+        public_key: 'testtesttest'
       )
       user.save
       users << user
@@ -64,7 +65,7 @@ describe API do
 
   before :each do
     DatabaseCleaner.start
-    User.create(username: 'server', password: 'rstnioerndordnior')
+    User.create(username: 'server', password: 'rstnioerndordnior', public_key: 'testtesttest')
   end
 
   after :each do
@@ -97,6 +98,7 @@ describe API do
       {
         id: user.id,
         username: user.username,
+        public_key: 'testtesttest',
         url: "http://example.org/v1/users/#{user.id}"
       }
     end
@@ -142,6 +144,7 @@ describe API do
       {
         id: user.id,
         username: user.username,
+        public_key: 'testtesttest',
         url: "http://example.org/v1/users/#{user.id}"
       }.to_json
     )
@@ -202,8 +205,7 @@ describe API do
   end
 
   it 'should error if the provided users don\'t exist' do
-    user = User.new username: 'user123', password: 'password'
-    user.save
+    user = User.create username: 'user123', password: 'password', public_key: 'testtesttest'
     # we're not creating user #3, which triggers this behaviour
     parts = [
       { 'server' => '1-9810ad8', '2' => '2-867e0bd', '3' => '3-74eb6a2' },

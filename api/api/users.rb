@@ -24,9 +24,10 @@ module API
       post do
         user = User.new(
           username: params[:username],
-          api_token: params[:api_token]
+          api_token: params[:api_token],
+          public_key: params[:public_key],
+          password: params[:password]
         )
-        user.password = params[:password]
         render_api_error! user.errors, 422 unless user.valid?
         user.save
         status 201

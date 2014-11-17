@@ -17,7 +17,7 @@ describe API do
   end
 
   it 'should persist the user correctly' do
-    user_json = { username: 'test', password: 'password' }.to_json
+    user_json = { username: 'test', password: 'password', public_key: 'testtesttest' }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
@@ -26,6 +26,7 @@ describe API do
       {
         id: user_id,
         username: 'test',
+        public_key: 'testtesttest',
         url: "http://example.org/v1/users/#{user_id}"
       }.to_json
     )
@@ -41,7 +42,7 @@ describe API do
   end
 
   it 'should not put the api token in the json response' do
-    user = User.create username: 'test', password: 'password'
+    user = User.create username: 'test', password: 'password', public_key: 'testtesttest'
 
     header 'Authorization', user.api_token
     get "/v1/users/#{user.id}", 'CONTENT_TYPE' => 'application/json'
@@ -51,7 +52,7 @@ describe API do
   end
 
   it 'should respond to listing users correctly' do
-    user = User.create username: 'test', password: 'password'
+    user = User.create username: 'test', password: 'password', public_key: 'testtesttest'
 
     header 'Authorization', user.api_token
     get '/v1/users', 'CONTENT_TYPE' => 'application/json'
@@ -67,7 +68,7 @@ describe API do
   end
 
   it 'should return the users api token correctly' do
-    user = User.create username: 'test', password: 'test-password'
+    user = User.create username: 'test', password: 'test-password', public_key: 'testtesttest'
     post '/v1/users/token', {
       username: 'test',
       password: 'test-password'
@@ -78,7 +79,7 @@ describe API do
   end
 
   it 'should return unauthenticated on wrong password' do
-    User.create username: 'test', password: 'test-password'
+    User.create username: 'test', password: 'test-password', public_key: 'testtesttest'
     post '/v1/users/token', {
       username: 'test',
       password: 'wrong-password'

@@ -1,17 +1,19 @@
-FROM ubuntu:14.04
+FROM ruby:2.1.5
 
-RUN sudo apt-get update
-RUN sudo apt-get install -y curl autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libpq-dev postgresql-server-dev-all
-RUN cd /tmp && curl ftp://ftp.ruby-lang.org/pub/ruby/2.1/ruby-2.1.5.tar.gz | tar xz
-RUN cd /tmp/ruby-2.1.5 && ./configure --disable-install-rdoc && make && sudo make install
-RUN rm -rf /tmp/ruby-2.1.5
-RUN echo "gem: --no-rdoc --no-ri" >> ~/.gemrc
-RUN sudo gem install bundler --no-ri --no-rdoc
-ADD . /app
-RUN cd /app && bundle install
+RUN apt-get update
+RUN apt-get install -y libpq-dev postgresql-server-dev-all
 
-WORKDIR /app
+# throw errors if Gemfile has been modified since Gemfile.lock
+RUN bundle config --global frozen 1
 
-ENV DATABASE_URL postgres://duse_api:password1@localhost/duse_api_test
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+COPY Gemfile /usr/src/app/
+COPY Gemfile.lock /usr/src/app/
+RUN bundle install
+
+COPY . /usr/src/app
+
 EXPOSE 5000
-CMD ["sudo foreman start"]
+CMD ["sudo rackup -p 5000"]

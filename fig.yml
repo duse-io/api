@@ -6,7 +6,7 @@ db:
     - "5432"
 web:
   build: .
-  command: rackup -p 5000
+  command: foreman start
   volumes:
     - .:/usr/src/app
   ports:

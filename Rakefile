@@ -8,12 +8,52 @@ rescue LoadError
   puts 'rspec tasks could not be loaded'
 end
 
+task :env do
+  pub_key = OpenSSL::PKey::RSA.generate(1024).public_key.to_s
+  File.open('.env', 'w') { |file| file.write("export PUB_KEY=#{pub_key.inspect}") }
+end
+
 task :migrate do
   require_relative 'config/database'
   DataMapper.auto_migrate!
 end
 
-task :hard_migrate do
+task :create do
   require_relative 'config/database'
-  DataMapper.auto_upgrade!
+  require 'pg'
+  require 'uri'
+
+  uri = URI(ENV['DATABASE_URL'])
+  host = uri.host
+  dbname = uri.path[1, uri.path.length]
+  conn = PG.connect(dbname: 'postgres', host: host, user: 'postgres')
+  dbexists = false
+  conn.exec("SELECT EXISTS ( SELECT * FROM pg_catalog.pg_database WHERE lower(datname) = lower('#{dbname}') );") do |result|
+    result.each do |row|
+      dbexists = row['exists'] == 't'
+    end
+  end
+  unless dbexists
+    conn.exec("CREATE DATABASE #{dbname}")
+  end
+end
+
+task :drop do
+  require_relative 'config/database'
+  require 'pg'
+  require 'uri'
+
+  uri = URI(ENV['DATABASE_URL'])
+  host = uri.host
+  dbname = uri.path[1, uri.path.length]
+  conn = PG.connect(dbname: 'postgres', host: host, user: 'postgres')
+  dbexists = false
+  conn.exec("SELECT EXISTS ( SELECT * FROM pg_catalog.pg_database WHERE lower(datname) = lower('#{dbname}') );") do |result|
+    result.each do |row|
+      dbexists = row['exists'] == 't'
+    end
+  end
+  if dbexists
+    conn.exec("DROP DATABASE #{dbname}")
+  end
 end

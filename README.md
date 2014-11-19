@@ -13,39 +13,37 @@ The RESTful api for duse.
 Requirements
 ------------
 
-- Ubuntu 14.04
-- Ruby 2.1.5
-- Postgres
+You will need docker and fig to start the application. On Ubuntu 14.04 you can
+easily install docker with:
 
-Ruby
+	sudo apt-get install docker.io
 
-	\curl -sSL https://get.rvm.io | bash -s stable --ruby
+And fig with
 
-PostgreSQL
+	curl -L https://github.com/docker/fig/releases/download/1.0.1/fig-`uname -s`-`uname -m` > /usr/local/bin/fig; chmod +x /usr/local/bin/fig
 
-	sudo apt-get install postgresql libpq-dev postgresql-server-dev-all
-
-Clone and install dependencies
-
-	git clone
-	bundle install
-
-Start
+Setup
 -----
 
-In development you can simply start the server with
+Once you have cloned the repository you can download the dependencies and build
+the docker image with
 
-	foreman start
+	sudo fig build
 
-In production it can be started with the rackup command
+Then start the application (this will fail the on the first try)
 
-	rackup
+	sudo fig up
 
-Docker Setup
-------------
+Then you can setup the database
 
-	sudo docker run --name duse-postgres -d postgres
-	sudo docker run -p 5000:5000 --name duse-api --link duse-postgres:postgres -d duseio/api sh -c 'sudo DATABASE_URL=postgres://postgres@$POSTGRES_PORT_5432_TCP_ADDR/postgres foreman start'
+	sudo fig run web rake create
+	sudo fig run web rake migrate
+
+And initialize the environment
+
+	sudo fig run web rake env
+
+Done! Start the api with the previously failed `sudo fig up` command.
 
 API Documentation
 -----------------

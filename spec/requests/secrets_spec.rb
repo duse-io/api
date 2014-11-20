@@ -12,7 +12,6 @@ describe API do
     {
       title: options[:title] || 'my secret',
       required: options[:required] || 2,
-      split: options[:split] || 4,
       parts: options[:parts] || [
         {
           'server' => '1-19810ad8',
@@ -83,7 +82,6 @@ describe API do
       id: secret_id,
       title: 'my secret',
       required: 2,
-      split: 4,
       url: "http://example.org/v1/secrets/#{secret_id}",
       shares_url: "http://example.org/v1/secrets/#{secret_id}/shares"
     }.to_json)
@@ -103,7 +101,6 @@ describe API do
       id: secret_id,
       title: 'my secret',
       required: 2,
-      split: 4,
       users: users,
       url: "http://example.org/v1/secrets/#{secret_id}",
       shares_url: "http://example.org/v1/secrets/#{secret_id}/shares"
@@ -127,7 +124,6 @@ describe API do
           id: secret_id,
           title: 'my secret',
           required: 2,
-          split: 4,
           url: "http://example.org/v1/secrets/#{secret_id}",
           shares_url: "http://example.org/v1/secrets/#{secret_id}/shares"
         }
@@ -170,17 +166,6 @@ describe API do
 
   it 'should only accept required >= 2' do
     secret_json = secret(required: 1).to_json
-
-    token = User.first(username: 'flower-pot').api_token
-    header 'Authorization', token
-    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
-
-    expect(last_response.status).to eq(422)
-    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
-  end
-
-  it 'should only accept split >= 1' do
-    secret_json = secret(split: 0).to_json
 
     token = User.first(username: 'flower-pot').api_token
     header 'Authorization', token

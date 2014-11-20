@@ -4,11 +4,8 @@ class Secret
   property :id, Serial
   property :title, String, required: true
   property :required, Integer, required: true
-  # max length of a secret part
-  property :split, Integer, required: true
 
   validates_numericality_of :required, gte: 2
-  validates_numericality_of :split, gte: 1
 
   has n, :secret_parts, constraint: :destroy
 
@@ -25,8 +22,7 @@ class Secret
   def self.new_full(params)
     secret = Secret.new(
       title: params[:title],
-      required: params[:required],
-      split: params[:split]
+      required: params[:required]
     )
     entities = [secret]
 

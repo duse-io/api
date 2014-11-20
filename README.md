@@ -30,11 +30,11 @@ the docker image with
 
 	sudo fig build
 
-Then start the application (this will fail the on the first try)
+Then start the database container
 
-	sudo fig up
+	sudo fig up -d db
 
-Then you can setup the database
+Now you can setup the database
 
 	sudo fig run web rake create
 	sudo fig run web rake migrate
@@ -43,7 +43,7 @@ And initialize the environment
 
 	sudo fig run web rake env
 
-Done! Start the api with the previously failed `sudo fig up` command.
+Done! Start the api with the `sudo fig up` command.
 
 API Documentation
 -----------------

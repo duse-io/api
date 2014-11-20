@@ -7,6 +7,12 @@ module API
         present User.all, with: Entities::User
       end
 
+      desc 'Return the authenticated users profile'
+      get '/me' do
+        authenticate!
+        present current_user, with: Entities::User, type: :full
+      end
+
       desc 'Retrieve a single user'
       get '/:id' do
         authenticate!

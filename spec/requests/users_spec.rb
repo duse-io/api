@@ -84,4 +84,19 @@ describe API do
     }.to_json, 'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq(401)
   end
+
+  it 'should return the correct user when request own profile' do
+    user = User.create username: 'test', password: 'test-password', public_key: generate_public_key
+
+    header 'Authorization', user.api_token
+    get '/v1/users/me', 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(200)
+    expect(last_response.body).to eq({
+      id: user.id,
+      username: 'test',
+      public_key: user.public_key,
+      url: "http://example.org/v1/users/#{user.id}"
+    }.to_json)
+  end
 end

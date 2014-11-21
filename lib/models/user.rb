@@ -5,7 +5,7 @@ class User
   include DataMapper::Resource
   include BCrypt
 
-  before :create, :set_token
+  before :create, :set_new_token
 
   property :id,         Serial
   property :username,   String,     required: true, index: true
@@ -17,17 +17,17 @@ class User
 
   validates_with_method :public_key, method: :validate_public_key
 
-  private
-
-  def set_token
-    begin
-      token = generate_token
-    end until User.first(api_token: token).nil?
-    self.api_token = token
+  def set_new_token
+    self.api_token = generate_save_token
   end
 
-  def generate_token
-    SecureRandom.urlsafe_base64(15).tr('lIO0', 'sxyz')
+  private
+
+  def generate_save_token
+    begin
+      token = SecureRandom.urlsafe_base64(15).tr('lIO0', 'sxyz')
+    end until User.first(api_token: token).nil?
+    token
   end
 
   def validate_public_key

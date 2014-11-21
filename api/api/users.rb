@@ -23,7 +23,17 @@ module API
       desc 'Retrieve a users api token'
       post '/token' do
         authenticate! :password
+        status 200
         {api_token: current_user.api_token}
+      end
+
+      desc 'Generate a new users api token'
+      post '/token/regenerate' do
+        authenticate!
+        user = current_user
+        user.set_new_token
+        user.save
+        {api_token: user.api_token}
       end
 
       desc 'Create a new user'
@@ -36,7 +46,6 @@ module API
         )
         render_api_error! user.errors, 422 unless user.valid?
         user.save
-        status 201
         present user, with: Entities::User, type: :full
       end
     end

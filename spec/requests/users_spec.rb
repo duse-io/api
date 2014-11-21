@@ -71,6 +71,7 @@ describe API do
       username: 'test',
       password: 'test-password'
     }.to_json, 'CONTENT_TYPE' => 'application/json'
+    expect(last_response.status).to eq(200)
     expect(last_response.body).to eq(
       { 'api_token' => user.api_token }.to_json
     )
@@ -97,6 +98,21 @@ describe API do
       username: 'test',
       public_key: user.public_key,
       url: "http://example.org/v1/users/#{user.id}"
+    }.to_json)
+  end
+
+  it 'should return the correct user when request own profile' do
+    user = User.create username: 'test', password: 'test-password', public_key: generate_public_key
+
+    header 'Authorization', user.api_token
+    post '/v1/users/token/regenerate', 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(201)
+    expect(last_response.body).not_to eq({
+      api_token: user.api_token # this is still the old token before refreshing
+    }.to_json)
+    expect(last_response.body).to eq({
+      api_token: User.get(user.id).api_token
     }.to_json)
   end
 end

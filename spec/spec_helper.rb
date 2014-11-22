@@ -32,13 +32,17 @@ require 'rack/test'
 require 'json'
 require 'openssl'
 
-DataMapper.auto_upgrade!
+DataMapper.auto_migrate!
 DatabaseCleaner[:data_mapper].strategy = :truncation
 DatabaseCleaner.clean # start with a clean database
 DatabaseCleaner[:data_mapper].strategy = :transaction
 
 def generate_public_key(size = 1024)
-  OpenSSL::PKey::RSA.generate(size).public_key.to_s
+  generate_key(size).public_key.to_s
+end
+
+def generate_key(size = 1024)
+  OpenSSL::PKey::RSA.generate(size)
 end
 
 RSpec.configure do |config|

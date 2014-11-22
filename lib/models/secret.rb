@@ -7,6 +7,7 @@ class Secret
 
   validates_numericality_of :required, gte: 2
 
+  belongs_to :last_edited_by, 'User', required: true
   has n, :secret_parts, constraint: :destroy
 
   def users

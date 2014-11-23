@@ -1,3 +1,4 @@
+require 'encryption'
 require 'warden_strategies/api_token'
 require 'warden_strategies/password'
 require 'validators/secret_validator'

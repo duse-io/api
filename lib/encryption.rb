@@ -1,3 +1,6 @@
+require 'openssl'
+require 'base64'
+
 module Encryption
   module_function
 
@@ -5,6 +8,10 @@ module Encryption
     encrypted = public_key.public_encrypt text
     signature = private_key.sign digest, encrypted
     [encode(encrypted), encode(signature)]
+  end
+
+  def decrypt(private_key, text)
+    private_key.private_decrypt decode(text)
   end
 
   def verify(public_key, signature, encrypted)

@@ -12,6 +12,7 @@ class User
   property :password,   BCryptHash, required: true
   property :api_token,  String,     index: true
   property :public_key, Text,       required: true
+  property :private_key,Text
 
   has n, :shares
 

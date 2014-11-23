@@ -9,8 +9,13 @@ rescue LoadError
 end
 
 task :env do
-  pub_key = OpenSSL::PKey::RSA.generate(1024).public_key.to_s
-  File.open('.env', 'w') { |file| file.write("export PUB_KEY=#{pub_key.inspect}") }
+  key = OpenSSL::PKey::RSA.generate(1024)
+  pub_key = key.public_key.to_s
+  priv_key = key.to_pem
+  File.open('.env', 'w') do |file|
+    file.write("export PUB_KEY=#{pub_key.inspect}")
+    file.write("export PUB_KEY=#{priv_key.inspect}")
+  end
 end
 
 task :migrate do

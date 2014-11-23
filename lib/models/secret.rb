@@ -14,16 +14,17 @@ class Secret
     secret_parts.shares.user
   end
 
-  def secret_parts_for(users)
+  def secret_parts_for(user)
     secret_parts(order: [:index.asc]).map do |part|
-      part.raw_shares_from users
+      part.raw_shares_from user
     end
   end
 
   def self.new_full(params)
     secret = Secret.new(
       title: params[:title],
-      required: params[:required]
+      required: params[:required],
+      last_edited_by: params[:last_edited_by]
     )
     entities = [secret]
 
@@ -38,7 +39,8 @@ class Secret
         entities << Share.new(
           user: user,
           secret_part: secret_part,
-          content: share
+          content: share[:share],
+          signature: share[:signature]
         )
       end
 

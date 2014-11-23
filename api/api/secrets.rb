@@ -23,11 +23,12 @@ module API
       desc 'Retrieve the neccessary shares to reconstruct a secret.'
       get '/:id/shares' do
         secret = Secret.get!(params[:id])
-        secret.secret_parts_for [current_user]
+        secret.secret_parts_for current_user
       end
 
       desc 'Create a new secret.'
       post do
+        params[:last_edited_by] = current_user
         errors = SecretValidator.validate_json(params)
         entities = Secret.new_full(params)
         secret = entities[0]

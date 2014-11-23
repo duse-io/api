@@ -6,9 +6,9 @@ class SecretValidator
 
     # malformed
     errors << 'Secret parts must be an array' unless secret_parts.is_a? Array
-    errors << 'Amount of secret parts is smaller than required to decrypt' if secret_parts.length < secret[:required]
-
     keys = secret_parts.first.keys
+    errors << 'Amount of secret parts is smaller than required to decrypt' if keys.length < secret[:required]
+
     secret_parts.each do |secret_part|
       errors << 'Users referenced in secret parts do not match in all parts' unless (keys - secret_part.keys).empty?
       errors << 'Shares for the server must be present' unless secret_part.key? 'server'

@@ -5,51 +5,38 @@ describe API do
     API::API
   end
 
+  def share(raw_share, private_key, public_key)
+    encrypted_share, signature = Encryption.encrypt(
+      private_key, public_key, raw_share
+    )
+    { share: encrypted_share, signature: signature }
+  end
+
   def secret(options = {})
-    options[:users] ||= create_users!
+    server_user = User.first username: 'server'
+    server_public_key = OpenSSL::PKey::RSA.new server_user.public_key
     users = options[:users]
+    private_key = options[:private_key]
+    raw_parts = options[:parts] || [
+      ['1-19810ad8', '2-2867e0bd', '3-374eb6a2']
+    ]
+
+    parts = []
+    raw_parts.each do |raw_part|
+      shares = {}
+      shares['server'] = share(raw_part[0], private_key, server_public_key)
+      raw_part[1..raw_part.length-1].each_with_index do |raw_share, index|
+        public_key = OpenSSL::PKey::RSA.new users[index].public_key
+        shares["#{users[index].id}"] = share(raw_share, private_key, public_key)
+      end
+      parts << shares
+    end
 
     {
       title: options[:title] || 'my secret',
       required: options[:required] || 2,
-      parts: options[:parts] || [
-        {
-          'server' => '1-19810ad8',
-          "#{users[0].id}" => '2-2867e0bd',
-          "#{users[1].id}" => '3-374eb6a2'
-        },
-        {
-          'server' => '1-940cc79',
-          "#{users[0].id}" => '2-e671f52',
-          "#{users[1].id}" => '3-138d722b'
-        },
-        {
-          'server' => '1-3e8f8a59',
-          "#{users[0].id}" => '2-70f6da4d',
-          "#{users[1].id}" => '3-235e2a42'
-        },
-        {
-          'server' => '1-117c3',
-          "#{users[0].id}" => '2-1f592',
-          "#{users[1].id}" => '3-d362'
-        }
-      ]
+      parts: parts
     }
-  end
-
-  def create_users!(usernames = [])
-    usernames += ['adracus', 'flower-pot']
-    users = []
-    usernames.each do |username|
-      user = User.new(
-        username: username,
-        password: 'password',
-        public_key: generate_public_key
-      )
-      user.save
-      users << user
-    end
-    users
   end
 
   def expect_count(entities)
@@ -61,7 +48,8 @@ describe API do
 
   before :each do
     DatabaseCleaner.start
-    User.create username: 'server', password: 'rstnioerndordnior', public_key: generate_public_key
+    key = generate_key
+    User.create username: 'server', password: 'rstnioerndordnior', public_key: key.public_key.to_s, private_key: key.to_pem
   end
 
   after :each do
@@ -70,9 +58,14 @@ describe API do
 
   # big integration test, testing usual workflow
   it 'persists a new secret correctly' do
-    secret_json = secret.to_json
+    user1_key = generate_key
+    user1 = User.create username: 'flower-pot', password: 'test', public_key: user1_key.public_key.to_s
+    user2_key = generate_key
+    user2 = User.create username: 'adracus', password: 'test', public_key: user2_key.public_key.to_s
+    raw_secret = secret(users: [user1, user2], current_user: user1, private_key: user1_key)
+    secret_json = raw_secret.to_json
 
-    token = User.first(username: 'flower-pot').api_token
+    token = user1.api_token
     header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -85,7 +78,7 @@ describe API do
       url: "http://example.org/v1/secrets/#{secret_id}",
       shares_url: "http://example.org/v1/secrets/#{secret_id}/shares"
     }.to_json)
-    expect_count(user: 3, secret: 1, secret_part: 4, share: 12)
+    expect_count(user: 3, secret: 1, secret_part: 1, share: 3)
 
     header 'Authorization', token
     get "/v1/secrets/#{secret_id}"
@@ -108,13 +101,16 @@ describe API do
 
     header 'Authorization', User.first(username: 'adracus').api_token
     get "/v1/secrets/#{secret_id}/shares"
-    result = [
-      ['1-19810ad8', '2-2867e0bd'],
-      ['1-940cc79',  '2-e671f52'],
-      ['1-3e8f8a59', '2-70f6da4d'],
-      ['1-117c3',    '2-1f592']
+    expected_result = [
+      ['1-19810ad8', '3-374eb6a2'],
     ]
-    expect(last_response.body).to eq(result.to_json)
+    result = JSON.parse last_response.body
+    result.map! do |part|
+      part.map do |share|
+        Encryption.decrypt user2_key, share
+      end
+    end
+    expect(result).to eq(expected_result)
 
     header 'Authorization', token
     get '/v1/secrets'

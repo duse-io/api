@@ -26,7 +26,9 @@ module API
     class User < Grape::Entity
       expose :id, documentation: { type: 'integer', desc: 'The users id.' }
       expose :username, documentation: { type: 'string', desc: 'The users username' }
-      expose :public_key, if: { type: :full }
+      expose :public_key, if: { type: :full } do |user, options|
+        user.public_key.to_s
+      end
       expose :url do |user, opts|
         user_url user, opts
       end

@@ -14,8 +14,8 @@ describe API do
   end
 
   it 'should persist the user correctly' do
-    pub_key = generate_public_key
-    user_json = { username: 'test', password: 'password', public_key: pub_key }.to_json
+    key = generate_key
+    user_json = { username: 'test', password: 'password', public_key: key.public_key.to_s }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
@@ -24,7 +24,7 @@ describe API do
       {
         id: user_id,
         username: 'test',
-        public_key: pub_key,
+        public_key: key.public_key.to_s,
         url: "http://example.org/v1/users/#{user_id}"
       }.to_json
     )
@@ -96,7 +96,7 @@ describe API do
     expect(last_response.body).to eq({
       id: user.id,
       username: 'test',
-      public_key: user.public_key,
+      public_key: user.public_key.to_s,
       url: "http://example.org/v1/users/#{user.id}"
     }.to_json)
   end

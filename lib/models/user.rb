@@ -1,5 +1,6 @@
 require 'openssl'
 require 'securerandom'
+require 'dm-types/public_key'
 
 class User
   include DataMapper::Resource
@@ -11,7 +12,7 @@ class User
   property :username,   String,     required: true, index: true
   property :password,   BCryptHash, required: true
   property :api_token,  String,     index: true
-  property :public_key, Text,       required: true
+  property :public_key, PublicKey,  required: true
   property :private_key,Text
 
   has n, :shares

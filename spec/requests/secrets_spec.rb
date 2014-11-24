@@ -92,7 +92,7 @@ describe API do
       {
         id: user.id,
         username: user.username,
-        public_key: user.public_key,
+        public_key: user.public_key.to_s,
         url: "http://example.org/v1/users/#{user.id}"
       }
     end
@@ -139,7 +139,7 @@ describe API do
       {
         id: user.id,
         username: user.username,
-        public_key: user.public_key,
+        public_key: user.public_key.to_s,
         url: "http://example.org/v1/users/#{user.id}"
       }.to_json
     )

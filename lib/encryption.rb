@@ -6,8 +6,12 @@ module Encryption
 
   def encrypt(private_key, public_key, text)
     encrypted = public_key.public_encrypt text
-    signature = private_key.sign digest, encrypted
-    [encode(encrypted), encode(signature)]
+    signature = sign(private_key, encrypted)
+    [encode(encrypted), signature]
+  end
+
+  def sign(private_key, text)
+    encode(private_key.sign(digest, text))
   end
 
   def decrypt(private_key, text)

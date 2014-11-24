@@ -39,6 +39,16 @@ describe API do
     }
   end
 
+  def default_secret(options = {})
+    user1_key = generate_key
+    user1 = User.create username: 'flower-pot', password: 'test', public_key: user1_key.public_key.to_s
+    user2_key = generate_key
+    user2 = User.create username: 'adracus', password: 'test', public_key: user2_key.public_key.to_s
+    options.merge!({ users: [user1, user2], current_user: user1, private_key: user1_key })
+    raw_secret = secret(options)
+    [raw_secret, user1, user1_key, user2, user2_key]
+  end
+
   def expect_count(entities)
     expect(User.all.count).to eq(entities[:user])
     expect(Secret.all.count).to eq(entities[:secret])
@@ -58,11 +68,7 @@ describe API do
 
   # big integration test, testing usual workflow
   it 'persists a new secret correctly' do
-    user1_key = generate_key
-    user1 = User.create username: 'flower-pot', password: 'test', public_key: user1_key.public_key.to_s
-    user2_key = generate_key
-    user2 = User.create username: 'adracus', password: 'test', public_key: user2_key.public_key.to_s
-    raw_secret = secret(users: [user1, user2], current_user: user1, private_key: user1_key)
+    raw_secret, user1, user1_key, user2, user2_key = default_secret
     secret_json = raw_secret.to_json
 
     token = user1.api_token
@@ -147,7 +153,8 @@ describe API do
   end
 
   it 'should error when title is empty' do
-    secret_json = secret(title: '').to_json
+    raw_secret, user1, user1_key, user2, user2_key = default_secret(title: '')
+    secret_json = raw_secret.to_json
 
     token = User.first(username: 'flower-pot').api_token
     header 'Authorization', token
@@ -161,7 +168,8 @@ describe API do
   end
 
   it 'should only accept required >= 2' do
-    secret_json = secret(required: 1).to_json
+    raw_secret, user1, user1_key, user2, user2_key = default_secret(required: 1)
+    secret_json = raw_secret.to_json
 
     token = User.first(username: 'flower-pot').api_token
     header 'Authorization', token
@@ -172,7 +180,8 @@ describe API do
   end
 
   it 'should only persist parts if the number of parts is >= required' do
-    secret_json = secret(required: 5).to_json
+    raw_secret, user1, user1_key, user2, user2_key = default_secret(required: 5)
+    secret_json = raw_secret.to_json
 
     token = User.first(username: 'flower-pot').api_token
     header 'Authorization', token
@@ -183,15 +192,19 @@ describe API do
   end
 
   it 'should error if the provided users don\'t exist' do
-    user = User.create username: 'user123', password: 'password', public_key: generate_public_key
+    server = User.first(username: 'server')
+    key = generate_key
+    user = User.create username: 'user123', password: 'password', public_key: key.public_key.to_s
     # we're not creating user #3, which triggers this behaviour
-    parts = [
-      { 'server' => '1-9810ad8', '2' => '2-867e0bd', '3' => '3-74eb6a2' },
-      { 'server' => '1-40cc79',  '2' => '2-671f52',  '3' => '3-38d722b' },
-      { 'server' => '1-e8f8a59', '2' => '2-0f6da4d', '3' => '3-35e2a42' },
-      { 'server' => '1-17c3',    '2' => '2-f592',    '3' => '3-362' }
-    ]
-    secret_json = secret(users: [], parts: parts).to_json
+    secret_json = {
+      title: 'my secret',
+      required: 2,
+      parts: [{
+        'server'     => share('1-19810ad8', key, OpenSSL::PKey::RSA.new(server.public_key)),
+        "#{user.id}" => share('2-2867e0bd', key, OpenSSL::PKey::RSA.new(user.public_key)),
+        '3'          => { share: '3-374eb6a2', signature: Encryption.sign(key, '3-374eb6a2') }
+      }]
+    }.to_json
 
     header 'Authorization', user.api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
@@ -201,33 +214,52 @@ describe API do
   end
 
   it 'should error if there is no part for the server' do
-    users = create_users!(['testuser'])
-    parts = [
-      { '4' => '1-19810ad8', '2' => '2-2867e0bd', '3' => '3-374eb6a2' },
-      { '4' => '1-940cc79',  '2' => '2-e671f52',  '3' => '3-138d722b' },
-      { '4' => '1-3e8f8a59', '2' => '2-70f6da4d', '3' => '3-235e2a42' },
-      { '4' => '1-117c3',    '2' => '2-1f592',    '3' => '3-d362' }
-    ]
-    secret_json = secret(parts: parts, users: users).to_json
+    key1 = generate_key
+    user1 = User.create username: 'user1', password: 'password', public_key: key1.public_key.to_s
+    key2 = generate_key
+    user2 = User.create username: 'user2', password: 'password', public_key: key2.public_key.to_s
+    secret_json = {
+      title: 'my secret',
+      required: 2,
+      parts: [{
+        "#{user1.id}" => share('2-2867e0bd', key1, OpenSSL::PKey::RSA.new(user1.public_key)),
+        "#{user2.id}" => share('3-374eb6a2', key1, OpenSSL::PKey::RSA.new(user1.public_key)),
+      }]
+    }.to_json
 
-    header 'Authorization', users[1].api_token
+    header 'Authorization', user1.api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 4, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
   end
 
   it 'should error when not all parts have shares for the same users' do
-    users = create_users!(['testuser'])
-    parts = [
-      { '4' => '1-19810ad8', '2' => '2-2867e0bd', '3' => '3-374eb6a2' },
-      { '1' => '1-940cc79',  '2' => '2-e671f52',  '3' => '3-138d722b' },
-      { '1' => '1-3e8f8a59', '2' => '2-70f6da4d', '3' => '3-235e2a42' },
-      { '1' => '1-117c3',    '2' => '2-1f592',    '3' => '3-d362' }
-    ]
-    secret_json = secret(parts: parts, users: users).to_json
+    server_user = User.first username: 'server'
+    key1 = generate_key
+    user1 = User.create username: 'user1', password: 'password', public_key: key1.public_key.to_s
+    key2 = generate_key
+    user2 = User.create username: 'user2', password: 'password', public_key: key2.public_key.to_s
+    key3 = generate_key
+    user3 = User.create username: 'user3', password: 'password', public_key: key3.public_key.to_s
+    secret_json = {
+      title: 'my secret',
+      required: 2,
+      parts: [
+        {
+          'server'      => share('1-19810ad8', key1, OpenSSL::PKey::RSA.new(server_user.public_key)),
+          "#{user1.id}" => share('2-2867e0bd', key1, OpenSSL::PKey::RSA.new(user1.public_key)),
+          "#{user2.id}" => share('3-374eb6a2', key1, OpenSSL::PKey::RSA.new(user2.public_key))
+        },
+        {
+          'server'      => share('1-940cc79',  key1, OpenSSL::PKey::RSA.new(server_user.public_key)),
+          "#{user2.id}" => share('2-2867e0bd', key1, OpenSSL::PKey::RSA.new(user2.public_key)),
+          "#{user3.id}" => share('3-374eb6a2', key1, OpenSSL::PKey::RSA.new(user3.public_key))
+        }
+      ]
+    }.to_json
 
-    header 'Authorization', users[1].api_token
+    header 'Authorization', user1.api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -235,24 +267,30 @@ describe API do
   end
 
   it 'should error when at least one of the provided users do not exist' do
-    users = create_users!
-    parts = [
-      { '4' => '1-19810ad8', '2' => '2-2867e0bd', '3' => '3-374eb6a2' },
-      { '1' => '1-940cc79',  '2' => '2-e671f52',  '3' => '3-138d722b' },
-      { '1' => '1-3e8f8a59', '2' => '2-70f6da4d', '3' => '3-235e2a42' },
-      { '1' => '1-117c3',    '2' => '2-1f592',    '3' => '3-d362' }
-    ]
-    secret_json = secret(parts: parts, users: users).to_json
+    server_user = User.first username: 'server'
+    key1 = generate_key
+    user1 = User.create username: 'user1', password: 'password', public_key: key1.public_key.to_s
+    secret_json = {
+      title: 'my secret',
+      required: 2,
+      parts: [
+        {
+          'server'      => share('1-19810ad8', key1, OpenSSL::PKey::RSA.new(server_user.public_key)),
+          "#{user1.id}" => share('2-2867e0bd', key1, OpenSSL::PKey::RSA.new(user1.public_key)),
+          '3'           => share('3-374eb6a2', key1, OpenSSL::PKey::RSA.new(user1.public_key))
+        }
+      ]
+    }.to_json
 
-    header 'Authorization', users[1].api_token
+    header 'Authorization', user1.api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
   end
 
   it 'should error with 401 if the user does not provide an auth header' do
-    post '/v1/secrets', secret.to_json, 'CONTENT_TYPE' => 'application/json'
+    post '/v1/secrets', default_secret.to_json, 'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq(401)
     expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
   end

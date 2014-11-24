@@ -23,6 +23,14 @@ class User
     self.api_token = generate_save_token
   end
 
+  def encrypt(signing_key, text)
+    Encryption.encrypt(signing_key, self.public_key, text)
+  end
+
+  def verify_authenticity(signature, text)
+    Encryption.verify(self.public_key, signature, text)
+  end
+
   private
 
   def generate_save_token

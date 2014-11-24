@@ -14,7 +14,6 @@ describe API do
 
   def secret(options = {})
     server_user = User.first username: 'server'
-    server_public_key = OpenSSL::PKey::RSA.new server_user.public_key
     users = options[:users]
     private_key = options[:private_key]
     raw_parts = options[:parts] || [
@@ -24,9 +23,9 @@ describe API do
     parts = []
     raw_parts.each do |raw_part|
       shares = {}
-      shares['server'] = share(raw_part[0], private_key, server_public_key)
+      shares['server'] = share(raw_part[0], private_key, server_user.public_key)
       raw_part[1..raw_part.length-1].each_with_index do |raw_share, index|
-        public_key = OpenSSL::PKey::RSA.new users[index].public_key
+        public_key = users[index].public_key
         shares["#{users[index].id}"] = share(raw_share, private_key, public_key)
       end
       parts << shares
@@ -41,9 +40,9 @@ describe API do
 
   def default_secret(options = {})
     user1_key = generate_key
-    user1 = User.create username: 'flower-pot', password: 'test', public_key: user1_key.public_key.to_s
+    user1 = User.create username: 'flower-pot', password: 'test', public_key: user1_key.public_key
     user2_key = generate_key
-    user2 = User.create username: 'adracus', password: 'test', public_key: user2_key.public_key.to_s
+    user2 = User.create username: 'adracus', password: 'test', public_key: user2_key.public_key
     options.merge!({ users: [user1, user2], current_user: user1, private_key: user1_key })
     raw_secret = secret(options)
     [raw_secret, user1, user1_key, user2, user2_key]
@@ -59,7 +58,7 @@ describe API do
   before :each do
     DatabaseCleaner.start
     key = generate_key
-    User.create username: 'server', password: 'rstnioerndordnior', public_key: key.public_key.to_s, private_key: key.to_pem
+    User.create username: 'server', password: 'rstnioerndordnior', public_key: key.public_key, private_key: key.to_pem
   end
 
   after :each do
@@ -200,8 +199,8 @@ describe API do
       title: 'my secret',
       required: 2,
       parts: [{
-        'server'     => share('1-19810ad8', key, OpenSSL::PKey::RSA.new(server.public_key)),
-        "#{user.id}" => share('2-2867e0bd', key, OpenSSL::PKey::RSA.new(user.public_key)),
+        'server'     => share('1-19810ad8', key, server.public_key),
+        "#{user.id}" => share('2-2867e0bd', key, user.public_key),
         '3'          => { share: '3-374eb6a2', signature: Encryption.sign(key, '3-374eb6a2') }
       }]
     }.to_json
@@ -222,8 +221,8 @@ describe API do
       title: 'my secret',
       required: 2,
       parts: [{
-        "#{user1.id}" => share('2-2867e0bd', key1, OpenSSL::PKey::RSA.new(user1.public_key)),
-        "#{user2.id}" => share('3-374eb6a2', key1, OpenSSL::PKey::RSA.new(user1.public_key)),
+        "#{user1.id}" => share('2-2867e0bd', key1, user1.public_key),
+        "#{user2.id}" => share('3-374eb6a2', key1, user1.public_key),
       }]
     }.to_json
 
@@ -247,14 +246,14 @@ describe API do
       required: 2,
       parts: [
         {
-          'server'      => share('1-19810ad8', key1, OpenSSL::PKey::RSA.new(server_user.public_key)),
-          "#{user1.id}" => share('2-2867e0bd', key1, OpenSSL::PKey::RSA.new(user1.public_key)),
-          "#{user2.id}" => share('3-374eb6a2', key1, OpenSSL::PKey::RSA.new(user2.public_key))
+          'server'      => share('1-19810ad8', key1, server_user.public_key),
+          "#{user1.id}" => share('2-2867e0bd', key1, user1.public_key),
+          "#{user2.id}" => share('3-374eb6a2', key1, user2.public_key)
         },
         {
-          'server'      => share('1-940cc79',  key1, OpenSSL::PKey::RSA.new(server_user.public_key)),
-          "#{user2.id}" => share('2-2867e0bd', key1, OpenSSL::PKey::RSA.new(user2.public_key)),
-          "#{user3.id}" => share('3-374eb6a2', key1, OpenSSL::PKey::RSA.new(user3.public_key))
+          'server'      => share('1-940cc79',  key1, server_user.public_key),
+          "#{user2.id}" => share('2-2867e0bd', key1, user2.public_key),
+          "#{user3.id}" => share('3-374eb6a2', key1, user3.public_key)
         }
       ]
     }.to_json
@@ -269,15 +268,15 @@ describe API do
   it 'should error when at least one of the provided users do not exist' do
     server_user = User.first username: 'server'
     key1 = generate_key
-    user1 = User.create username: 'user1', password: 'password', public_key: key1.public_key.to_s
+    user1 = User.create username: 'user1', password: 'password', public_key: key1.public_key
     secret_json = {
       title: 'my secret',
       required: 2,
       parts: [
         {
-          'server'      => share('1-19810ad8', key1, OpenSSL::PKey::RSA.new(server_user.public_key)),
-          "#{user1.id}" => share('2-2867e0bd', key1, OpenSSL::PKey::RSA.new(user1.public_key)),
-          '3'           => share('3-374eb6a2', key1, OpenSSL::PKey::RSA.new(user1.public_key))
+          'server'      => share('1-19810ad8', key1, server_user.public_key),
+          "#{user1.id}" => share('2-2867e0bd', key1, user1.public_key),
+          '3'           => share('3-374eb6a2', key1, user1.public_key)
         }
       ]
     }.to_json

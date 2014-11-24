@@ -1,5 +1,4 @@
 describe User do
-
   before :each do
     DatabaseCleaner.start
   end
@@ -14,11 +13,18 @@ describe User do
     expect(user.public_key.class).to eq(OpenSSL::PKey::RSA)
   end
 
-  it 'should correctly handle plain text public keys and encryption' do
+  it 'should correctly handle plain text public keys' do
     key = generate_key
     user = User.create(username: 'test', password: 'test', public_key: key.public_key.to_s)
-    encrypted, signature = Encryption.encrypt(key, user.public_key, 'test')
-    expect(Encryption.verify user.public_key, signature, encrypted).to be true
+    expect(user.public_key.class).to eq(OpenSSL::PKey::RSA)
+  end
+
+  it 'should handle encryption/signing/verification correctly' do
+    key = generate_key
+    user = User.create(username: 'test', password: 'test', public_key: key.public_key)
+    encrypted, signature = user.encrypt key, 'test'
+    expect(user.verify_authenticity signature, encrypted).to be true
+    expect(Encryption.decrypt key, encrypted).to eq 'test'
   end
 
   it 'should correctly handle non public keys' do

@@ -14,8 +14,8 @@ describe API do
   end
 
   it 'should persist the user correctly' do
-    key = generate_key
-    user_json = { username: 'test', password: 'password', public_key: key.public_key.to_s }.to_json
+    public_key = generate_public_key
+    user_json = { username: 'test', password: 'password', public_key: public_key }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
@@ -24,7 +24,7 @@ describe API do
       {
         id: user_id,
         username: 'test',
-        public_key: key.public_key.to_s,
+        public_key: public_key,
         url: "http://example.org/v1/users/#{user_id}"
       }.to_json
     )
@@ -59,7 +59,7 @@ describe API do
     expect(last_response.body).to eq(
       [{
         id: user.id,
-        username: user.username,
+        username: 'test',
         url: "http://example.org/v1/users/#{user.id}"
       }].to_json
     )
@@ -67,10 +67,12 @@ describe API do
 
   it 'should return the users api token correctly' do
     user = User.create username: 'test', password: 'test-password', public_key: generate_public_key
+
     post '/v1/users/token', {
       username: 'test',
       password: 'test-password'
     }.to_json, 'CONTENT_TYPE' => 'application/json'
+
     expect(last_response.status).to eq(200)
     expect(last_response.body).to eq(
       { 'api_token' => user.api_token }.to_json
@@ -79,15 +81,18 @@ describe API do
 
   it 'should return unauthenticated on wrong password' do
     User.create username: 'test', password: 'test-password', public_key: generate_public_key
+
     post '/v1/users/token', {
       username: 'test',
       password: 'wrong-password'
     }.to_json, 'CONTENT_TYPE' => 'application/json'
+
     expect(last_response.status).to eq(401)
   end
 
   it 'should return the correct user when request own profile' do
-    user = User.create username: 'test', password: 'test-password', public_key: generate_public_key
+    public_key = generate_public_key
+    user = User.create username: 'test', password: 'test-password', public_key: public_key
 
     header 'Authorization', user.api_token
     get '/v1/users/me', 'CONTENT_TYPE' => 'application/json'
@@ -96,7 +101,7 @@ describe API do
     expect(last_response.body).to eq({
       id: user.id,
       username: 'test',
-      public_key: user.public_key.to_s,
+      public_key: public_key,
       url: "http://example.org/v1/users/#{user.id}"
     }.to_json)
   end

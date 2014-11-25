@@ -18,6 +18,7 @@ class User
   has n, :shares
 
   validates_with_method :public_key, method: :validate_public_key
+  validates_format_of   :username, with: /[a-zA-Z0-9_-]{4,30}$/
 
   def set_new_token
     self.api_token = generate_save_token

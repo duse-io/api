@@ -44,7 +44,7 @@ module API
           public_key: params[:public_key],
           password: params[:password]
         )
-        render_api_error! user.errors, 422 unless user.valid?
+        render_api_error! user.errors.full_messages, 422 unless user.valid?
         user.save
         present user, with: Entities::User, type: :full
       end

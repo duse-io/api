@@ -32,10 +32,35 @@ describe API do
   end
 
   it 'should error when a username is not given' do
-    user_json = { password: 'test1', public_key: generate_public_key }.to_json
+    user_json = { password: 'test-password', public_key: generate_public_key }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
+    expect(last_response.body).to eq({
+      'message' => ['Username must not be blank']
+    }.to_json)
+    expect(User.all.count).to eq(0)
+  end
+
+  it 'should error when a username contains illegal characters' do
+    user_json = { username: 'test?', password: 'test-password', public_key: generate_public_key }.to_json
+    post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(422)
+    expect(last_response.body).to eq({
+      'message' => ['Username has an invalid format']
+    }.to_json)
+    expect(User.all.count).to eq(0)
+  end
+
+  it 'should correctly handle non rsa public keys' do
+    user_json = { username: 'test', password: 'test-password', public_key: 'non rsa public key' }.to_json
+    post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(422)
+    expect(last_response.body).to eq({
+      'message' => ['Public key is not a valid RSA Public Key.']
+    }.to_json)
     expect(User.all.count).to eq(0)
   end
 
@@ -79,12 +104,19 @@ describe API do
     )
   end
 
-  it 'should return unauthenticated on wrong password' do
+  it 'should return unauthenticated on wrong username or password' do
     User.create username: 'test', password: 'test-password', public_key: generate_public_key
 
     post '/v1/users/token', {
       username: 'test',
       password: 'wrong-password'
+    }.to_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(401)
+
+    post '/v1/users/token', {
+      username: 'wrong-username',
+      password: 'some-password'
     }.to_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(401)

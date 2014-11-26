@@ -40,9 +40,9 @@ describe API do
 
   def default_secret(options = {})
     user1_key = generate_key
-    user1 = User.create username: 'flower-pot', password: 'test', public_key: user1_key.public_key
+    user1 = User.create username: 'flower-pot', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: user1_key.public_key
     user2_key = generate_key
-    user2 = User.create username: 'adracus', password: 'test', public_key: user2_key.public_key
+    user2 = User.create username: 'adracus', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: user2_key.public_key
     options.merge!({ users: [user1, user2], current_user: user1, private_key: user1_key })
     raw_secret = secret(options)
     [raw_secret, user1, user1_key, user2, user2_key]
@@ -58,7 +58,9 @@ describe API do
   before :each do
     DatabaseCleaner.start
     key = generate_key
-    User.create username: 'server', password: 'rstnioerndordnior', public_key: key.public_key, private_key: key.to_pem
+    user = User.new username: 'server', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: key.public_key, private_key: key.to_pem
+    p user.errors.full_messages unless user.valid?
+    user.save
   end
 
   after :each do
@@ -193,7 +195,7 @@ describe API do
   it 'should error if the provided users don\'t exist' do
     server = User.first(username: 'server')
     key = generate_key
-    user = User.create username: 'user123', password: 'password', public_key: key.public_key.to_s
+    user = User.create username: 'user123', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: key.public_key.to_s
     # we're not creating user #3, which triggers this behaviour
     secret_json = {
       title: 'my secret',
@@ -214,9 +216,9 @@ describe API do
 
   it 'should error if there is no part for the server' do
     key1 = generate_key
-    user1 = User.create username: 'user1', password: 'password', public_key: key1.public_key.to_s
+    user1 = User.create username: 'user1', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: key1.public_key.to_s
     key2 = generate_key
-    user2 = User.create username: 'user2', password: 'password', public_key: key2.public_key.to_s
+    user2 = User.create username: 'user2', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: key2.public_key.to_s
     secret_json = {
       title: 'my secret',
       required: 2,
@@ -236,11 +238,11 @@ describe API do
   it 'should error when not all parts have shares for the same users' do
     server_user = User.first username: 'server'
     key1 = generate_key
-    user1 = User.create username: 'user1', password: 'password', public_key: key1.public_key.to_s
+    user1 = User.create username: 'user1', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: key1.public_key.to_s
     key2 = generate_key
-    user2 = User.create username: 'user2', password: 'password', public_key: key2.public_key.to_s
+    user2 = User.create username: 'user2', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: key2.public_key.to_s
     key3 = generate_key
-    user3 = User.create username: 'user3', password: 'password', public_key: key3.public_key.to_s
+    user3 = User.create username: 'user3', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: key3.public_key.to_s
     secret_json = {
       title: 'my secret',
       required: 2,
@@ -268,7 +270,7 @@ describe API do
   it 'should error when at least one of the provided users do not exist' do
     server_user = User.first username: 'server'
     key1 = generate_key
-    user1 = User.create username: 'user1', password: 'password', public_key: key1.public_key
+    user1 = User.create username: 'user1', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: key1.public_key
     secret_json = {
       title: 'my secret',
       required: 2,

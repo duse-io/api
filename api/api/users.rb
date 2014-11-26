@@ -42,7 +42,8 @@ module API
           username: params[:username],
           api_token: params[:api_token],
           public_key: params[:public_key],
-          password: params[:password]
+          password: params[:password],
+          password_confirmation: params[:password_confirmation]
         )
         render_api_error! user.errors.full_messages, 422 unless user.valid?
         user.save

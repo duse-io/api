@@ -1,4 +1,11 @@
 describe Encryption do
+  it 'signature and encrypted text are utf-8 encoded' do
+    key = generate_key
+    encrypted, signature = Encryption.encrypt key, key.public_key, 'text'
+    expect(encrypted.encoding).to eq Encoding::UTF_8
+    expect(signature.encoding).to eq Encoding::UTF_8
+  end
+
   it 'correctly verifies a signed encrypted text' do
     key1 = generate_key
     key2 = generate_key

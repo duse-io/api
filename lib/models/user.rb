@@ -20,6 +20,7 @@ class User
 
   validates_with_method :public_key, method: :validate_public_key
   validates_with_method :password_confirmation, method: :validate_password_complexity, if: :new?
+  validates_with_method :password_confirmation, method: :validate_password_equalness, if: :new?
   validates_length_of   :password_confirmation, min: 8, if: :new?
   validates_format_of   :username, with: /[a-zA-Z0-9_-]{4,30}$/
 
@@ -27,11 +28,18 @@ class User
     self.api_token = generate_save_token
   end
 
+  def validate_password_equalness
+    unless self.password == self.password_confirmation
+      return [false, 'Password and password confirmation do not match']
+    end
+    true
+  end
+
   def validate_password_complexity
-    unless /.*[[:punct:]]+.*/ =~ self.password_confirmation && # includes punctuation
-           /.*[[:upper:]]+.*/ =~ self.password_confirmation && # includes uppercase letters
-           /.*[[:lower:]]+.*/ =~ self.password_confirmation && # includes lowercase letters
-           /.*\d+.*/          =~ self.password_confirmation # includes digits letters
+    if (/.*[[:punct:]]+.*/ =~ self.password_confirmation).nil? || # includes punctuation
+       (/.*[[:upper:]]+.*/ =~ self.password_confirmation).nil? || # includes uppercase letters
+       (/.*[[:lower:]]+.*/ =~ self.password_confirmation).nil? || # includes lowercase letters
+       (/.*\d+.*/          =~ self.password_confirmation).nil?    # includes digits letters
       return [false, 'Password too weak.']
     end
     true

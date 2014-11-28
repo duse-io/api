@@ -48,7 +48,7 @@ describe API do
 
     expect(last_response.status).to eq(422)
     expect(last_response.body).to eq({
-      'message' => ['Username has an invalid format']
+      'message' => ['Username must be only letters, capital letters, numbers, "-" and "_". And at least 4 characters long.']
     }.to_json)
     expect(User.all.count).to eq(0)
   end

@@ -9,12 +9,16 @@ rescue LoadError
 end
 
 task :env do
+  require 'openssl'
+  require 'securerandom'
   key = OpenSSL::PKey::RSA.generate(1024)
   pub_key = key.public_key.to_s
   priv_key = key.to_pem
+  password = SecureRandom.base64(32)
   File.open('.env', 'w') do |file|
-    file.write("export PUB_KEY=#{pub_key.inspect}")
-    file.write("export PUB_KEY=#{priv_key.inspect}")
+    file.puts("export PUB_KEY=#{pub_key.inspect}")
+    file.puts("export PUB_KEY=#{priv_key.inspect}")
+    file.puts("export PASSWORD=#{password.inspect}")
   end
 end
 

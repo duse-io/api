@@ -8,6 +8,8 @@ class SecretPart
 
   belongs_to :secret
 
+  validates_uniqueness_of :secret, :scope => :index
+
   def raw_shares_from(user)
     server_user = User.first(username: 'server')
     server_share = shares user: server_user

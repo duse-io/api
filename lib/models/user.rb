@@ -8,10 +8,11 @@ class User
 
   before :create, :set_new_token
 
+  attr_accessor :password_confirmation
+
   property :id,         Serial
   property :username,   String,     required: true, index: true, unique: true
   property :password,   BCryptHash, required: true
-  attr_accessor :password_confirmation
   property :api_token,  String,     index: true, unique: true
   property :public_key, PublicKey,  required: true
   property :private_key,Text
@@ -20,7 +21,7 @@ class User
 
   validates_with_method :public_key, method: :validate_public_key
   validates_with_method :password_confirmation, method: :validate_password_complexity, if: :new?
-  validates_with_method :password_confirmation, method: :validate_password_equalness, if: :new?
+  validates_with_method :password_confirmation, method: :validate_password_equalness,  if: :new?
   validates_length_of   :password_confirmation, min: 8, if: :new?, message: 'Password must be at least 8 characters long'
   validates_format_of   :username, with: /[a-zA-Z0-9_-]{4,30}$/, message: 'Username must be only letters, capital letters, numbers, "-" and "_". And at least 4 characters long.'
 

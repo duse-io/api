@@ -1,7 +1,7 @@
 class Share
   include DataMapper::Resource
 
-  property :content, Text, required: true
+  property :content,   Text, required: true
   property :signature, Text, required: true
 
   belongs_to :secret_part, key: true

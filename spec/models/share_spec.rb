@@ -15,6 +15,8 @@ describe Share do
     secret = Secret.create title: 'secret', required: 2, last_edited_by: user
     secret_part = SecretPart.create index: 0, secret: secret
     content, signature = server.encrypt user_key, 'share1'
-    Share.create content: content, signature: signature, secret_part: secret_part, user: server
+    share = Share.new content: content, signature: signature, secret_part: secret_part, user: server
+    expect(share.valid?).to be true
+    share.save
   end
 end

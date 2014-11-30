@@ -3,7 +3,7 @@ require 'openssl'
 
 module DataMapper
   class Property
-    class PublicKey < DataMapper::Property::Text
+    class RSAKey < DataMapper::Property::Text
       def load(value)
         return nil if value.nil?
         return value if value.is_a? OpenSSL::PKey::RSA
@@ -27,6 +27,6 @@ module DataMapper
       def custom?
         true
       end
-    end # class PublicKey
+    end # class RSAKey
   end # class Property
 end # module DataMapper

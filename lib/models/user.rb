@@ -1,6 +1,6 @@
 require 'openssl'
 require 'securerandom'
-require 'dm-types/public_key'
+require 'dm-types/rsa_key'
 
 class User
   include DataMapper::Resource
@@ -14,7 +14,7 @@ class User
   property :username,   String,     required: true, index: true, unique: true
   property :password,   BCryptHash, required: true
   property :api_token,  String,     index:    true, unique: true
-  property :public_key, PublicKey,  required: true
+  property :public_key, RSAKey,     required: true
 
   has n, :shares
 
@@ -74,9 +74,16 @@ class User
 end
 
 class Server < User
-  property :private_key, Text
+
+  property :private_key, RSAKey
+
+  validates_with_method :private_key, method: :validate_private_key, if: ->(u) { !u.private_key.nil? }
 
   def self.get
+    Server.find_or_create
+  end
+
+  def self.find_or_create
     user = Server.first(username: 'server')
 
     if user.nil?
@@ -87,5 +94,25 @@ class Server < User
     end
 
     user
+  end
+
+  def self.public_key
+    Server.get.public_key
+  end
+
+  def self.private_key
+    Server.get.private_key
+  end
+
+  private
+
+  def validate_private_key
+    begin
+      key = OpenSSL::PKey::RSA.new self.private_key
+      fail OpenSSL::PKey::RSAError unless key.private?
+      return true
+    rescue OpenSSL::PKey::RSAError
+      return [false, 'Public key is not a valid RSA Private Key.']
+    end
   end
 end

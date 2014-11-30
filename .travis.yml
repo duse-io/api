@@ -5,8 +5,30 @@ bundler_args: "--without development"
 env:
   global:
     - DATABASE_URL=postgres://postgres@localhost/duse_api_test
-    - PUBLIC_KEY="-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDc+zhQWbwrBnG3gJgTClaBjaWo\nuA8T/KWzVywg+wT4NBXHO76a+i+/WgC4PpEnxyGJsZJoUFNTFqB8qF/ouC78gZZi\neYa/zxZQVpQmHl2H07xRwxxoO7nbAybUdvtjir9DbIzYIW4GK5KXXvXbfTJqte9x\n/hKIcP1ILK+hSyd+dwIDAQAB\n-----END PUBLIC KEY-----\n"
-    - PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\nMIICXQIBAAKBgQDc+zhQWbwrBnG3gJgTClaBjaWouA8T/KWzVywg+wT4NBXHO76a\n+i+/WgC4PpEnxyGJsZJoUFNTFqB8qF/ouC78gZZieYa/zxZQVpQmHl2H07xRwxxo\nO7nbAybUdvtjir9DbIzYIW4GK5KXXvXbfTJqte9x/hKIcP1ILK+hSyd+dwIDAQAB\nAoGBANj7eHU1V5Wrszdq9mgjy4NUcah0aqHGf3HUk8kikeOhSQ0jdeo45W9v0asY\nDHHRjvXkPY1d6iN44UbmEZ6yU7bbLm538JlHsdNE4vXxia3o5q6IQ9kLn10D7puP\nbFoRt8mIoicArOSY/Sk0/zsOZYkER4stxcywhK1HjzTHO+jxAkEA++pyKHpJ42zJ\nDyPW3XE0yZdLmrLfJ4P8Z9LAAbOsLBnGopJKajHnY4k5VOtEKozKdLAiPpHaocWz\ndcLddGuIuQJBAOCQYh1wf8T1Q+TOhYWguqtBMiEA3Dyrv56YlQ6FIzCqzB3BqsHW\nTTME0cqw6SXHV+qVmLHZgIArTxyAeDY5SK8CQQCYvnGTe3p7rAVI6ckpIbAJH3RX\nC2flNNEBPrbvETsuzj4zapI2S6XqI1Ug2TnOtuk20WkiGRvAhPgoSgwuv9j5AkAp\nlnOlMhVne2iUci7GHYsUdiF7fTZMQh5dl7JbGwr2U1sz0471EOQBI85adELpTS6Z\n8hRyM26Zzet7wssAd8FfAkAIbLQKr0+K65MnS1fLGsCHHddJ7IbXdbdeemY1Xu98\nk+0KoDpBlKhbvW4vH0bjKhDpRpAip8xhKeWtM0osu3O4\n-----END RSA PRIVATE KEY-----\n"
+    - |
+      PUBLIC_KEY="-----BEGIN PUBLIC KEY-----
+      MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDc+zhQWbwrBnG3gJgTClaBjaWo
+      uA8T/KWzVywg+wT4NBXHO76a+i+/WgC4PpEnxyGJsZJoUFNTFqB8qF/ouC78gZZi
+      eYa/zxZQVpQmHl2H07xRwxxoO7nbAybUdvtjir9DbIzYIW4GK5KXXvXbfTJqte9x
+      /hKIcP1ILK+hSyd+dwIDAQAB-----END PUBLIC KEY-----
+      "
+    - |
+      PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----
+      MIICXQIBAAKBgQDc+zhQWbwrBnG3gJgTClaBjaWouA8T/KWzVywg+wT4NBXHO76a
+      +i+/WgC4PpEnxyGJsZJoUFNTFqB8qF/ouC78gZZieYa/zxZQVpQmHl2H07xRwxxo
+      O7nbAybUdvtjir9DbIzYIW4GK5KXXvXbfTJqte9x/hKIcP1ILK+hSyd+dwIDAQAB
+      AoGBANj7eHU1V5Wrszdq9mgjy4NUcah0aqHGf3HUk8kikeOhSQ0jdeo45W9v0asY
+      DHHRjvXkPY1d6iN44UbmEZ6yU7bbLm538JlHsdNE4vXxia3o5q6IQ9kLn10D7puP
+      bFoRt8mIoicArOSY/Sk0/zsOZYkER4stxcywhK1HjzTHO+jxAkEA++pyKHpJ42zJ
+      DyPW3XE0yZdLmrLfJ4P8Z9LAAbOsLBnGopJKajHnY4k5VOtEKozKdLAiPpHaocWz
+      dcLddGuIuQJBAOCQYh1wf8T1Q+TOhYWguqtBMiEA3Dyrv56YlQ6FIzCqzB3BqsHW
+      TTME0cqw6SXHV+qVmLHZgIArTxyAeDY5SK8CQQCYvnGTe3p7rAVI6ckpIbAJH3RX
+      C2flNNEBPrbvETsuzj4zapI2S6XqI1Ug2TnOtuk20WkiGRvAhPgoSgwuv9j5AkAp
+      lnOlMhVne2iUci7GHYsUdiF7fTZMQh5dl7JbGwr2U1sz0471EOQBI85adELpTS6Z
+      8hRyM26Zzet7wssAd8FfAkAIbLQKr0+K65MnS1fLGsCHHddJ7IbXdbdeemY1Xu98
+      k+0KoDpBlKhbvW4vH0bjKhDpRpAip8xhKeWtM0osu3O4
+      -----END RSA PRIVATE KEY-----
+      "
     - PASSWORD="tCdQhV+hkz7Xnp5+19HgO6eq0tXjPc7U//seMohpZrk="
 before_script:
 - psql -c 'create database duse_api_test;' -U postgres

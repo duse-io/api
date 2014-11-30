@@ -89,7 +89,10 @@ class Server < User
     if user.nil?
       public_key  = ENV['PUBLIC_KEY']
       private_key = ENV['PRIVATE_KEY']
-      password = ENV['PASSWORD']
+      password    = ENV['PASSWORD']
+      puts public_key
+      puts private_key
+      puts password
       user = Server.create(username: 'server', password: password, password_confirmation: password, public_key: public_key, private_key: private_key)
     end
 

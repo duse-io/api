@@ -12,12 +12,12 @@ task :env do
   require 'openssl'
   require 'securerandom'
   key = OpenSSL::PKey::RSA.generate(1024)
-  pub_key = key.public_key.to_s
-  priv_key = key.to_pem
+  public_key = key.public_key.to_s
+  private_key = key.to_pem
   password = SecureRandom.base64(32)
   File.open('.env', 'w') do |file|
-    file.puts("export PUB_KEY=#{pub_key.inspect}")
-    file.puts("export PRIV_KEY=#{priv_key.inspect}")
+    file.puts("export PUBLIC_KEY=#{public_key.inspect}")
+    file.puts("export PRIVATE_KEY=#{private_key.inspect}")
     file.puts("export PASSWORD=#{password.inspect}")
   end
 end

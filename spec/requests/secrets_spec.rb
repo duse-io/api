@@ -58,9 +58,7 @@ describe API do
   before :each do
     DatabaseCleaner.start
     key = generate_key
-    user = User.new username: 'server', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: key.public_key, private_key: key.to_pem
-    p user.errors.full_messages unless user.valid?
-    user.save
+    Server.get
   end
 
   after :each do

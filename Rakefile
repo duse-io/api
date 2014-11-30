@@ -17,7 +17,7 @@ task :env do
   password = SecureRandom.base64(32)
   File.open('.env', 'w') do |file|
     file.puts("export PUB_KEY=#{pub_key.inspect}")
-    file.puts("export PUB_KEY=#{priv_key.inspect}")
+    file.puts("export PRIV_KEY=#{priv_key.inspect}")
     file.puts("export PASSWORD=#{password.inspect}")
   end
 end

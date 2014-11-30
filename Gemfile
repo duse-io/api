@@ -13,6 +13,7 @@ gem 'dm-transactions'
 gem 'warden'
 gem 'bcrypt'
 gem 'puma'
+gem 'dotenv'
 
 group :test do
   gem 'rspec'

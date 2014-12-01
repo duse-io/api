@@ -33,9 +33,7 @@ class Secret
 
       part.each do |user_id, share|
         user = User.first(username: 'server')
-        unless user_id == 'server'
-          user = User.get(user_id)
-        end
+        user = User.get(user_id) unless user_id == 'server'
         entities << Share.new(
           user: user,
           secret_part: secret_part,

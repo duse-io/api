@@ -5,9 +5,7 @@ class PasswordStrategy < ::Warden::Strategies::Base
 
   def authenticate!
     user = User.first(username: params['username'])
-    if !user.nil? && user.password == params['password']
-      return success! user
-    end
+    return success! user if !user.nil? && user.password == params['password']
     fail! 'Username or password incorrect.'
   end
 end

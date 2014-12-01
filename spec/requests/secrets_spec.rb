@@ -24,7 +24,7 @@ describe API do
     raw_parts.each do |raw_part|
       shares = {}
       shares['server'] = share(raw_part[0], private_key, server_user.public_key)
-      raw_part[1..raw_part.length-1].each_with_index do |raw_share, index|
+      raw_part[1...raw_part.length].each_with_index do |raw_share, index|
         public_key = users[index].public_key
         shares["#{users[index].id}"] = share(raw_share, private_key, public_key)
       end
@@ -43,7 +43,7 @@ describe API do
     user1 = User.create username: 'flower-pot', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: user1_key.public_key
     user2_key = generate_key
     user2 = User.create username: 'adracus', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: user2_key.public_key
-    options.merge!({ users: [user1, user2], current_user: user1, private_key: user1_key })
+    options.merge!(users: [user1, user2], current_user: user1, private_key: user1_key)
     raw_secret = secret(options)
     [raw_secret, user1, user1_key, user2, user2_key]
   end
@@ -66,7 +66,7 @@ describe API do
 
   # big integration test, testing usual workflow
   it 'persists a new secret correctly' do
-    raw_secret, user1, user1_key, user2, user2_key = default_secret
+    raw_secret, user1, _, _, user2_key = default_secret
     secret_json = raw_secret.to_json
 
     token = user1.api_token
@@ -106,7 +106,7 @@ describe API do
     header 'Authorization', User.first(username: 'adracus').api_token
     get "/v1/secrets/#{secret_id}/shares"
     expected_result = [
-      ['1-19810ad8', '3-374eb6a2'],
+      ['1-19810ad8', '3-374eb6a2']
     ]
     result = JSON.parse last_response.body
     result.map! do |part|
@@ -151,7 +151,7 @@ describe API do
   end
 
   it 'should error when title is empty' do
-    raw_secret, user1, user1_key, user2, user2_key = default_secret(title: '')
+    raw_secret, _, _, _, _ = default_secret(title: '')
     secret_json = raw_secret.to_json
 
     token = User.first(username: 'flower-pot').api_token
@@ -166,7 +166,7 @@ describe API do
   end
 
   it 'should only accept required >= 2' do
-    raw_secret, user1, user1_key, user2, user2_key = default_secret(required: 1)
+    raw_secret, _, _, _, _ = default_secret(required: 1)
     secret_json = raw_secret.to_json
 
     token = User.first(username: 'flower-pot').api_token
@@ -178,7 +178,7 @@ describe API do
   end
 
   it 'should only persist parts if the number of parts is >= required' do
-    raw_secret, user1, user1_key, user2, user2_key = default_secret(required: 5)
+    raw_secret, _, _, _, _ = default_secret(required: 5)
     secret_json = raw_secret.to_json
 
     token = User.first(username: 'flower-pot').api_token
@@ -221,7 +221,7 @@ describe API do
       required: 2,
       parts: [{
         "#{user1.id}" => share('2-2867e0bd', key1, user1.public_key),
-        "#{user2.id}" => share('3-374eb6a2', key1, user1.public_key),
+        "#{user2.id}" => share('3-374eb6a2', key1, user1.public_key)
       }]
     }.to_json
 

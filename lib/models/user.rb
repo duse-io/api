@@ -29,28 +29,28 @@ class User
   end
 
   def validate_password_equalness
-    unless self.password == self.password_confirmation
+    unless password == password_confirmation
       return [false, 'Password and password confirmation do not match']
     end
     true
   end
 
   def validate_password_complexity
-    if (/.*[[:punct:]\W]+.*/ =~ self.password_confirmation).nil? || # includes punctuation/special chars
-       (/.*[[:upper:]]+.*/   =~ self.password_confirmation).nil? || # includes uppercase letters
-       (/.*[[:lower:]]+.*/   =~ self.password_confirmation).nil? || # includes lowercase letters
-       (/.*\d+.*/            =~ self.password_confirmation).nil?    # includes digits letters
+    if (/.*[[:punct:]\W]+.*/ =~ password_confirmation).nil? || # includes punctuation/special chars
+       (/.*[[:upper:]]+.*/   =~ password_confirmation).nil? || # includes uppercase letters
+       (/.*[[:lower:]]+.*/   =~ password_confirmation).nil? || # includes lowercase letters
+       (/.*\d+.*/            =~ password_confirmation).nil?    # includes digits letters
       return [false, 'Password too weak.']
     end
     true
   end
 
   def encrypt(signing_key, text)
-    Encryption.encrypt(signing_key, self.public_key, text)
+    Encryption.encrypt(signing_key, public_key, text)
   end
 
   def verify_authenticity(signature, text)
-    Encryption.verify(self.public_key, signature, text)
+    Encryption.verify(public_key, signature, text)
   end
 
   private
@@ -63,13 +63,11 @@ class User
   end
 
   def validate_public_key
-    begin
-      key = OpenSSL::PKey::RSA.new self.public_key
-      fail OpenSSL::PKey::RSAError unless key.public?
-      return true
-    rescue OpenSSL::PKey::RSAError
-      return [false, 'Public key is not a valid RSA Public Key.']
-    end
+    key = OpenSSL::PKey::RSA.new public_key
+    fail OpenSSL::PKey::RSAError unless key.public?
+    return true
+  rescue OpenSSL::PKey::RSAError
+    return [false, 'Public key is not a valid RSA Public Key.']
   end
 end
 
@@ -111,12 +109,10 @@ class Server < User
   private
 
   def validate_private_key
-    begin
-      key = OpenSSL::PKey::RSA.new self.private_key
-      fail OpenSSL::PKey::RSAError unless key.private?
-      return true
-    rescue OpenSSL::PKey::RSAError
-      return [false, 'Public key is not a valid RSA Private Key.']
-    end
+    key = OpenSSL::PKey::RSA.new private_key
+    fail OpenSSL::PKey::RSAError unless key.private?
+    return true
+  rescue OpenSSL::PKey::RSAError
+    return [false, 'Public key is not a valid RSA Private Key.']
   end
 end

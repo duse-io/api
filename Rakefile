@@ -28,9 +28,7 @@ task :create do
       dbexists = row['exists'] == 't'
     end
   end
-  unless dbexists
-    conn.exec("CREATE DATABASE #{dbname}")
-  end
+  conn.exec("CREATE DATABASE #{dbname}") unless dbexists
 end
 
 task :drop do
@@ -48,7 +46,5 @@ task :drop do
       dbexists = row['exists'] == 't'
     end
   end
-  if dbexists
-    conn.exec("DROP DATABASE #{dbname}")
-  end
+  conn.exec("DROP DATABASE #{dbname}") if dbexists
 end

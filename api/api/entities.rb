@@ -1,10 +1,10 @@
 module API
   module Entities
     class Secret < Grape::Entity
-      expose :id, documentation: { type: 'integer', desc: 'Id of the secret.' }
-      expose :title, documentation: { type: 'string', desc: 'Title for the secret.' }
-      expose :required, documentation: { type: 'integer', desc: 'Number of shares required to reconstruct this secret.' }
-      expose :users, using: "API::Entities::User", if: { type: :full }
+      expose :id, documentation: { type: 'integer' }
+      expose :title, documentation: { type: 'string' }
+      expose :required, documentation: { type: 'integer' }
+      expose :users, using: 'API::Entities::User', if: { type: :full }
       expose :url do |secret, opts|
         secret_url secret, opts
       end
@@ -24,9 +24,9 @@ module API
     end
 
     class User < Grape::Entity
-      expose :id, documentation: { type: 'integer', desc: 'The users id.' }
-      expose :username, documentation: { type: 'string', desc: 'The users username' }
-      expose :public_key, if: { type: :full } do |user, options|
+      expose :id, documentation: { type: 'integer' }
+      expose :username, documentation: { type: 'string' }
+      expose :public_key, if: { type: :full } do |user, _|
         user.public_key.to_s
       end
       expose :url do |user, opts|

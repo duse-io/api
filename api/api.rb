@@ -35,7 +35,7 @@ module API
         :password,
         strategies: [:password],
         store: false,
-        action: "unauthenticated"
+        action: 'unauthenticated'
       )
 
       config.scope_defaults(

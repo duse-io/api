@@ -32,7 +32,7 @@ describe User do
       public_key = 'not a public key'
       user = User.new username: 'test', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: public_key
       expect(user.valid?).to be false
-      expect(user.errors.full_messages).to eq(["Public key is not a valid RSA Public Key."])
+      expect(user.errors.full_messages).to eq(['Public key is not a valid RSA Public Key.'])
     end
   end
 

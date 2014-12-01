@@ -1,0 +1,4 @@
+Documentation:
+  Enabled: false # this is handled by yard and it is annoying since rubocop does
+                 # not notice if a top level class documentation has already
+                 # been created (https://github.com/bbatsov/rubocop/issues/691)

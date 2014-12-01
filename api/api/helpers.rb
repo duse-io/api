@@ -40,7 +40,10 @@ module API
         accumulator = accumulator.merge entity.errors.full_messages unless entity.valid?
       end
 
-      accumulator.subtract ['Secret must not be blank', 'Secret part must not be blank']
+      accumulator.subtract [
+        'Secret must not be blank',
+        'Secret part must not be blank'
+      ]
     end
 
     # params extraction & validation

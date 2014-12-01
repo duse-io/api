@@ -12,8 +12,8 @@ class Share
   private
 
   def validate_signature
-    last_edited_by = self.secret_part.secret.last_edited_by
-    unless last_edited_by.verify_authenticity self.signature, self.content
+    last_edited_by = secret_part.secret.last_edited_by
+    unless last_edited_by.verify_authenticity signature, content
       return [false, 'Authenticity could not be verified. Wrong signature.']
     end
     true

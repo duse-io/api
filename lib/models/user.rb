@@ -79,29 +79,33 @@ class Server < User
 
   validates_with_method :private_key, method: :validate_private_key, if: ->(u) { !u.private_key.nil? }
 
-  def self.get
-    Server.find_or_create
-  end
-
-  def self.find_or_create
-    user = Server.first(username: 'server')
-
-    if user.nil?
-      public_key  = ENV['PUBLIC_KEY']
-      private_key = ENV['PRIVATE_KEY']
-      password    = ENV['PASSWORD']
-      user = Server.create(username: 'server', password: password, password_confirmation: password, public_key: public_key, private_key: private_key)
+  class << self
+    def get
+      Server.find_or_create
     end
 
-    user
-  end
+    def find_or_create
+      user = Server.first(username: 'server')
 
-  def self.public_key
-    Server.get.public_key
-  end
+      if user.nil?
+        key = OpenSSL::PKey::RSA.generate(1024)
+        public_key = key.public_key.to_s
+        private_key = key.to_pem
+        password = SecureRandom.base64(32)
+        user = Server.create(username: 'server', password: password, password_confirmation: password, public_key: public_key, private_key: private_key)
+      end
 
-  def self.private_key
-    Server.get.private_key
+      user
+    end
+    alias_method :ensure_user_exists, :find_or_create
+
+    def public_key
+      Server.get.public_key
+    end
+
+    def private_key
+      Server.get.private_key
+    end
   end
 
   private

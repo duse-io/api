@@ -8,20 +8,6 @@ rescue LoadError
   puts 'rspec tasks could not be loaded'
 end
 
-task :env do
-  require 'openssl'
-  require 'securerandom'
-  key = OpenSSL::PKey::RSA.generate(1024)
-  public_key = key.public_key.to_s
-  private_key = key.to_pem
-  password = SecureRandom.base64(32)
-  File.open('.env', 'w') do |file|
-    file.puts("export PUBLIC_KEY=#{public_key.inspect}")
-    file.puts("export PRIVATE_KEY=#{private_key.inspect}")
-    file.puts("export PASSWORD=#{password.inspect}")
-  end
-end
-
 task :migrate do
   require_relative 'config/database'
   DataMapper.auto_migrate!

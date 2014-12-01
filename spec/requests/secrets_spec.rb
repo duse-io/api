@@ -57,8 +57,7 @@ describe API do
 
   before :each do
     DatabaseCleaner.start
-    key = generate_key
-    Server.get
+    Server.ensure_user_exists
   end
 
   after :each do

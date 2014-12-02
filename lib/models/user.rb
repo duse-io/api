@@ -36,10 +36,10 @@ class User
   end
 
   def validate_password_complexity
-    if (/.*[[:punct:]\W]+.*/ =~ password_confirmation).nil? || # includes punctuation/special chars
-       (/.*[[:upper:]]+.*/   =~ password_confirmation).nil? || # includes uppercase letters
-       (/.*[[:lower:]]+.*/   =~ password_confirmation).nil? || # includes lowercase letters
-       (/.*\d+.*/            =~ password_confirmation).nil?    # includes digits letters
+    if (/.*[[:punct:]\W]+.*/ =~ password_confirmation).nil? || # special chars
+       (/.*[[:upper:]]+.*/   =~ password_confirmation).nil? || # upper chars
+       (/.*[[:lower:]]+.*/   =~ password_confirmation).nil? || # lower chars
+       (/.*\d+.*/            =~ password_confirmation).nil?    # digits
       return [false, 'Password too weak.']
     end
     true
@@ -72,10 +72,11 @@ class User
 end
 
 class Server < User
-
   property :private_key, RSAKey
 
-  validates_with_method :private_key, method: :validate_private_key, if: ->(u) { !u.private_key.nil? }
+  validates_with_method :private_key,
+                        method: :validate_private_key,
+                        if: ->(u) { !u.private_key.nil? }
 
   class << self
     def get
@@ -90,7 +91,13 @@ class Server < User
         public_key = key.public_key.to_s
         private_key = key.to_pem
         password = SecureRandom.base64(32)
-        user = Server.create(username: 'server', password: password, password_confirmation: password, public_key: public_key, private_key: private_key)
+        user = Server.create(
+          username: 'server',
+          password: password,
+          password_confirmation: password,
+          public_key: public_key,
+          private_key: private_key
+        )
       end
 
       user

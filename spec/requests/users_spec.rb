@@ -15,7 +15,12 @@ describe API do
 
   it 'should persist the user correctly' do
     public_key = generate_public_key
-    user_json = { username: 'test', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: public_key }.to_json
+    user_json = {
+      username: 'test',
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: public_key
+    }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
@@ -32,7 +37,11 @@ describe API do
   end
 
   it 'should error when a username is not given' do
-    user_json = { password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: generate_public_key }.to_json
+    user_json = {
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: generate_public_key
+    }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -43,7 +52,12 @@ describe API do
   end
 
   it 'should error when a username contains illegal characters' do
-    user_json = { username: 'test?', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: generate_public_key }.to_json
+    user_json = {
+      username: 'test?',
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: generate_public_key
+    }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -54,7 +68,12 @@ describe API do
   end
 
   it 'should correctly handle non rsa public keys' do
-    user_json = { username: 'test', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: 'non rsa public key' }.to_json
+    user_json = {
+      username: 'test',
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: 'non rsa public key'
+    }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -65,7 +84,12 @@ describe API do
   end
 
   it 'should not put the api token in the json response' do
-    user = User.create username: 'test', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: generate_public_key
+    user = User.create(
+      username: 'test',
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: generate_public_key
+    )
 
     header 'Authorization', user.api_token
     get "/v1/users/#{user.id}", 'CONTENT_TYPE' => 'application/json'
@@ -75,7 +99,12 @@ describe API do
   end
 
   it 'should respond to listing users correctly' do
-    user = User.create username: 'test', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: generate_public_key
+    user = User.create(
+      username: 'test',
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: generate_public_key
+    )
 
     header 'Authorization', user.api_token
     get '/v1/users', 'CONTENT_TYPE' => 'application/json'
@@ -91,7 +120,12 @@ describe API do
   end
 
   it 'should return the users api token correctly' do
-    user = User.create username: 'test', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: generate_public_key
+    user = User.create(
+      username: 'test',
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: generate_public_key
+    )
 
     post '/v1/users/token', {
       username: 'test',
@@ -105,7 +139,12 @@ describe API do
   end
 
   it 'should return unauthenticated on wrong username or password' do
-    User.create username: 'test', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: generate_public_key
+    User.create(
+      username: 'test',
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: generate_public_key
+    )
 
     post '/v1/users/token', {
       username: 'test',
@@ -124,7 +163,12 @@ describe API do
 
   it 'should return the correct user when request own profile' do
     public_key = generate_public_key
-    user = User.create username: 'test', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: public_key
+    user = User.create(
+      username: 'test',
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: public_key
+    )
 
     header 'Authorization', user.api_token
     get '/v1/users/me', 'CONTENT_TYPE' => 'application/json'
@@ -139,7 +183,12 @@ describe API do
   end
 
   it 'should return the correct user when request own profile' do
-    user = User.create username: 'test', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', public_key: generate_public_key
+    user = User.create(
+      username: 'test',
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: generate_public_key
+    )
 
     header 'Authorization', user.api_token
     post '/v1/users/token/regenerate', 'CONTENT_TYPE' => 'application/json'

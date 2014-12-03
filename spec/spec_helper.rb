@@ -47,6 +47,15 @@ def generate_key(size = 1024)
   OpenSSL::PKey::RSA.generate(size)
 end
 
+def create_default_user(options = {})
+  User.create(
+    username: options[:username] || 'test',
+    password: options[:password] || 'Passw0rd!',
+    password_confirmation: options[:password_confirmation] || 'Passw0rd!',
+    public_key: options[:public_key] || generate_public_key
+  )
+end
+
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest

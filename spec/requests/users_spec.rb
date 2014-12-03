@@ -84,12 +84,7 @@ describe API do
   end
 
   it 'should not put the api token in the json response' do
-    user = User.create(
-      username: 'test',
-      password: 'Passw0rd!',
-      password_confirmation: 'Passw0rd!',
-      public_key: generate_public_key
-    )
+    user = create_default_user
 
     header 'Authorization', user.api_token
     get "/v1/users/#{user.id}", 'CONTENT_TYPE' => 'application/json'
@@ -99,12 +94,7 @@ describe API do
   end
 
   it 'should respond to listing users correctly' do
-    user = User.create(
-      username: 'test',
-      password: 'Passw0rd!',
-      password_confirmation: 'Passw0rd!',
-      public_key: generate_public_key
-    )
+    user = create_default_user
 
     header 'Authorization', user.api_token
     get '/v1/users', 'CONTENT_TYPE' => 'application/json'
@@ -120,12 +110,7 @@ describe API do
   end
 
   it 'should return the users api token correctly' do
-    user = User.create(
-      username: 'test',
-      password: 'Passw0rd!',
-      password_confirmation: 'Passw0rd!',
-      public_key: generate_public_key
-    )
+    user = create_default_user(username: 'test', password: 'Passw0rd!')
 
     post '/v1/users/token', {
       username: 'test',
@@ -139,12 +124,7 @@ describe API do
   end
 
   it 'should return unauthenticated on wrong username or password' do
-    User.create(
-      username: 'test',
-      password: 'Passw0rd!',
-      password_confirmation: 'Passw0rd!',
-      public_key: generate_public_key
-    )
+    user = create_default_user(username: 'test')
 
     post '/v1/users/token', {
       username: 'test',
@@ -163,12 +143,7 @@ describe API do
 
   it 'should return the correct user when request own profile' do
     public_key = generate_public_key
-    user = User.create(
-      username: 'test',
-      password: 'Passw0rd!',
-      password_confirmation: 'Passw0rd!',
-      public_key: public_key
-    )
+    user = create_default_user(public_key: public_key)
 
     header 'Authorization', user.api_token
     get '/v1/users/me', 'CONTENT_TYPE' => 'application/json'
@@ -183,12 +158,7 @@ describe API do
   end
 
   it 'should return the correct user when request own profile' do
-    user = User.create(
-      username: 'test',
-      password: 'Passw0rd!',
-      password_confirmation: 'Passw0rd!',
-      public_key: generate_public_key
-    )
+    user = create_default_user
 
     header 'Authorization', user.api_token
     post '/v1/users/token/regenerate', 'CONTENT_TYPE' => 'application/json'

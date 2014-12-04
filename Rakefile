@@ -24,7 +24,10 @@ task :create do
   conn = PG.connect(dbname: 'postgres', host: host, user: 'postgres')
   dbexists = false
   conn.exec(
-    "SELECT EXISTS ( SELECT * FROM pg_catalog.pg_database WHERE lower(datname) = lower('#{dbname}') );"
+    "SELECT EXISTS ( 
+       SELECT * FROM pg_catalog.pg_database
+       WHERE lower(datname) = lower('#{dbname}')
+     );"
   ) do |result|
     result.each do |row|
       dbexists = row['exists'] == 't'
@@ -44,7 +47,10 @@ task :drop do
   conn = PG.connect(dbname: 'postgres', host: host, user: 'postgres')
   dbexists = false
   conn.exec(
-    "SELECT EXISTS ( SELECT * FROM pg_catalog.pg_database WHERE lower(datname) = lower('#{dbname}') );"
+    "SELECT EXISTS (
+       SELECT * FROM pg_catalog.pg_database
+       WHERE lower(datname) = lower('#{dbname}')
+     );"
   ) do |result|
     result.each do |row|
       dbexists = row['exists'] == 't'

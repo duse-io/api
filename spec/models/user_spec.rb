@@ -69,7 +69,7 @@ describe User do
       )
       expect(user.valid?).to be false
       expect(user.errors.full_messages).to eq([
-        'Username must be only letters, capital letters, numbers, "-" and "_". And at least 4 characters long.'
+        'Username must be only letters, numbers, "-" and "_"'
       ])
     end
 
@@ -83,7 +83,7 @@ describe User do
       )
       expect(user.valid?).to be false
       expect(user.errors.full_messages).to eq([
-        'Username must be only letters, capital letters, numbers, "-" and "_". And at least 4 characters long.'
+        'Username must be between 4 and 30 characters long'
       ])
     end
 

@@ -22,7 +22,8 @@ class User
   validates_with_method :password_confirmation, method: :validate_password_complexity, if: :new?
   validates_with_method :password_confirmation, method: :validate_password_equalness,  if: :new?
   validates_length_of   :password_confirmation, min: 8, if: :new?, message: 'Password must be at least 8 characters long'
-  validates_format_of   :username, with: /[a-zA-Z0-9_-]{4,30}$/,   message: 'Username must be only letters, capital letters, numbers, "-" and "_". And at least 4 characters long.'
+  validates_length_of   :username, within: 4..30,       if: ->(user) { !user.username.nil? }
+  validates_format_of   :username, with: /[a-zA-Z0-9_-]+$/,        message: 'Username must be only letters, numbers, "-" and "_"'
 
   def set_new_token
     self.api_token = generate_save_token

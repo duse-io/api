@@ -62,7 +62,7 @@ describe API do
 
     expect(last_response.status).to eq(422)
     expect(last_response.body).to eq({
-      'message' => ['Username must be only letters, capital letters, numbers, "-" and "_". And at least 4 characters long.']
+      'message' => ['Username must be only letters, numbers, "-" and "_"']
     }.to_json)
     expect(User.all.count).to eq(0)
   end

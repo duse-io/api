@@ -16,20 +16,20 @@ describe API do
   it 'should persist the user correctly' do
     public_key = generate_public_key
     user_json = {
-      username: 'test',
+      username: 'flower-pot',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
-      public_key: public_key
+      public_key: "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDR1pYkhBVekZZvcgRaMR6iZTJt\nfr6ALzIg1MHkkWonMXIJ5qvN+3Xeucf8Wk6c8I01T2PviQtnw/h+NjkBcvTKi/3y\n2eMatpsu1QK5iaarWx25RcfFCkcElBZ8FibMfC2/DH+11kKIjlQN3iZaC3qd2Mpq\na042HsjIOuVQqTb/mQIDAQAB\n-----END PUBLIC KEY-----\n"
     }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
-    user_id = User.first(username: 'test').id
+    user_id = User.first(username: 'flower-pot').id
     expect(last_response.body).to eq(
       {
         id: user_id,
-        username: 'test',
-        public_key: public_key,
+        username: 'flower-pot',
+        public_key: "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDR1pYkhBVekZZvcgRaMR6iZTJt\nfr6ALzIg1MHkkWonMXIJ5qvN+3Xeucf8Wk6c8I01T2PviQtnw/h+NjkBcvTKi/3y\n2eMatpsu1QK5iaarWx25RcfFCkcElBZ8FibMfC2/DH+11kKIjlQN3iZaC3qd2Mpq\na042HsjIOuVQqTb/mQIDAQAB\n-----END PUBLIC KEY-----\n",
         url: "http://example.org/v1/users/#{user_id}"
       }.to_json
     )

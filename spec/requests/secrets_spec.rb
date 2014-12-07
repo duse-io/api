@@ -12,32 +12,6 @@ describe API do
     { share: encrypted_share, signature: signature }
   end
 
-  def secret(options = {})
-    server_user = Server.get
-    users = options[:users]
-    private_key = options[:private_key]
-    raw_parts = options[:parts] || [
-      ['1-19810ad8', '2-2867e0bd', '3-374eb6a2']
-    ]
-
-    parts = []
-    raw_parts.each do |raw_part|
-      shares = {}
-      shares['server'] = share(raw_part[0], private_key, server_user.public_key)
-      raw_part[1...raw_part.length].each_with_index do |raw_share, index|
-        public_key = users[index].public_key
-        shares["#{users[index].id}"] = share(raw_share, private_key, public_key)
-      end
-      parts << shares
-    end
-
-    {
-      title: options[:title] || 'my secret',
-      required: options[:required] || 2,
-      parts: parts
-    }
-  end
-
   def default_secret(options = {})
     user1_key = generate_key
     user1 = create_default_user(
@@ -47,11 +21,18 @@ describe API do
     user2 = create_default_user(
       username: 'adracus', public_key: user2_key.public_key
     )
-    options.merge!(
-      users: [user1, user2], current_user: user1, private_key: user1_key
-    )
-    raw_secret = secret(options)
-    [raw_secret, user1, user1_key, user2, user2_key]
+
+    secret_json = {
+      title: options[:title] || 'my secret',
+      required: options[:required] || 2,
+      parts: [
+        {
+          "server"      => share('share1', user1_key, Server.public_key),
+          "me"          => share('share2', user1_key, user1.public_key),
+          "#{user2.id}" => share('share3', user1_key, user2.public_key)
+        }
+      ]
+    }.to_json
   end
 
   def expect_count(entities)
@@ -72,11 +53,27 @@ describe API do
 
   # big integration test, testing usual workflow
   it 'persists a new secret correctly' do
-    raw_secret, user1, _, _, user2_key = default_secret
-    secret_json = raw_secret.to_json
+    user1_key = generate_key
+    user1 = create_default_user(
+      username: 'flower-pot', public_key: user1_key.public_key
+    )
+    user2_key = generate_key
+    user2 = create_default_user(
+      username: 'adracus', public_key: user2_key.public_key
+    )
+    secret_json = {
+      title: 'my secret',
+      required: 2,
+      parts: [
+        {
+          "server"      => share('share1', user1_key, Server.public_key),
+          "me"          => share('share2', user1_key, user1.public_key),
+          "#{user2.id}" => share('share3', user1_key, user2.public_key)
+        }
+      ]
+    }.to_json
 
-    token = user1.api_token
-    header 'Authorization', token
+    header 'Authorization', user1.api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
@@ -90,7 +87,7 @@ describe API do
     }.to_json)
     expect_count(user: 3, secret: 1, secret_part: 1, share: 3)
 
-    header 'Authorization', token
+    header 'Authorization', user1.api_token
     get "/v1/secrets/#{secret_id}"
     users = User.all.map do |user|
       {
@@ -109,20 +106,20 @@ describe API do
       shares_url: "http://example.org/v1/secrets/#{secret_id}/shares"
     }.to_json)
 
-    header 'Authorization', User.first(username: 'adracus').api_token
+    header 'Authorization', user1.api_token
     get "/v1/secrets/#{secret_id}/shares"
     expected_result = [
-      ['1-19810ad8', '3-374eb6a2']
+      ['share1', 'share2']
     ]
     result = JSON.parse last_response.body
     result.map! do |part|
       part.map do |share|
-        Encryption.decrypt user2_key, share
+        Encryption.decrypt user1_key, share
       end
     end
     expect(result).to eq(expected_result)
 
-    header 'Authorization', token
+    header 'Authorization', user1.api_token
     get '/v1/secrets'
     expect(last_response.body).to eq(
       [
@@ -136,7 +133,7 @@ describe API do
       ].to_json
     )
 
-    header 'Authorization', token
+    header 'Authorization', user1.api_token
     user = User.first
     get "/v1/users/#{user.id}"
     expect(last_response.body).to eq(
@@ -148,7 +145,7 @@ describe API do
       }.to_json
     )
 
-    header 'Authorization', token
+    header 'Authorization', user1.api_token
     delete "/v1/secrets/#{secret_id}"
     expect(last_response.status).to eq(204)
     expect(last_response.body).to eq('')
@@ -157,8 +154,7 @@ describe API do
   end
 
   it 'should error when title is empty' do
-    raw_secret, _, _, _, _ = default_secret(title: '')
-    secret_json = raw_secret.to_json
+    secret_json = default_secret(title: '')
 
     token = User.first(username: 'flower-pot').api_token
     header 'Authorization', token
@@ -172,8 +168,7 @@ describe API do
   end
 
   it 'should only accept required >= 2' do
-    raw_secret, _, _, _, _ = default_secret(required: 1)
-    secret_json = raw_secret.to_json
+    secret_json = default_secret(required: 1)
 
     token = User.first(username: 'flower-pot').api_token
     header 'Authorization', token
@@ -184,8 +179,7 @@ describe API do
   end
 
   it 'should only persist parts if the number of parts is >= required' do
-    raw_secret, _, _, _, _ = default_secret(required: 5)
-    secret_json = raw_secret.to_json
+    secret_json = default_secret(required: 5)
 
     token = User.first(username: 'flower-pot').api_token
     header 'Authorization', token

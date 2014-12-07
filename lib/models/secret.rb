@@ -20,7 +20,7 @@ class Secret
     end
   end
 
-  def self.new_full(params)
+  def self.new_full(params, current_user)
     secret = Secret.new(
       title: params[:title],
       required: params[:required],
@@ -32,8 +32,9 @@ class Secret
       secret_part = SecretPart.new(index: index, secret: secret)
 
       part.each do |user_id, share|
-        user = User.first(username: 'server')
-        user = User.get(user_id) unless user_id == 'server'
+        user = User.first(username: 'server') if 'server' == user_id
+        user = current_user if 'me' == user_id
+        user ||= User.get(user_id)
         entities << Share.new(
           user: user,
           secret_part: secret_part,

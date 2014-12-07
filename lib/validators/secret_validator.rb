@@ -12,11 +12,14 @@ class SecretValidator
     secret_parts.each do |secret_part|
       errors << 'Users referenced in secret parts do not match in all parts' unless (keys - secret_part.keys).empty?
       errors << 'Shares for the server must be present' unless secret_part.key? 'server'
+      errors << 'Shares for your user must be present' unless secret_part.key? 'me'
 
       # check for malformed when secret_part is not an array
 
       secret_part.keys.each do |user_id|
-        if 'server' != user_id && User.get(user_id).nil?
+        next if 'server' == user_id
+        next if 'me'     == user_id
+        if User.get(user_id).nil?
           errors << 'One or more of the provided users do not exist'
         end
       end

@@ -18,7 +18,7 @@ class User
 
   has n, :shares
 
-  validates_with_method :public_key,            method: :validate_public_key
+  validates_with_method :public_key,            method: :validate_public_key, if: ->(user) { !user.public_key.nil? }
   validates_with_method :password_confirmation, method: :validate_password_complexity, if: :new?
   validates_with_method :password_confirmation, method: :validate_password_equalness,  if: :new?
   validates_length_of   :password_confirmation, min: 8, if: :new?, message: 'Password must be at least 8 characters long'

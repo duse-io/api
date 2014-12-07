@@ -34,7 +34,6 @@ module API
       post do
         user = User.new(
           username:   params[:username],
-          api_token:  params[:api_token],
           public_key: params[:public_key],
           password:   params[:password],
           password_confirmation: params[:password_confirmation]

@@ -18,32 +18,33 @@ class User
 
   has n, :shares
 
-  validates_with_method :public_key,            method: :validate_public_key, if: ->(user) { !user.public_key.nil? }
-  validates_with_method :password_confirmation, method: :validate_password_complexity, if: :new?
-  validates_with_method :password_confirmation, method: :validate_password_equalness,  if: :new?
-  validates_length_of   :password_confirmation, min: 8, if: :new?, message: 'Password must be at least 8 characters long'
-  validates_length_of   :username, within: 4..30,       if: ->(user) { !user.username.nil? }
-  validates_format_of   :username, with: /[a-zA-Z0-9_-]+$/,        message: 'Username must be only letters, numbers, "-" and "_"'
+  validates_with_method :public_key,
+                        method: :validate_public_key,
+                        if: ->(user) { !user.public_key.nil? }
+
+  validates_with_method :password_confirmation,
+                        method: :validate_password_complexity,
+                        if: ->(user) { user.new? && !user.password.nil? }
+
+  validates_with_method :password_confirmation,
+                        method: :validate_password_equalness,
+                        if: ->(user) { user.new? && !user.password.nil? }
+
+  validates_length_of :password_confirmation,
+                      min: 8, 
+                      if: ->(user) { user.new? && !user.password.nil? } ,
+                      message: 'Password must be at least 8 characters long'
+
+  validates_length_of :username,
+                      within: 4..30,
+                      if: ->(user) { !user.username.nil? }
+
+  validates_format_of :username,
+                      with: /[a-zA-Z0-9_-]+$/,
+                      message: 'Username must be only letters, numbers, "-" and "_"'
 
   def set_new_token
     self.api_token = generate_save_token
-  end
-
-  def validate_password_equalness
-    unless password == password_confirmation
-      return [false, 'Password and password confirmation do not match']
-    end
-    true
-  end
-
-  def validate_password_complexity
-    if (/.*[[:punct:]\W]+.*/ =~ password_confirmation).nil? || # special chars
-       (/.*[[:upper:]]+.*/   =~ password_confirmation).nil? || # upper chars
-       (/.*[[:lower:]]+.*/   =~ password_confirmation).nil? || # lower chars
-       (/.*\d+.*/            =~ password_confirmation).nil?    # digits
-      return [false, 'Password too weak.']
-    end
-    true
   end
 
   def encrypt(signing_key, text)
@@ -61,6 +62,23 @@ class User
       token = SecureRandom.urlsafe_base64(15).tr('lIO0', 'sxyz')
     end until User.first(api_token: token).nil?
     token
+  end
+
+  def validate_password_equalness
+    unless password == password_confirmation
+      return [false, 'Password and password confirmation do not match']
+    end
+    true
+  end
+
+  def validate_password_complexity
+    if (/.*[[:punct:]\W]+.*/ =~ password_confirmation).nil? || # special chars
+       (/.*[[:upper:]]+.*/   =~ password_confirmation).nil? || # upper chars
+       (/.*[[:lower:]]+.*/   =~ password_confirmation).nil? || # lower chars
+       (/.*\d+.*/            =~ password_confirmation).nil?    # digits
+      return [false, 'Password too weak.']
+    end
+    true
   end
 
   def validate_public_key

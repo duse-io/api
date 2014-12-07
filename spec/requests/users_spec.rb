@@ -98,6 +98,20 @@ describe API do
     expect(User.all.count).to eq(0)
   end
 
+  it 'should not validate further than blanks when nothing is given' do
+    post '/v1/users', '{}', 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(422)
+    expect(last_response.body).to eq({
+      'message' => [
+        'Username must not be blank',
+        'Password must not be blank',
+        'Public key must not be blank'
+      ]
+    }.to_json)
+    expect(User.all.count).to eq(0)
+  end
+
   it 'should not put the api token in the json response' do
     user = create_default_user
 

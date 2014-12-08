@@ -11,6 +11,11 @@ module API
         present current_user, with: Entities::User, type: :full
       end
 
+      get '/server' do
+        authenticate!
+        present Server.get, with: Entities::User, type: :full
+      end
+
       get '/:id' do
         authenticate!
         user = User.get!(params[:id])

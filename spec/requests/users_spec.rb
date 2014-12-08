@@ -186,7 +186,23 @@ describe API do
     }.to_json)
   end
 
-  it 'should return the correct user when request own profile' do
+  it 'should return the correct user when requesting the server user' do
+    user = create_default_user
+    server_user = Server.get
+
+    header 'Authorization', user.api_token
+    get '/v1/users/server', 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(200)
+    expect(last_response.body).to eq({
+      id: server_user.id,
+      username: 'server',
+      public_key: server_user.public_key.to_s,
+      url: "http://example.org/v1/users/#{server_user.id}"
+    }.to_json)
+  end
+
+  it 'should return the new token when requesting a new one' do
     user = create_default_user
 
     header 'Authorization', user.api_token

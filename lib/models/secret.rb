@@ -31,7 +31,8 @@ class Secret
     params[:parts].each_with_index do |part, index|
       secret_part = SecretPart.new(index: index, secret: secret)
 
-      part.each do |user_id, share|
+      part.each do |share|
+        user_id = share[:user_id]
         user = User.first(username: 'server') if 'server' == user_id
         user = current_user if 'me' == user_id
         user ||= User.get(user_id)

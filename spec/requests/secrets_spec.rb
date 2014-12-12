@@ -5,11 +5,11 @@ describe API do
     API::API
   end
 
-  def share(raw_share, private_key, public_key)
+  def share(user_id, raw_share, private_key, public_key)
     encrypted_share, signature = Encryption.encrypt(
       private_key, public_key, raw_share
     )
-    { share: encrypted_share, signature: signature }
+    { user_id: user_id, share: encrypted_share, signature: signature }
   end
 
   def default_secret(options = {})
@@ -26,11 +26,11 @@ describe API do
       title: options[:title] || 'my secret',
       required: options[:required] || 2,
       parts: [
-        {
-          "server"      => share('share1', user1_key, Server.public_key),
-          "me"          => share('share2', user1_key, user1.public_key),
-          "#{user2.id}" => share('share3', user1_key, user2.public_key)
-        }
+        [
+          share('server', 'share1', user1_key, Server.public_key),
+          share('me', 'share2', user1_key, user1.public_key),
+          share("#{user2.id}", 'share3', user1_key, user2.public_key)
+        ]
       ]
     }.to_json
   end
@@ -65,11 +65,11 @@ describe API do
       title: 'my secret',
       required: 2,
       parts: [
-        {
-          "server"      => share('share1', user1_key, Server.public_key),
-          "me"          => share('share2', user1_key, user1.public_key),
-          "#{user2.id}" => share('share3', user1_key, user2.public_key)
-        }
+        [
+          share('server', 'share1', user1_key, Server.public_key),
+          share('me', 'share2', user1_key, user1.public_key),
+          share("#{user2.id}", 'share3', user1_key, user2.public_key)
+        ]
       ]
     }.to_json
 
@@ -197,14 +197,15 @@ describe API do
     secret_json = {
       title: 'my secret',
       required: 2,
-      parts: [{
-        'server'     => share('1-19810ad8', key, server.public_key),
-        "#{user.id}" => share('2-2867e0bd', key, user.public_key),
-        '3'          => {
+      parts: [[
+        share('server', '1-19810ad8', key, server.public_key),
+        share("#{user.id}", '2-2867e0bd', key, user.public_key),
+        {
+          user_id: '3',
           share: '3-374eb6a2',
           signature: Encryption.sign(key, '3-374eb6a2')
         }
-      }]
+      ]]
     }.to_json
 
     header 'Authorization', user.api_token
@@ -222,10 +223,10 @@ describe API do
     secret_json = {
       title: 'my secret',
       required: 2,
-      parts: [{
-        "#{user1.id}" => share('2-2867e0bd', key1, user1.public_key),
-        "#{user2.id}" => share('3-374eb6a2', key1, user1.public_key)
-      }]
+      parts: [[
+        share("#{user1.id}", '2-2867e0bd', key1, user1.public_key),
+        share("#{user2.id}", '3-374eb6a2', key1, user1.public_key)
+      ]]
     }.to_json
 
     header 'Authorization', user1.api_token
@@ -247,16 +248,16 @@ describe API do
       title: 'my secret',
       required: 2,
       parts: [
-        {
-          'server'      => share('1-19810ad8', key1, server_user.public_key),
-          "#{user1.id}" => share('2-2867e0bd', key1, user1.public_key),
-          "#{user2.id}" => share('3-374eb6a2', key1, user2.public_key)
-        },
-        {
-          'server'      => share('1-940cc79',  key1, server_user.public_key),
-          "#{user2.id}" => share('2-2867e0bd', key1, user2.public_key),
-          "#{user3.id}" => share('3-374eb6a2', key1, user3.public_key)
-        }
+        [
+          share('server', '1-19810ad8', key1, server_user.public_key),
+          share("#{user1.id}", '2-2867e0bd', key1, user1.public_key),
+          share("#{user2.id}", '3-374eb6a2', key1, user2.public_key)
+        ],
+        [
+          share('server', '1-940cc79',  key1, server_user.public_key),
+          share("#{user2.id}", '2-2867e0bd', key1, user2.public_key),
+          share("#{user3.id}", '3-374eb6a2', key1, user3.public_key)
+        ]
       ]
     }.to_json
 
@@ -275,11 +276,11 @@ describe API do
       title: 'my secret',
       required: 2,
       parts: [
-        {
-          'server'      => share('1-19810ad8', key1, server_user.public_key),
-          "#{user1.id}" => share('2-2867e0bd', key1, user1.public_key),
-          '3'           => share('3-374eb6a2', key1, user1.public_key)
-        }
+        [
+          share('server', '1-19810ad8', key1, server_user.public_key),
+          share("#{user1.id}", '2-2867e0bd', key1, user1.public_key),
+          share('3', '3-374eb6a2', key1, user1.public_key)
+        ]
       ]
     }.to_json
 

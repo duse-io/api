@@ -1,14 +1,13 @@
 require 'validators/json_validator'
 
 describe JSONValidator do
-
   it 'should work with simple hashes' do
     schema = {
       type: Hash,
-      message: 'must be a hash',
+      name: 'Test hash',
       properties: {
-        title: { type: String, message: 'Title must be a string' },
-        required: { type: Integer, message: 'Required must be an integer' }
+        title:    { type: String,  name: 'Title' },
+        required: { type: Integer, name: 'Required' }
       }
     }
     hash = { title: 1, required: 'Test' }
@@ -21,20 +20,20 @@ describe JSONValidator do
   it 'should work with nested hashes' do
     schema = {
       type: Hash,
-      message: 'must be a hash',
+      name: 'Test hash',
       properties: {
         test_hash: {
           type: Hash,
-          message: 'Test hash must be a hash',
+          name: 'Nested test hash',
           properties: {
-            test: { type: String, message: 'Test must be a string' }
+            test: { type: String, name: 'Test' }
           }
         }
       }
     }
-    hash = { hash: [1] }
+    hash = { test_hash: [1] }
     expect(JSONValidator.validate(hash, schema)).to eq Set.new([
-      'Test hash must be a hash'
+      'Nested test hash must be a hash'
     ])
     hash = { test_hash: { test: '1' } }
     expect(JSONValidator.validate(hash, schema)).to eq Set.new
@@ -43,47 +42,76 @@ describe JSONValidator do
   it 'should work with nested arrays' do
     schema = {
       type: Array,
-      message: 'must be an array',
+      name: 'Test array',
       items: {
         type: Array,
-        message: 'items must be an array',
+        name: 'Test items',
         items: {
           type: Integer,
-          message: 'items must be integers'
+          name: 'Test item'
         }
       }
     }
     array = [{test: 1}]
     expect(JSONValidator.validate(array, schema)).to eq Set.new([
-      'items must be an array'
+      'Test items must be an array'
     ])
     expect(JSONValidator.validate([[1]], schema)).to eq Set.new
   end
 
+  it 'should handle multiple types' do
+    schema = {
+      name: 'Test hash',
+      type: Hash,
+      properties: {
+        property: {
+          name: 'Test property',
+          type: [String, Integer],
+          message: 'Test property must be string or integer'
+        }
+      }
+    }
+
+    expect(JSONValidator.validate({property: 1},   schema)).to eq Set.new
+    expect(JSONValidator.validate({property: '1'}, schema)).to eq Set.new
+    expect(JSONValidator.validate({property: 1.0}, schema)).to eq Set.new([
+      'Test property must be string or integer'
+    ])
+  end
+
+  it 'should check for presence by default' do
+    schema = {
+      name: 'Test hash',
+      type: Hash,
+      properties: {
+        property: {
+          name: 'Test property',
+          type: String,
+          message: 'Test property must be a string'
+        }
+      }
+    }
+
+    expect(JSONValidator.validate({}, schema)).to eq Set.new([
+      'Test property must be present'
+    ])
+  end
 end
 
-#{
-#  type: Hash
-#  message: 'Secret must be an object'
-#  properties: {
-#    title:    { type: String,  message: 'Title must be a string' }
-#    required: { type: Integer, message: 'Required must be an integer' }
-#    parts: {
-#      type: Array,
-#      message: 'Parts must be an array',
-#      items: {
-#        type: Array,
-#        message: 'A part must be an array',
-#        items: {
-#          type: Hash,
-#          message: 'A share must be an object',
-#          properties: {
-#            user_id:   { type: [String, Integer], message: 'User id must be "me", "server", or the users id' },
-#            content:   { type: String, message: 'Content must be a string' },
-#            signature: { type: String, message: 'Signature must be a string' }
-#          }
-#        }
-#      }
-#    }
-#  }
-#}
+describe SecretJSON do
+  it 'should validate secrets correctly' do
+    hash = {
+      title: 'My secret',
+      required: 2,
+      parts: [
+        [
+          {user_id: 'server', content: 'content', signature: 'signature'},
+          {user_id: 'me',     content: 'content', signature: 'signature'},
+          {user_id: 3,        content: 'content', signature: 'signature'}
+        ]
+      ]
+    }
+
+    expect(SecretJSON.validate(hash)).to eq Set.new
+  end
+end

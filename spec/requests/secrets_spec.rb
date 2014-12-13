@@ -9,7 +9,7 @@ describe API do
     encrypted_share, signature = Encryption.encrypt(
       private_key, public_key, raw_share
     )
-    { user_id: user_id, share: encrypted_share, signature: signature }
+    { user_id: user_id, content: encrypted_share, signature: signature }
   end
 
   def default_secret(options = {})
@@ -153,6 +153,16 @@ describe API do
     expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
   end
 
+  it 'should error on malformed json' do
+    user = create_default_user
+
+    header 'Authorization', user.api_token
+    post '/v1/secrets', '{ ', 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(400)
+    expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
+  end
+
   it 'should error when title is empty' do
     secret_json = default_secret(title: '')
 
@@ -202,7 +212,7 @@ describe API do
         share("#{user.id}", '2-2867e0bd', key, user.public_key),
         {
           user_id: '3',
-          share: '3-374eb6a2',
+          content: '3-374eb6a2',
           signature: Encryption.sign(key, '3-374eb6a2')
         }
       ]]

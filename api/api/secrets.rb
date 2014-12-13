@@ -24,13 +24,15 @@ module API
 
       post do
         params[:last_edited_by] = current_user
-        errors = SecretValidator.validate_json(params)
+        errors = SecretJSON.validate(params)
+        if errors.empty?
+          errors.merge SecretValidator.validate(params)
+        end
         entities = Secret.new_full(params, current_user)
         secret = entities[0]
         aggregate_secret_errors(errors, entities)
         render_api_error! errors.to_a, 422 unless errors.empty?
         entities.each(&:save)
-        status 201
         present secret, with: Entities::Secret
       end
     end

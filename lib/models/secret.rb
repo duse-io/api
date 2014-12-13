@@ -39,7 +39,7 @@ class Secret
         entities << Share.new(
           user: user,
           secret_part: secret_part,
-          content: share[:share],
+          content: share[:content],
           signature: share[:signature]
         )
       end

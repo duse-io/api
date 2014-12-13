@@ -1,33 +1,39 @@
 class SecretValidator
-  def self.validate_json(secret)
+  def self.validate(secret)
     errors = Set.new
 
     secret_parts = secret[:parts]
 
-    # malformed
-    errors << 'Secret parts must be an array' unless secret_parts.is_a? Array
-    errors << 'Amount of secret parts is smaller than required to decrypt' if secret_parts.first.length < secret[:required]
+    if secret_parts.first.length < secret[:required]
+      errors << 'Amount of secret parts is smaller than required to decrypt'
+    end
 
     user_ids = extract_user_ids(secret_parts.first)
     errors << 'Shares for the server must be present' unless user_ids.include? 'server'
-    errors << 'Shares for your user must be present' unless user_ids.include? 'me'
+    errors << 'Shares for your user must be present'  unless user_ids.include? 'me'
 
     secret_parts.each do |secret_part|
       share_user_ids = extract_user_ids(secret_part)
-      errors << 'Users referenced in secret parts do not match in all parts' unless (user_ids - share_user_ids).empty?
-
-      # check for malformed when secret_part is not an array
+      unless consistent_users?(user_ids, share_user_ids)
+        errors << 'Users referenced in shares do not match in all parts'
+      end
 
       share_user_ids.each do |user_id|
-        next if 'server' == user_id
-        next if 'me'     == user_id
-        if User.get(user_id).nil?
+        unless user_exists? user_id
           errors << 'One or more of the provided users do not exist'
         end
       end
     end
 
     errors
+  end
+
+  def self.user_exists?(user_id)
+    'server' != user_id || 'me' != user_id || User.get(user_id).nil?
+  end
+
+  def self.consistent_users?(allowed_users, requested_users)
+    (allowed_users - requested_users).empty?
   end
 
   def self.extract_user_ids(shares)

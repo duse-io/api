@@ -28,9 +28,11 @@ module API
         if errors.empty?
           errors.merge SecretValidator.validate(params)
         end
-        entities = Secret.new_full(params, current_user)
-        secret = entities[0]
-        aggregate_secret_errors(errors, entities)
+        if errors.empty?
+          entities = Secret.new_full(params, current_user)
+          secret = entities[0]
+          aggregate_secret_errors(errors, entities)
+        end
         render_api_error! errors.to_a, 422 unless errors.empty?
         entities.each(&:save)
         present secret, with: Entities::Secret

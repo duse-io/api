@@ -153,6 +153,17 @@ describe API do
     expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
   end
 
+  it 'should not try to do semantic validate when json validation fails' do
+    user = create_default_user
+    secret_json = {title: 'test', required: 2, parts: 'test'}.to_json
+
+    header 'Authorization', user.api_token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(422)
+    expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
+  end
+
   it 'should error on malformed json' do
     user = create_default_user
 

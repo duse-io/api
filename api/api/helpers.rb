@@ -35,19 +35,6 @@ module API
       error!({ message: message }, status)
     end
 
-    def secret_errors(entities)
-      accumulator = Set.new
-
-      entities.each do |entity|
-        accumulator = accumulator.merge entity.errors.full_messages unless entity.valid?
-      end
-
-      accumulator.subtract [
-        'Secret must not be blank',
-        'Secret part must not be blank'
-      ]
-    end
-
     # params extraction & validation
 
     def extract_params(keys)

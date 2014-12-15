@@ -31,14 +31,13 @@ module API
         json = SecretJSON.new(params)
         render_api_error! json.errors, 422 unless json.valid?
 
-        json = json.extract
-        json[:last_edited_by] = current_user
-        entities = Secret.new_full(json, current_user)
-        secret = entities[0]
-        errors = secret_errors(entities)
-        render_api_error! errors.to_a, 422 unless errors.empty?
-        entities.each(&:save)
-        present secret, with: Entities::Secret
+        factory = SecretFactory.new
+        begin
+          secret = factory.create_from_json(json.extract, current_user)
+          present secret, with: Entities::Secret
+        rescue DataMapper::SaveFailureError
+          render_api_error! factory.errors, 422
+        end
       end
     end
   end

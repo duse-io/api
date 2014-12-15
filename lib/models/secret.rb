@@ -19,12 +19,14 @@ class Secret
       part.raw_shares_from user
     end
   end
+end
 
-  def self.new_full(params, current_user)
+class SecretFactory
+  def create_from_json(params, current_user)
     secret = Secret.new(
       title: params[:title],
       required: params[:required],
-      last_edited_by: params[:last_edited_by]
+      last_edited_by: current_user
     )
     entities = [secret]
 
@@ -47,6 +49,26 @@ class Secret
       entities << secret_part
     end
 
-    entities
+    @errors = entity_errors(entities)
+    entities.each(&:save)
+
+    secret
+  end
+
+  def entity_errors(entities)
+    accumulator = Set.new
+
+    entities.each do |entity|
+      accumulator = accumulator.merge entity.errors.full_messages unless entity.valid?
+    end
+
+    accumulator.subtract [
+      'Secret must not be blank',
+      'Secret part must not be blank'
+    ]
+  end
+
+  def errors
+    @errors ||= Set.new
   end
 end

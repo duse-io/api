@@ -30,22 +30,22 @@ module API
 
       post '/token/regenerate' do
         authenticate!
-        user = current_user
-        user.set_new_token
-        user.save
-        { api_token: user.api_token }
+        current_user.set_new_token
+        current_user.save
+        { api_token: current_user.api_token }
       end
 
       post do
-        user = User.new(
-          username:   params[:username],
-          public_key: params[:public_key],
-          password:   params[:password],
-          password_confirmation: params[:password_confirmation]
-        )
-        render_api_error! user.errors.full_messages, 422 unless user.valid?
-        user.save
-        present user, with: Entities::User, type: :full
+        json = UserJSON.new(params)
+        render_api_error! json.errors, 422 unless json.valid?
+
+        user = User.new json.extract
+        begin
+          user.save
+          present user, with: Entities::User, type: :full
+        rescue DataMapper::SaveFailureError
+          render_api_error! user.errors.full_messages, 422
+        end
       end
     end
   end

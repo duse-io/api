@@ -106,6 +106,7 @@ describe API do
       'message' => [
         'Username must not be blank',
         'Password must not be blank',
+        'Password confirmation must not be blank',
         'Public key must not be blank'
       ]
     }.to_json)

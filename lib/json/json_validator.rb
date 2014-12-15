@@ -3,7 +3,7 @@ require 'set'
 class JSONValidator
   def self.validate(value, schema)
     if value.nil?
-      return Set.new ["#{schema[:name]} must be present"]
+      return Set.new ["#{schema[:name]} must not be blank"]
     end
 
     if schema[:type].is_a? Array

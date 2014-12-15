@@ -91,7 +91,7 @@ describe JSONValidator do
     }
 
     expect(JSONValidator.validate({}, schema)).to eq Set.new([
-      'Test property must be present'
+      'Test property must not be blank'
     ])
   end
 end

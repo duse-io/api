@@ -15,6 +15,10 @@ class DefaultJSON
     @errors.empty?
   end
 
+  def semantic_errors
+    Set.new # by default only validate by schema, no semantic validation
+  end
+
   def extract
     JSONExtractor.extract(@json, schema)
   end
@@ -54,17 +58,17 @@ class SecretJSON < DefaultJSON
   end
 end
 
-#class UserJSON < DefaultJSON
-#  def scheme
-#    {
-#      type: Hash,
-#      message: 'User must be an object',
-#      properties: {
-#        username:              { type: String, name: 'Username' },
-#        password:              { type: String, name: 'Password' },
-#        password_confirmation: { type: String, name: 'Password confirmation' },
-#        public_key:            { type: String, name: 'Public key' }
-#      }
-#    }
-#  end
-#end
+class UserJSON < DefaultJSON
+  def schema
+    {
+      type: Hash,
+      message: 'User must be an object',
+      properties: {
+        username:              { type: String, name: 'Username' },
+        password:              { type: String, name: 'Password' },
+        password_confirmation: { type: String, name: 'Password confirmation' },
+        public_key:            { type: String, name: 'Public key' }
+      }
+    }
+  end
+end

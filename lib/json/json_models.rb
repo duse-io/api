@@ -34,8 +34,8 @@ class SecretJSON < DefaultJSON
       type: Hash,
       message: 'Secret must be an object',
       properties: {
-        title:    { name: 'Title',    type: String},
-        required: { name: 'Required', type: Integer},
+        title:    { name: 'Title',    type: String },
+        required: { name: 'Required', type: Integer },
         parts: {
           name: 'Parts',
           type: Array,

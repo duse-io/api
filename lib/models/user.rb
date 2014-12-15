@@ -31,8 +31,8 @@ class User
                         if: ->(user) { user.new? && !user.password.nil? }
 
   validates_length_of :password_confirmation,
-                      min: 8, 
-                      if: ->(user) { user.new? && !user.password.nil? } ,
+                      min: 8,
+                      if: ->(user) { user.new? && !user.password.nil? },
                       message: 'Password must be at least 8 characters long'
 
   validates_length_of :username,
@@ -58,9 +58,10 @@ class User
   private
 
   def generate_save_token
-    begin
+    loop do
       token = SecureRandom.urlsafe_base64(15).tr('lIO0', 'sxyz')
-    end until User.first(api_token: token).nil?
+      break if User.first(api_token: token).nil?
+    end
     token
   end
 

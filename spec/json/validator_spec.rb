@@ -10,8 +10,8 @@ describe JSONValidator do
     }
     hash = { title: 1, required: 'Test' }
     expect(JSONValidator.validate(hash, schema)).to eq Set.new([
-      "Title must be a string",
-      "Required must be an integer"
+      'Title must be a string',
+      'Required must be an integer'
     ])
   end
 
@@ -50,7 +50,7 @@ describe JSONValidator do
         }
       }
     }
-    array = [{test: 1}]
+    array = [{ test: 1 }]
     expect(JSONValidator.validate(array, schema)).to eq Set.new([
       'Test items must be an array'
     ])
@@ -70,9 +70,9 @@ describe JSONValidator do
       }
     }
 
-    expect(JSONValidator.validate({property: 1},   schema)).to eq Set.new
-    expect(JSONValidator.validate({property: '1'}, schema)).to eq Set.new
-    expect(JSONValidator.validate({property: 1.0}, schema)).to eq Set.new([
+    expect(JSONValidator.validate({ property: 1 },   schema)).to eq Set.new
+    expect(JSONValidator.validate({ property: '1' }, schema)).to eq Set.new
+    expect(JSONValidator.validate({ property: 1.0 }, schema)).to eq Set.new([
       'Test property must be string or integer'
     ])
   end

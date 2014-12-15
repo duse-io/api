@@ -22,7 +22,7 @@ describe API do
       username: 'adracus', public_key: user2_key.public_key
     )
 
-    secret_json = {
+    {
       title: options[:title] || 'my secret',
       required: options[:required] || 2,
       parts: [
@@ -114,7 +114,7 @@ describe API do
     header 'Authorization', user1.api_token
     get "/v1/secrets/#{secret_id}/shares"
     expected_result = [
-      ['share1', 'share2']
+      %w(share1 share2)
     ]
     result = JSON.parse last_response.body
     result.map! do |part|
@@ -160,7 +160,7 @@ describe API do
 
   it 'should not try to do semantic validate when json validation fails' do
     user = create_default_user
-    secret_json = {title: 'test', required: 2, parts: 'test'}.to_json
+    secret_json = { title: 'test', required: 2, parts: 'test' }.to_json
 
     header 'Authorization', user.api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'

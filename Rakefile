@@ -24,7 +24,7 @@ task :create do
   conn = PG.connect(dbname: 'postgres', host: host, user: 'postgres')
   dbexists = false
   conn.exec(
-    "SELECT EXISTS ( 
+    "SELECT EXISTS (
        SELECT * FROM pg_catalog.pg_database
        WHERE lower(datname) = lower('#{dbname}')
      );"

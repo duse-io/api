@@ -14,7 +14,6 @@ describe API do
   end
 
   it 'should persist the user correctly' do
-    public_key = generate_public_key
     user_json = {
       username: 'flower-pot',
       password: 'Passw0rd!',
@@ -87,7 +86,7 @@ describe API do
     user_json = {
       username: 'test',
       password: 'Passw0rd!',
-      password_confirmation: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!'
     }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -154,7 +153,7 @@ describe API do
   end
 
   it 'should return unauthenticated on wrong username or password' do
-    user = create_default_user(username: 'test')
+    create_default_user(username: 'test')
 
     post '/v1/users/token', {
       username: 'test',

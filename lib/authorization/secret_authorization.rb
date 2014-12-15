@@ -9,7 +9,7 @@ module Duse
   class Authorization
     def self.allow(action, &block)
       @abilities ||= {}
-      @abilities[action] = ->(user, secret) { true }
+      @abilities[action] = ->(_, _) { true }
       @abilities[action] = block unless block.nil?
     end
 

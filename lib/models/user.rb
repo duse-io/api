@@ -58,6 +58,7 @@ class User
   private
 
   def generate_save_token
+    token = nil
     loop do
       token = SecureRandom.urlsafe_base64(15).tr('lIO0', 'sxyz')
       break if User.first(api_token: token).nil?

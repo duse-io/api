@@ -106,6 +106,11 @@ describe API do
       shares_url: "http://example.org/v1/secrets/#{secret_id}/shares"
     }.to_json)
 
+    other_user = create_default_user
+    header 'Authorization', other_user.api_token
+    get "/v1/secrets/#{secret_id}"
+    expect(last_response.status).to eq 403
+
     header 'Authorization', user1.api_token
     get "/v1/secrets/#{secret_id}/shares"
     expected_result = [
@@ -150,7 +155,7 @@ describe API do
     expect(last_response.status).to eq(204)
     expect(last_response.body).to eq('')
 
-    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 4, secret: 0, secret_part: 0, share: 0)
   end
 
   it 'should not try to do semantic validate when json validation fails' do

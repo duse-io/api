@@ -3,6 +3,7 @@ require 'warden_strategies/api_token'
 require 'warden_strategies/password'
 require 'validators/secret_validator'
 require 'validators/json_validator'
+require 'authorization/secret_authorization'
 require 'api/entities'
 require 'api/helpers'
 require 'api/secrets'
@@ -16,6 +17,10 @@ module API
       rack_response({ message: '404 Not found' }.to_json, 404)
     end
 
+    rescue_from Duse::InvalidAuthorization do
+      rack_response({ message: '403 Forbidden' }.to_json, 403)
+    end
+
     rescue_from :all do |exception|
       # lifted from https://github.com/rails/rails/blob/master/actionpack/lib/action_dispatch/middleware/debug_exceptions.rb#L60
       # why is this not wrapped in something reusable?
@@ -26,7 +31,7 @@ module API
       message << '  ' << trace.join("\n  ")
 
       API.logger.add Logger::FATAL, message
-      rack_response({ message: '500 Internal Server Error' }, 500)
+      rack_response({ message: '500 Internal Server Error' }.to_json, 500)
     end
 
     use Warden::Manager do |config|

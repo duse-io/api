@@ -1,5 +1,3 @@
-require 'validators/json_validator'
-
 describe JSONValidator do
   it 'should work with simple hashes' do
     schema = {
@@ -95,23 +93,5 @@ describe JSONValidator do
     expect(JSONValidator.validate({}, schema)).to eq Set.new([
       'Test property must be present'
     ])
-  end
-end
-
-describe SecretJSON do
-  it 'should validate secrets correctly' do
-    hash = {
-      title: 'My secret',
-      required: 2,
-      parts: [
-        [
-          {user_id: 'server', content: 'content', signature: 'signature'},
-          {user_id: 'me',     content: 'content', signature: 'signature'},
-          {user_id: 3,        content: 'content', signature: 'signature'}
-        ]
-      ]
-    }
-
-    expect(SecretJSON.validate(hash)).to eq Set.new
   end
 end

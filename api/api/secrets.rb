@@ -28,16 +28,14 @@ module API
       end
 
       post do
-        params[:last_edited_by] = current_user
-        errors = SecretJSON.validate(params)
-        if errors.empty?
-          errors.merge SecretValidator.validate(params)
-        end
-        if errors.empty?
-          entities = Secret.new_full(params, current_user)
-          secret = entities[0]
-          aggregate_secret_errors(errors, entities)
-        end
+        json = SecretJSON.new(params)
+        render_api_error! json.errors, 422 unless json.valid?
+
+        json = json.extract
+        json[:last_edited_by] = current_user
+        entities = Secret.new_full(json, current_user)
+        secret = entities[0]
+        errors = secret_errors(entities)
         render_api_error! errors.to_a, 422 unless errors.empty?
         entities.each(&:save)
         present secret, with: Entities::Secret

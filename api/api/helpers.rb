@@ -35,7 +35,9 @@ module API
       error!({ message: message }, status)
     end
 
-    def aggregate_secret_errors(accumulator, entities)
+    def secret_errors(entities)
+      accumulator = Set.new
+
       entities.each do |entity|
         accumulator = accumulator.merge entity.errors.full_messages unless entity.valid?
       end

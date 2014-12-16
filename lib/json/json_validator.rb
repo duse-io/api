@@ -53,9 +53,6 @@ class JSONValidator
     end
 
     def validate_further(value, schema)
-      unless schema[:type] == Hash && schema[:type] == Array
-        fail ArgumentException, 'No further validation necessary'
-      end
       if schema[:type] == Hash
         return validate_properties(value, schema[:properties])
       end

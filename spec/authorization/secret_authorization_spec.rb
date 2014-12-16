@@ -15,8 +15,18 @@ describe Duse::Authorization do
     secret_part = SecretPart.create index: 0, secret: secret
     content1, signature1 = server.encrypt user_key, 'share1'
     content2, signature2 = user.encrypt user_key, 'share2'
-    Share.create content: content1, signature: signature1, secret_part: secret_part, user: server
-    Share.create content: content2, signature: signature2, secret_part: secret_part, user: user
+    Share.create(
+      content: content1,
+      signature: signature1,
+      secret_part: secret_part,
+      user: server
+    )
+    Share.create(
+      content: content2,
+      signature: signature2,
+      secret_part: secret_part,
+      user: user
+    )
 
     Duse::SecretAuthorization.authorize!(user, :read, secret)
   end
@@ -29,11 +39,23 @@ describe Duse::Authorization do
     secret_part = SecretPart.create index: 0, secret: secret
     content1, signature1 = server.encrypt user_key, 'share1'
     content2, signature2 = user.encrypt user_key, 'share2'
-    Share.create content: content1, signature: signature1, secret_part: secret_part, user: server
-    Share.create content: content2, signature: signature2, secret_part: secret_part, user: user
+    Share.create(
+      content: content1,
+      signature: signature1,
+      secret_part: secret_part,
+      user: server
+    )
+    Share.create(
+      content: content2,
+      signature: signature2,
+      secret_part: secret_part,
+      user: user
+    )
     other_user = create_default_user(username: 'other_user')
 
-    expect { Duse::SecretAuthorization.authorize!(other_user, :read, secret) }.to raise_error(Duse::InvalidAuthorization)
+    expect do
+      Duse::SecretAuthorization.authorize!(other_user, :read, secret)
+    end.to raise_error(Duse::InvalidAuthorization)
   end
 
   it 'should allow by default when no block is given' do

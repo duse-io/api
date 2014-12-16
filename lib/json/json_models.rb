@@ -9,6 +9,8 @@ class DefaultJSON
 
   def valid?
     @errors = JSONValidator.validate(@json, schema)
+
+    # only do a semantic check if schema validation successful
     if @errors.empty?
       @errors.merge semantic_errors
     end

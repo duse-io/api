@@ -106,24 +106,22 @@ class Server < User
 
     def find_or_create
       user = Server.first(username: 'server')
-
-      if user.nil?
-        key = OpenSSL::PKey::RSA.generate(1024)
-        public_key = key.public_key.to_s
-        private_key = key.to_pem
-        password = SecureRandom.base64(32)
-        user = Server.create(
-          username: 'server',
-          password: password,
-          password_confirmation: password,
-          public_key: public_key,
-          private_key: private_key
-        )
-      end
-
+      user = create_server_user if user.nil?
       user
     end
     alias_method :ensure_user_exists, :find_or_create
+
+    def create_server_user
+      key      = OpenSSL::PKey::RSA.generate(1024)
+      password = SecureRandom.base64(32)
+      Server.create(
+        username: 'server',
+        password: password,
+        password_confirmation: password,
+        public_key:  key.public_key.to_s,
+        private_key: key.to_pem
+      )
+    end
 
     def public_key
       Server.get.public_key

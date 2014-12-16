@@ -56,13 +56,14 @@ class SecretFactory
   end
 
   def entity_errors(entities)
-    accumulator = Set.new
+    errors = Set.new
 
     entities.each do |entity|
-      accumulator = accumulator.merge entity.errors.full_messages unless entity.valid?
+      errors = errors.merge entity.errors.full_messages unless entity.valid?
     end
 
-    accumulator.subtract [
+    # these errors may occur since the entity ids do not exist yet
+    errors.subtract [
       'Secret must not be blank',
       'Secret part must not be blank'
     ]

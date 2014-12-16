@@ -18,7 +18,12 @@ describe API do
       username: 'flower-pot',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
-      public_key: "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDR1pYkhBVekZZvcgRaMR6iZTJt\nfr6ALzIg1MHkkWonMXIJ5qvN+3Xeucf8Wk6c8I01T2PviQtnw/h+NjkBcvTKi/3y\n2eMatpsu1QK5iaarWx25RcfFCkcElBZ8FibMfC2/DH+11kKIjlQN3iZaC3qd2Mpq\na042HsjIOuVQqTb/mQIDAQAB\n-----END PUBLIC KEY-----\n"
+      public_key: "-----BEGIN PUBLIC KEY-----\n" \
+      "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDR1pYkhBVekZZvcgRaMR6iZTJt\n" \
+      "fr6ALzIg1MHkkWonMXIJ5qvN+3Xeucf8Wk6c8I01T2PviQtnw/h+NjkBcvTKi/3y\n" \
+      "2eMatpsu1QK5iaarWx25RcfFCkcElBZ8FibMfC2/DH+11kKIjlQN3iZaC3qd2Mpq\n" \
+      "a042HsjIOuVQqTb/mQIDAQAB\n" \
+      "-----END PUBLIC KEY-----\n"
     }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -28,7 +33,12 @@ describe API do
       {
         id: user_id,
         username: 'flower-pot',
-        public_key: "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDR1pYkhBVekZZvcgRaMR6iZTJt\nfr6ALzIg1MHkkWonMXIJ5qvN+3Xeucf8Wk6c8I01T2PviQtnw/h+NjkBcvTKi/3y\n2eMatpsu1QK5iaarWx25RcfFCkcElBZ8FibMfC2/DH+11kKIjlQN3iZaC3qd2Mpq\na042HsjIOuVQqTb/mQIDAQAB\n-----END PUBLIC KEY-----\n",
+        public_key: "-----BEGIN PUBLIC KEY-----\n" \
+        "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDR1pYkhBVekZZvcgRaMR6iZTJt\n" \
+        "fr6ALzIg1MHkkWonMXIJ5qvN+3Xeucf8Wk6c8I01T2PviQtnw/h+NjkBcvTKi/3y\n" \
+        "2eMatpsu1QK5iaarWx25RcfFCkcElBZ8FibMfC2/DH+11kKIjlQN3iZaC3qd2Mpq\n" \
+        "a042HsjIOuVQqTb/mQIDAQAB\n" \
+        "-----END PUBLIC KEY-----\n",
         url: "http://example.org/v1/users/#{user_id}"
       }.to_json
     )

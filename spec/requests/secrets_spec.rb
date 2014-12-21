@@ -82,8 +82,7 @@ describe API do
       id: secret_id,
       title: 'my secret',
       required: 2,
-      url: "http://example.org/v1/secrets/#{secret_id}",
-      shares_url: "http://example.org/v1/secrets/#{secret_id}/shares"
+      url: "http://example.org/v1/secrets/#{secret_id}"
     }.to_json)
     expect_count(user: 3, secret: 1, secret_part: 1, share: 3)
 
@@ -91,38 +90,31 @@ describe API do
     get "/v1/secrets/#{secret_id}"
     users = User.all.map do |user|
       {
-        id: user.id,
-        username: user.username,
-        public_key: user.public_key.to_s,
-        url: "http://example.org/v1/users/#{user.id}"
+        'id' => user.id,
+        'username' => user.username,
+        'public_key' => user.public_key.to_s,
+        'url' => "http://example.org/v1/users/#{user.id}"
       }
     end
-    expect(last_response.body).to eq({
-      id: secret_id,
-      title: 'my secret',
-      required: 2,
-      users: users,
-      url: "http://example.org/v1/secrets/#{secret_id}",
-      shares_url: "http://example.org/v1/secrets/#{secret_id}/shares"
-    }.to_json)
+    response = JSON.parse last_response.body
+    response['shares'].map! do |part|
+      part.map do |share|
+        Encryption.decrypt user1_key, share
+      end
+    end
+    expect(response).to eq({
+      'id' => secret_id,
+      'title' => 'my secret',
+      'required' => 2,
+      'shares' => [%w(share1 share2)],
+      'users' => users,
+      'url' => "http://example.org/v1/secrets/#{secret_id}",
+    })
 
     other_user = create_default_user
     header 'Authorization', other_user.api_token
     get "/v1/secrets/#{secret_id}"
     expect(last_response.status).to eq 403
-
-    header 'Authorization', user1.api_token
-    get "/v1/secrets/#{secret_id}/shares"
-    expected_result = [
-      %w(share1 share2)
-    ]
-    result = JSON.parse last_response.body
-    result.map! do |part|
-      part.map do |share|
-        Encryption.decrypt user1_key, share
-      end
-    end
-    expect(result).to eq(expected_result)
 
     header 'Authorization', user1.api_token
     get '/v1/secrets'
@@ -133,7 +125,6 @@ describe API do
           title: 'my secret',
           required: 2,
           url: "http://example.org/v1/secrets/#{secret_id}",
-          shares_url: "http://example.org/v1/secrets/#{secret_id}/shares"
         }
       ].to_json
     )

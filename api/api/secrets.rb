@@ -11,7 +11,7 @@ module API
       get '/:id' do
         secret = Secret.get!(params[:id])
         Duse::SecretAuthorization.authorize! current_user, :read, secret
-        present secret, with: Entities::Secret, type: :full
+        present secret, with: Entities::Secret, type: :full, user: current_user
       end
 
       delete '/:id' do
@@ -19,12 +19,6 @@ module API
         Duse::SecretAuthorization.authorize! current_user, :read, secret
         secret.destroy
         status 204
-      end
-
-      get '/:id/shares' do
-        secret = Secret.get!(params[:id])
-        Duse::SecretAuthorization.authorize! current_user, :read, secret
-        secret.secret_parts_for current_user
       end
 
       post do

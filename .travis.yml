@@ -8,7 +8,7 @@ env:
 before_script:
 - psql -c 'create database duse_api_test;' -U postgres
 before_install:
-- sudo apt-get install -qq libpq-dev postgresql-server-dev-9.3
+- sudo apt-get update && sudo apt-get install -qq libpq-dev postgresql-server-dev-9.3
 addons:
   postgresql: '9.3'
 notifications:

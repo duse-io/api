@@ -7,6 +7,9 @@ bundler_args: "--without development"
 env:
   global:
     - DATABASE_URL=postgres://postgres@localhost/duse_api_test
+  matrix:
+    - CUSTOM_RUBY_VERSION=2.1.5
+    - CUSTOM_RUBY_VERSION=2.2.0
 before_script:
 - psql -c 'create database duse_api_test;' -U postgres
 before_install:

@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.1.5'
+ruby ENV['CUSTOM_RUBY_VERSION'] || '2.1.5'
 
 gem 'bundler', '~> 1.6'
 gem 'rake'

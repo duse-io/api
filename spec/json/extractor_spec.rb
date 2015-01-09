@@ -10,7 +10,7 @@ describe JSONExtractor do
       properties: { title: { type: String, name: 'Test string' } }
     }
 
-    expect(JSONExtractor.extract(hash, schema)).to eq(title: 'test')
+    expect(JSONExtractor.new(schema).extract(hash)).to eq(title: 'test')
   end
 
   it 'should correctly extract from a hash within an array' do
@@ -28,7 +28,6 @@ describe JSONExtractor do
       }
     }
 
-    expect(JSONExtractor.extract(hash, schema)).to eq([{ title: 'test' }])
-
+    expect(JSONExtractor.new(schema).extract(hash)).to eq([{ title: 'test' }])
   end
 end

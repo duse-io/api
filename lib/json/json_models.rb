@@ -21,8 +21,8 @@ class DefaultJSON
     Set.new # by default only validate by schema, no semantic validation
   end
 
-  def extract
-    JSONExtractor.extract(@json, schema)
+  def extract(options = {})
+    JSONExtractor.new(schema, options).extract(@json)
   end
 end
 

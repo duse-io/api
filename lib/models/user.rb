@@ -55,6 +55,10 @@ class User
     Encryption.verify(public_key, signature, text)
   end
 
+  def has_access_to_secret?(secret)
+    !Share.all(user: self).secret_part.secret.get(secret.id).nil?
+  end
+
   private
 
   def generate_save_token

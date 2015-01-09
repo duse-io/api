@@ -22,7 +22,7 @@ module Duse
 
   class SecretAuthorization < Authorization
     allow :read do |user, secret|
-      Share.all(user: user).secret_part.secret.get(secret.id)
+      user.has_access_to_secret?(secret)
     end
   end
 end

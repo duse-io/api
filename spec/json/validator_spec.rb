@@ -9,7 +9,7 @@ describe JSONValidator do
       }
     }
     hash = { title: 1, required: 'Test' }
-    expect(JSONValidator.validate(hash, schema)).to eq Set.new([
+    expect(JSONValidator.new(schema).validate(hash)).to eq Set.new([
       'Title must be a string',
       'Required must be an integer'
     ])
@@ -29,12 +29,13 @@ describe JSONValidator do
         }
       }
     }
+    validator = JSONValidator.new(schema)
     hash = { test_hash: [1] }
-    expect(JSONValidator.validate(hash, schema)).to eq Set.new([
+    expect(validator.validate(hash)).to eq Set.new([
       'Nested test hash must be a hash'
     ])
     hash = { test_hash: { test: '1' } }
-    expect(JSONValidator.validate(hash, schema)).to eq Set.new
+    expect(validator.validate(hash)).to eq Set.new
   end
 
   it 'should work with nested arrays' do
@@ -51,10 +52,11 @@ describe JSONValidator do
       }
     }
     array = [{ test: 1 }]
-    expect(JSONValidator.validate(array, schema)).to eq Set.new([
+    validator = JSONValidator.new(schema)
+    expect(validator.validate(array)).to eq Set.new([
       'Test items must be an array'
     ])
-    expect(JSONValidator.validate([[1]], schema)).to eq Set.new
+    expect(validator.validate([[1]])).to eq Set.new
   end
 
   it 'should handle multiple types' do
@@ -70,9 +72,10 @@ describe JSONValidator do
       }
     }
 
-    expect(JSONValidator.validate({ property: 1 },   schema)).to eq Set.new
-    expect(JSONValidator.validate({ property: '1' }, schema)).to eq Set.new
-    expect(JSONValidator.validate({ property: 1.0 }, schema)).to eq Set.new([
+    validator = JSONValidator.new(schema)
+    expect(validator.validate({ property: 1 })).to eq Set.new
+    expect(validator.validate({ property: '1' })).to eq Set.new
+    expect(validator.validate({ property: 1.0 })).to eq Set.new([
       'Test property must be string or integer'
     ])
   end
@@ -90,7 +93,7 @@ describe JSONValidator do
       }
     }
 
-    expect(JSONValidator.validate({}, schema)).to eq Set.new([
+    expect(JSONValidator.new(schema).validate({})).to eq Set.new([
       'Test property must not be blank'
     ])
   end

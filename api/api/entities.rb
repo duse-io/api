@@ -3,7 +3,6 @@ module API
     class Secret < Grape::Entity
       expose :id
       expose :title
-      expose :required
       expose :shares, if: { type: :full } do |secret, options|
         secret.secret_parts_for options[:user]
       end

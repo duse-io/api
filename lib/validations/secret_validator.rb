@@ -4,10 +4,6 @@ class SecretValidator
 
     secret_parts = secret[:parts]
 
-    if secret_parts.first.length < secret[:required]
-      errors << 'Amount of secret parts is smaller than required to decrypt'
-    end
-
     user_ids = extract_user_ids(secret_parts.first)
     errors << 'Shares for the server must be present' unless user_ids.include? 'server'
     errors << 'Shares for your user must be present'  unless user_ids.include? 'me'

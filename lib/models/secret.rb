@@ -3,9 +3,6 @@ class Secret
 
   property :id, Serial
   property :title, String, required: true
-  property :required, Integer, required: true
-
-  validates_numericality_of :required, gte: 2
 
   belongs_to :last_edited_by, 'User', required: true
   has n, :secret_parts, constraint: :destroy
@@ -25,7 +22,6 @@ class SecretFactory
   def create_from_json(params, current_user)
     secret = Secret.new(
       title: params[:title],
-      required: params[:required],
       last_edited_by: current_user
     )
     entities = [secret]

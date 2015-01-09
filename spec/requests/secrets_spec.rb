@@ -24,7 +24,6 @@ describe API do
 
     {
       title: options[:title] || 'my secret',
-      required: options[:required] || 2,
       parts: [
         [
           share('server', 'share1', user1_key, Server.public_key),
@@ -63,7 +62,6 @@ describe API do
     )
     secret_json = {
       title: 'my secret',
-      required: 2,
       parts: [
         [
           share('server', 'share1', user1_key, Server.public_key),
@@ -81,7 +79,6 @@ describe API do
     expect(last_response.body).to eq({
       id: secret_id,
       title: 'my secret',
-      required: 2,
       url: "http://example.org/v1/secrets/#{secret_id}"
     }.to_json)
     expect_count(user: 3, secret: 1, secret_part: 1, share: 3)
@@ -105,7 +102,6 @@ describe API do
     expect(response).to eq({
       'id' => secret_id,
       'title' => 'my secret',
-      'required' => 2,
       'shares' => [%w(share1 share2)],
       'users' => users,
       'url' => "http://example.org/v1/secrets/#{secret_id}",
@@ -123,7 +119,6 @@ describe API do
         {
           id: secret_id,
           title: 'my secret',
-          required: 2,
           url: "http://example.org/v1/secrets/#{secret_id}",
         }
       ].to_json
@@ -151,7 +146,7 @@ describe API do
 
   it 'should not try to do semantic validate when json validation fails' do
     user = create_default_user
-    secret_json = { title: 'test', required: 2, parts: 'test' }.to_json
+    secret_json = { title: 'test', parts: 'test' }.to_json
 
     header 'Authorization', user.api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
@@ -184,28 +179,6 @@ describe API do
     expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
   end
 
-  it 'should only accept required >= 2' do
-    secret_json = default_secret(required: 1)
-
-    token = User.first(username: 'flower-pot').api_token
-    header 'Authorization', token
-    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
-
-    expect(last_response.status).to eq(422)
-    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
-  end
-
-  it 'should only persist parts if the number of parts is >= required' do
-    secret_json = default_secret(required: 5)
-
-    token = User.first(username: 'flower-pot').api_token
-    header 'Authorization', token
-    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
-
-    expect(last_response.status).to eq(422)
-    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
-  end
-
   it 'should error if the provided users don\'t exist' do
     server = User.first(username: 'server')
     key = generate_key
@@ -213,7 +186,6 @@ describe API do
     # we're not creating user #3, which triggers this behaviour
     secret_json = {
       title: 'my secret',
-      required: 2,
       parts: [[
         share('server', '1-19810ad8', key, server.public_key),
         share("#{user.id}", '2-2867e0bd', key, user.public_key),
@@ -239,7 +211,6 @@ describe API do
     user2 = create_default_user(username: 'user2', public_key: key2.public_key)
     secret_json = {
       title: 'my secret',
-      required: 2,
       parts: [[
         share("#{user1.id}", '2-2867e0bd', key1, user1.public_key),
         share("#{user2.id}", '3-374eb6a2', key1, user1.public_key)
@@ -263,7 +234,6 @@ describe API do
     user3 = create_default_user(username: 'user3', public_key: key3.public_key)
     secret_json = {
       title: 'my secret',
-      required: 2,
       parts: [
         [
           share('server', '1-19810ad8', key1, server_user.public_key),
@@ -291,7 +261,6 @@ describe API do
     user1 = create_default_user(username: 'user1', public_key: key1.public_key)
     secret_json = {
       title: 'my secret',
-      required: 2,
       parts: [
         [
           share('server', '1-19810ad8', key1, server_user.public_key),

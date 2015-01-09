@@ -11,7 +11,7 @@ describe Duse::Authorization do
     server = Server.find_or_create
     user_key = generate_key
     user = create_default_user(public_key: user_key.public_key)
-    secret = Secret.create title: 'secret', required: 2, last_edited_by: user
+    secret = Secret.create title: 'secret', last_edited_by: user
     secret_part = SecretPart.create index: 0, secret: secret
     content1, signature1 = server.encrypt user_key, 'share1'
     content2, signature2 = user.encrypt user_key, 'share2'
@@ -35,7 +35,7 @@ describe Duse::Authorization do
     server = Server.find_or_create
     user_key = generate_key
     user = create_default_user(public_key: user_key.public_key)
-    secret = Secret.create title: 'secret', required: 2, last_edited_by: user
+    secret = Secret.create title: 'secret', last_edited_by: user
     secret_part = SecretPart.create index: 0, secret: secret
     content1, signature1 = server.encrypt user_key, 'share1'
     content2, signature2 = user.encrypt user_key, 'share2'

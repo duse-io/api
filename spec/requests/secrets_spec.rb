@@ -284,4 +284,36 @@ describe API do
     expect(last_response.status).to eq(401)
     expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
   end
+
+  it 'should be able to update the title of a secret' do
+    user1_key = generate_key
+    user1 = create_default_user(
+      username: 'flower-pot', public_key: user1_key.public_key
+    )
+    user2_key = generate_key
+    user2 = create_default_user(
+      username: 'adracus', public_key: user2_key.public_key
+    )
+    secret_json = {
+      title: 'my secret',
+      parts: [
+        [
+          share('server', 'share1', user1_key, Server.public_key),
+          share('me', 'share2', user1_key, user1.public_key),
+          share("#{user2.id}", 'share3', user1_key, user2.public_key)
+        ]
+      ]
+    }.to_json
+
+    header 'Authorization', user1.api_token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    secret = JSON.parse(last_response.body)
+    header 'Authorization', user1.api_token
+    patch "/v1/secrets/#{secret['id']}",
+          {title: 'new title'}.to_json,
+          'CONTENT_TYPE' => 'application/json'
+
+    expect(JSON.parse(last_response.body)['title']).to eq 'new title'
+  end
 end

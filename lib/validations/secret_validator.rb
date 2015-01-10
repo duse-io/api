@@ -4,19 +4,21 @@ class SecretValidator
 
     secret_parts = secret[:parts]
 
-    user_ids = extract_user_ids(secret_parts.first)
-    errors << 'Shares for the server must be present' unless user_ids.include? 'server'
-    errors << 'Shares for your user must be present'  unless user_ids.include? 'me'
+    unless secret_parts.nil?
+      user_ids = extract_user_ids(secret_parts.first)
+      errors << 'Shares for the server must be present' unless user_ids.include? 'server'
+      errors << 'Shares for your user must be present'  unless user_ids.include? 'me'
 
-    secret_parts.each do |secret_part|
-      share_user_ids = extract_user_ids(secret_part)
-      unless consistent_users?(user_ids, share_user_ids)
-        errors << 'Users referenced in shares do not match in all parts'
-      end
+      secret_parts.each do |secret_part|
+        share_user_ids = extract_user_ids(secret_part)
+        unless consistent_users?(user_ids, share_user_ids)
+          errors << 'Users referenced in shares do not match in all parts'
+        end
 
-      share_user_ids.each do |user_id|
-        unless user_exists? user_id
-          errors << 'One or more of the provided users do not exist'
+        share_user_ids.each do |user_id|
+          unless user_exists? user_id
+            errors << 'One or more of the provided users do not exist'
+          end
         end
       end
     end

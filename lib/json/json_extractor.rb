@@ -26,16 +26,20 @@ class JSONExtractor
 
   def extract_hash(hash, schema)
     result = {}
-    schema[:properties].each do |key, sub_schema|
-      result[key] = extract_value(hash[key], sub_schema) if strict? && !hash[key].nil?
+    unless hash.nil?
+      schema[:properties].each do |key, sub_schema|
+        result[key] = extract_value(hash[key], sub_schema) unless strict? && hash[key].nil?
+      end
     end
     result
   end
 
   def extract_array(array, schema)
     result = []
-    array.each do |value|
-      result << extract_value(value, schema[:items])
+    unless array.nil?
+      array.each do |value|
+        result << extract_value(value, schema[:items])
+      end
     end
     result
   end

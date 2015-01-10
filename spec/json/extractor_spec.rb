@@ -40,4 +40,14 @@ describe JSONExtractor do
 
     expect(JSONExtractor.new(schema).extract({})).to eq({})
   end
+
+  it 'should keep correct values when not in strict mode' do
+    schema = {
+      type: Hash,
+      name: 'Test hash',
+      properties: { title: { type: String, name: 'Test string' } }
+    }
+
+    expect(JSONExtractor.new(schema, strict: false).extract({title: 'test'})).to eq({title: 'test'})
+  end
 end

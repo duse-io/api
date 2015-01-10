@@ -4,7 +4,6 @@ class JSONValidator
   def initialize(schema, options = {})
     @schema  = schema
     @options = options
-    @options[:strict] ||= true
   end
 
   def validate(value)
@@ -12,12 +11,18 @@ class JSONValidator
   end
 
   def strict?
-    @options[:strict]
+    if @options.key? :strict
+      @options[:strict]
+    else
+      true
+    end
   end
 
   private
 
   def validate_value(value, schema)
+    return Set.new if value.nil? && !strict?
+
     if value.nil?
       return Set.new ["#{schema[:name]} must not be blank"]
     end

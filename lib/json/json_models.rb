@@ -7,8 +7,8 @@ class DefaultJSON
     @errors ||= Set.new
   end
 
-  def valid?
-    @errors = JSONValidator.new(schema).validate(@json)
+  def valid?(options = {})
+    @errors = JSONValidator.new(schema, options).validate(@json)
 
     # only do a semantic check if schema validation successful
     if @errors.empty?

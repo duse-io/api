@@ -97,4 +97,24 @@ describe JSONValidator do
       'Test property must not be blank'
     ])
   end
+
+  it 'should not be in strict mode when setting it to false' do
+    expect(JSONValidator.new({}, strict: false).strict?).to be false
+  end
+
+  it 'should ignore not required flags when not in strict mode' do
+    schema = {
+      name: 'Test hash',
+      type: Hash,
+      properties: {
+        property: {
+          name: 'Test property',
+          type: String,
+          message: 'Test property must be a string'
+        }
+      }
+    }
+
+    expect(JSONValidator.new(schema, strict: false) .validate({})).to eq Set.new
+  end
 end

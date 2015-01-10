@@ -2,7 +2,6 @@ class JSONExtractor
   def initialize(schema, options = {})
     @schema  = schema
     @options = options
-    @options[:strict] ||= true
   end
 
   def extract(value)
@@ -10,7 +9,11 @@ class JSONExtractor
   end
 
   def strict?
-    @options[:strict]
+    if @options.key? :strict
+      @options[:strict]
+    else
+      true
+    end
   end
 
   private
@@ -24,7 +27,7 @@ class JSONExtractor
   def extract_hash(hash, schema)
     result = {}
     schema[:properties].each do |key, sub_schema|
-      result[key] = extract_value(hash[key], sub_schema)
+      result[key] = extract_value(hash[key], sub_schema) if strict? && !hash[key].nil?
     end
     result
   end

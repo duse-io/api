@@ -28,7 +28,7 @@ class SecretUpdater
     @secret.title = params[:title] if params.key? :title
     entities = [@secret]
 
-    if params.key? :parts
+    if params.key?(:parts) && !params[:parts].nil?
       @secret.secret_parts.destroy
       params[:parts].each_with_index do |part, index|
         secret_part = SecretPart.new(index: index, secret: @secret)

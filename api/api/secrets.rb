@@ -29,7 +29,7 @@ module API
 
         updater = SecretUpdater.new(params[:id])
         begin
-          secret = updater.update(json.extract(strict: false), current_user)
+          secret = updater.update(json.extract, current_user)
           present secret, with: Entities::Secret
         rescue DataMapper::SaveFailureError
           render_api_error! updater.errors, 422

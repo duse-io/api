@@ -314,6 +314,9 @@ describe API do
           {title: 'new title'}.to_json,
           'CONTENT_TYPE' => 'application/json'
 
+    header 'Authorization', user1.api_token
+    get "/v1/secrets/#{secret['id']}", 'CONTENT_TYPE' => 'application/json'
+
     expect(JSON.parse(last_response.body)['title']).to eq 'new title'
   end
 end

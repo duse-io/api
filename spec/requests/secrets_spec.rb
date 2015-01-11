@@ -308,11 +308,22 @@ describe API do
     header 'Authorization', user1.api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
+    new_secret_json = {
+      title: 'new title',
+      parts: [
+        [
+          share('server', 'new_share1', user1_key, Server.public_key),
+          share('me', 'new_share2', user1_key, user1.public_key),
+          share("#{user2.id}", 'new_share3', user1_key, user2.public_key)
+        ]
+      ]
+    }.to_json
     secret = JSON.parse(last_response.body)
     header 'Authorization', user1.api_token
     patch "/v1/secrets/#{secret['id']}",
-          {title: 'new title'}.to_json,
+          new_secret_json,
           'CONTENT_TYPE' => 'application/json'
+    expect(last_response.status).to eq 200
 
     header 'Authorization', user1.api_token
     get "/v1/secrets/#{secret['id']}", 'CONTENT_TYPE' => 'application/json'

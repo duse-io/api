@@ -27,12 +27,12 @@ module API
         json = SecretJSON.new(params)
         render_api_error! json.errors, 422 unless json.valid?(strict: false)
 
-        updater = SecretUpdater.new(params[:id])
+        facade = SecretFacade.new
         begin
-          secret = updater.update(json.extract, current_user)
+          secret = facade.update(params[:id], json.extract, current_user)
           present secret, with: Entities::Secret
         rescue DataMapper::SaveFailureError
-          render_api_error! updater.errors, 422
+          render_api_error! facade.errors, 422
         end
       end
 
@@ -40,12 +40,12 @@ module API
         json = SecretJSON.new(params)
         render_api_error! json.errors, 422 unless json.valid?
 
-        factory = SecretFactory.new
+        facade = SecretFacade.new
         begin
-          secret = factory.create_from_json(json.extract, current_user)
+          secret = facade.create(json.extract, current_user)
           present secret, with: Entities::Secret
         rescue DataMapper::SaveFailureError
-          render_api_error! factory.errors, 422
+          render_api_error! facade.errors, 422
         end
       end
     end

@@ -1,13 +1,19 @@
 class SecretValidator
-  def self.validate(secret)
+  def initialize(current_user)
+    @user_id   = current_user.id
+    @server_id = Server.get.id
+  end
+
+  def validate(secret)
     errors = Set.new
 
     secret_parts = secret[:parts]
 
     unless secret_parts.nil?
       user_ids = extract_user_ids(secret_parts.first)
-      errors << 'Shares for the server must be present' unless user_ids.include? 'server'
-      errors << 'Shares for your user must be present'  unless user_ids.include? 'me'
+      errors << 'Each user must only have one share'    unless user_ids_unique?(user_ids)
+      errors << 'Shares for the server must be present' unless user_ids.include? @server_id.to_s
+      errors << 'Shares for your user must be present'  unless user_ids.include? @user_id.to_s
 
       secret_parts.each do |secret_part|
         share_user_ids = extract_user_ids(secret_part)
@@ -26,15 +32,21 @@ class SecretValidator
     errors
   end
 
-  def self.user_exists?(user_id)
-    'server' != user_id || 'me' != user_id || User.get(user_id).nil?
+  private
+
+  def user_exists?(user_id)
+    !User.get(user_id).nil?
   end
 
-  def self.consistent_users?(allowed_users, requested_users)
+  def consistent_users?(allowed_users, requested_users)
     (allowed_users - requested_users).empty?
   end
 
-  def self.extract_user_ids(shares)
+  def extract_user_ids(shares)
     shares.map { |share| share[:user_id] }
+  end
+
+  def user_ids_unique?(user_ids)
+    user_ids == user_ids.uniq
   end
 end

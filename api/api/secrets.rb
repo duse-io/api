@@ -25,7 +25,7 @@ module API
         secret = Secret.get!(params[:id])
         Duse::SecretAuthorization.authorize! current_user, :update, secret
         json = SecretJSON.new(params)
-        render_api_error! json.errors, 422 unless json.valid?(strict: false)
+        render_api_error! json.errors, 422 unless json.valid?(strict: false, current_user: current_user)
 
         facade = SecretFacade.new
         begin
@@ -38,7 +38,7 @@ module API
 
       post do
         json = SecretJSON.new(params)
-        render_api_error! json.errors, 422 unless json.valid?
+        render_api_error! json.errors, 422 unless json.valid?(current_user: current_user)
 
         facade = SecretFacade.new
         begin

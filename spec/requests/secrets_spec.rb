@@ -26,8 +26,8 @@ describe API do
       title: options[:title] || 'my secret',
       parts: [
         [
-          share('server', 'share1', user1_key, Server.public_key),
-          share('me', 'share2', user1_key, user1.public_key),
+          share("#{Server.get.id}", 'share1', user1_key, Server.public_key),
+          share("#{user1.id}", 'share2', user1_key, user1.public_key),
           share("#{user2.id}", 'share3', user1_key, user2.public_key)
         ]
       ]
@@ -64,8 +64,8 @@ describe API do
       title: 'my secret',
       parts: [
         [
-          share('server', 'share1', user1_key, Server.public_key),
-          share('me', 'share2', user1_key, user1.public_key),
+          share("#{Server.get.id}", 'share1', user1_key, Server.public_key),
+          share("#{user1.id}", 'share2', user1_key, user1.public_key),
           share("#{user2.id}", 'share3', user1_key, user2.public_key)
         ]
       ]
@@ -168,8 +168,7 @@ describe API do
   it 'should error when title is empty' do
     secret_json = default_secret(title: '')
 
-    token = User.first(username: 'flower-pot').api_token
-    header 'Authorization', token
+    header 'Authorization', User.first(username: 'flower-pot').api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -187,7 +186,7 @@ describe API do
     secret_json = {
       title: 'my secret',
       parts: [[
-        share('server', '1-19810ad8', key, server.public_key),
+        share("#{Server.get.id}", '1-19810ad8', key, server.public_key),
         share("#{user.id}", '2-2867e0bd', key, user.public_key),
         {
           user_id: '3',
@@ -236,12 +235,12 @@ describe API do
       title: 'my secret',
       parts: [
         [
-          share('server', '1-19810ad8', key1, server_user.public_key),
+          share("#{server_user.id}", '1-19810ad8', key1, server_user.public_key),
           share("#{user1.id}", '2-2867e0bd', key1, user1.public_key),
           share("#{user2.id}", '3-374eb6a2', key1, user2.public_key)
         ],
         [
-          share('server', '1-940cc79',  key1, server_user.public_key),
+          share("#{server_user.id}", '1-940cc79',  key1, server_user.public_key),
           share("#{user2.id}", '2-2867e0bd', key1, user2.public_key),
           share("#{user3.id}", '3-374eb6a2', key1, user3.public_key)
         ]
@@ -263,7 +262,7 @@ describe API do
       title: 'my secret',
       parts: [
         [
-          share('server', '1-19810ad8', key1, server_user.public_key),
+          share("#{Server.get.id}", '1-19810ad8', key1, server_user.public_key),
           share("#{user1.id}", '2-2867e0bd', key1, user1.public_key),
           share('3', '3-374eb6a2', key1, user1.public_key)
         ]
@@ -298,8 +297,8 @@ describe API do
       title: 'my secret',
       parts: [
         [
-          share('server', 'share1', user1_key, Server.public_key),
-          share('me', 'share2', user1_key, user1.public_key),
+          share("#{Server.get.id}", 'share1', user1_key, Server.public_key),
+          share("#{user1.id}", 'share2', user1_key, user1.public_key),
           share("#{user2.id}", 'share3', user1_key, user2.public_key)
         ]
       ]
@@ -312,8 +311,8 @@ describe API do
       title: 'new title',
       parts: [
         [
-          share('server', 'new_share1', user1_key, Server.public_key),
-          share('me', 'new_share2', user1_key, user1.public_key),
+          share("#{Server.get.id}", 'new_share1', user1_key, Server.public_key),
+          share("#{user1.id}", 'new_share2', user1_key, user1.public_key),
           share("#{user2.id}", 'new_share3', user1_key, user2.public_key)
         ]
       ]

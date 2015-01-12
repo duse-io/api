@@ -12,12 +12,12 @@ class DefaultJSON
 
     # only do a semantic check if schema validation successful
     if @errors.empty?
-      @errors.merge semantic_errors
+      @errors.merge semantic_errors(options)
     end
     @errors.empty?
   end
 
-  def semantic_errors
+  def semantic_errors(options)
     Set.new # by default only validate by schema, no semantic validation
   end
 
@@ -27,8 +27,8 @@ class DefaultJSON
 end
 
 class SecretJSON < DefaultJSON
-  def semantic_errors
-    SecretValidator.validate(@json)
+  def semantic_errors(options)
+    SecretValidator.new(options[:current_user]).validate(@json)
   end
 
   def schema

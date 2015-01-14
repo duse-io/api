@@ -10,17 +10,22 @@ require 'api/entities'
 require 'api/helpers'
 require 'api/secrets'
 require 'api/users'
+require 'duse/errors'
 
 module API
   class API < Grape::API
     version 'v1', using: :path
 
     rescue_from DataMapper::ObjectNotFoundError do
-      rack_response({ message: '404 Not found' }.to_json, 404)
+      rack_response({ message: 'Not found' }.to_json, 404)
     end
 
     rescue_from Duse::InvalidAuthorization do
-      rack_response({ message: '403 Forbidden' }.to_json, 403)
+      rack_response({ message: 'Forbidden' }.to_json, 403)
+    end
+
+    rescue_from Duse::ValidationFailed do |e|
+      rack_response(e.message, 422)
     end
 
     rescue_from :all do |exception|

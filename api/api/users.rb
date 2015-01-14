@@ -37,14 +37,14 @@ module API
 
       post do
         json = UserJSON.new(params)
-        render_api_error! json.errors, 422 unless json.valid?
+        json.validate!
 
         user = User.new json.extract
         begin
           user.save
           present user, with: Entities::User, type: :full
         rescue DataMapper::SaveFailureError
-          render_api_error! user.errors.full_messages, 422
+          raise Duse::ValidationFailed, { message: user.errors.full_messages }.to_json
         end
       end
     end

@@ -24,8 +24,6 @@ describe SecretJSON do
       ]
     })
 
-    valid = json.valid?(current_user: user1)
-    expect(valid).to be true
-    expect(json.errors).to eq Set.new
+    json.validate!(current_user: user1)
   end
 end

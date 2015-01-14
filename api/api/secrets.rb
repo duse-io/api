@@ -25,27 +25,27 @@ module API
         secret = Secret.get!(params[:id])
         Duse::SecretAuthorization.authorize! current_user, :update, secret
         json = SecretJSON.new(params)
-        render_api_error! json.errors, 422 unless json.valid?(strict: false, current_user: current_user)
+        json.validate!(strict: false, current_user: current_user)
 
         facade = SecretFacade.new
         begin
           secret = facade.update(params[:id], json.extract, current_user)
           present secret, with: Entities::Secret
         rescue DataMapper::SaveFailureError
-          render_api_error! facade.errors, 422
+          raise Duse::ValidationFailed, {message: facade.errors}.to_json
         end
       end
 
       post do
         json = SecretJSON.new(params)
-        render_api_error! json.errors, 422 unless json.valid?(current_user: current_user)
+        json.validate!(current_user: current_user)
 
         facade = SecretFacade.new
         begin
           secret = facade.create(json.extract, current_user)
           present secret, with: Entities::Secret
         rescue DataMapper::SaveFailureError
-          render_api_error! facade.errors, 422
+          raise Duse::ValidationFailed, {message: facade.errors}.to_json
         end
       end
     end

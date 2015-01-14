@@ -7,14 +7,15 @@ class DefaultJSON
     @errors ||= Set.new
   end
 
-  def valid?(options = {})
+  def validate!(options = {})
     @errors = JSONValidator.new(schema, options).validate(@json)
 
     # only do a semantic check if schema validation successful
     if @errors.empty?
       @errors.merge semantic_errors(options)
     end
-    @errors.empty?
+
+    fail Duse::ValidationFailed, { message: @errors }.to_json unless @errors.empty?
   end
 
   def semantic_errors(options)

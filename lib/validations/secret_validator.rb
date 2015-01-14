@@ -12,8 +12,8 @@ class SecretValidator
     unless secret_parts.nil?
       user_ids = extract_user_ids(secret_parts.first)
       errors << 'Each user must only have one share'    unless user_ids_unique?(user_ids)
-      errors << 'Shares for the server must be present' unless user_ids.include? @server_id.to_s
-      errors << 'Shares for your user must be present'  unless user_ids.include? @user_id.to_s
+      errors << 'Shares for the server must be present' unless user_ids.include? @server_id
+      errors << 'Shares for your user must be present'  unless user_ids.include? @user_id
 
       secret_parts.each do |secret_part|
         share_user_ids = extract_user_ids(secret_part)

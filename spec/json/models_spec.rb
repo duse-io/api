@@ -17,9 +17,9 @@ describe SecretJSON do
       title: 'My secret',
       parts: [
         [
-          { user_id: "#{server.id}", content: 'content', signature: 'signature' },
-          { user_id: "#{user1.id}",  content: 'content', signature: 'signature' },
-          { user_id: "#{user2.id}",  content: 'content', signature: 'signature' }
+          { user_id: server.id, content: 'content', signature: 'signature' },
+          { user_id: user1.id,  content: 'content', signature: 'signature' },
+          { user_id: user2.id,  content: 'content', signature: 'signature' }
         ]
       ]
     })

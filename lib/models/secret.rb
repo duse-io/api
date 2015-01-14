@@ -56,6 +56,8 @@ class SecretFacade
     entities.each(&:save)
 
     secret
+  rescue DataMapper::SaveFailureError
+    raise Duse::ValidationFailed, {message: errors}.to_json
   end
 
   def create!(params)
@@ -72,6 +74,8 @@ class SecretFacade
     entities.each(&:save)
 
     secret
+  rescue DataMapper::SaveFailureError
+    raise Duse::ValidationFailed, {message: errors}.to_json
   end
 
   def entity_errors(entities)

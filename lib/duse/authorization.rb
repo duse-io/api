@@ -1,8 +1,3 @@
-require 'models/user'
-require 'models/secret'
-require 'models/secret_part'
-require 'models/share'
-
 module Duse
   class InvalidAuthorization < StandardError; end
 
@@ -17,20 +12,6 @@ module Duse
       block  = @abilities[action]
       result = block.call(user, object)
       fail InvalidAuthorization unless result
-    end
-  end
-
-  class SecretAuthorization < Authorization
-    allow :read do |user, secret|
-      user.has_access_to_secret?(secret)
-    end
-
-    allow :update do |user, secret|
-      user.has_access_to_secret?(secret)
-    end
-
-    allow :delete do |user, secret|
-      user.has_access_to_secret?(secret)
     end
   end
 end

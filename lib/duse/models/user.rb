@@ -1,6 +1,6 @@
 require 'openssl'
 require 'securerandom'
-require 'dm-types/rsa_key'
+require 'duse/dm-types/rsa_key'
 
 class User
   include DataMapper::Resource

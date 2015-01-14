@@ -3,23 +3,23 @@ module API
     resource :users do
       get do
         authenticate!
-        present User.all, with: Entities::User
+        present User.all, with: Duse::JSONViews::User
       end
 
       get '/me' do
         authenticate!
-        present current_user, with: Entities::User, type: :full
+        present current_user, with: Duse::JSONViews::User, type: :full
       end
 
       get '/server' do
         authenticate!
-        present Server.get, with: Entities::User, type: :full
+        present Server.get, with: Duse::JSONViews::User, type: :full
       end
 
       get '/:id' do
         authenticate!
         user = User.get!(params[:id])
-        present user, with: Entities::User, type: :full
+        present user, with: Duse::JSONViews::User, type: :full
       end
 
       post '/token' do
@@ -42,7 +42,7 @@ module API
         user = User.new json.extract
         begin
           user.save
-          present user, with: Entities::User, type: :full
+          present user, with: Duse::JSONViews::User, type: :full
         rescue DataMapper::SaveFailureError
           raise Duse::ValidationFailed, { message: user.errors.full_messages }.to_json
         end

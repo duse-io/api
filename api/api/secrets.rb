@@ -4,32 +4,27 @@ module API
 
     resource :secrets do
       get do
-        secrets = Share.all(user: current_user).secret_part.secret
+        facade = SecretFacade.new(current_user)
+        secrets = facade.all
         present secrets, with: Entities::Secret
       end
 
       get '/:id' do
-        secret = Secret.get!(params[:id])
-        Duse::SecretAuthorization.authorize! current_user, :read, secret
+        facade = SecretFacade.new(current_user)
+        secret = facade.get!(params[:id])
         present secret, with: Entities::Secret, type: :full, user: current_user
       end
 
       delete '/:id' do
-        secret = Secret.get!(params[:id])
-        Duse::SecretAuthorization.authorize! current_user, :read, secret
-        secret.destroy
+        facade = SecretFacade.new(current_user)
+        facade.delete! params[:id]
         status 204
       end
 
       patch '/:id' do
-        secret = Secret.get!(params[:id])
-        Duse::SecretAuthorization.authorize! current_user, :update, secret
-        json = SecretJSON.new(params)
-        json.validate!(strict: false, current_user: current_user)
-
-        facade = SecretFacade.new
+        facade = SecretFacade.new(current_user)
         begin
-          secret = facade.update(params[:id], json.extract, current_user)
+          secret = facade.update!(params[:id], SecretJSON.new(params))
           present secret, with: Entities::Secret
         rescue DataMapper::SaveFailureError
           raise Duse::ValidationFailed, {message: facade.errors}.to_json
@@ -37,12 +32,9 @@ module API
       end
 
       post do
-        json = SecretJSON.new(params)
-        json.validate!(current_user: current_user)
-
-        facade = SecretFacade.new
+        facade = SecretFacade.new(current_user)
         begin
-          secret = facade.create(json.extract, current_user)
+          secret = facade.create!(SecretJSON.new(params))
           present secret, with: Entities::Secret
         rescue DataMapper::SaveFailureError
           raise Duse::ValidationFailed, {message: facade.errors}.to_json

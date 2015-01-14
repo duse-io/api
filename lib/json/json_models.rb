@@ -25,6 +25,11 @@ class DefaultJSON
   def extract
     JSONExtractor.new(schema).extract(@json)
   end
+
+  def sanitized(options = {})
+    validate!(options)
+    extract
+  end
 end
 
 class SecretJSON < DefaultJSON

@@ -19,19 +19,37 @@ class Secret
 end
 
 class SecretFacade
-  def get!(id)
-    Secret.get! id
+  def initialize(current_user)
+    @current_user = current_user
   end
 
-  def update(id, params, current_user)
+  def all
+    Share.all(user: @current_user).secret_part.secret
+  end
+
+  def get!(id)
+    secret = Secret.get! id
+    Duse::SecretAuthorization.authorize! @current_user, :read, secret
+    secret
+  end
+
+  def delete!(id)
+    secret = Secret.get! id
+    Duse::SecretAuthorization.authorize! @current_user, :delete, secret
+    secret.destroy
+  end
+
+  def update!(id, params)
+    params = params.sanitized strict: false, current_user: @current_user
     secret = Secret.get!(id)
-    secret.last_edited_by = current_user
+    Duse::SecretAuthorization.authorize! @current_user, :update, secret
+    secret.last_edited_by = @current_user
     secret.title = params[:title] if params.key? :title
     entities = [secret]
 
     if params.key?(:parts) && !params[:parts].nil?
       secret.secret_parts.destroy
-      entities += create_parts_from_hash(params[:parts], secret, current_user)
+      entities += create_parts_from_hash(params[:parts], secret)
     end
 
     errors = entity_errors(entities)
@@ -40,14 +58,15 @@ class SecretFacade
     secret
   end
 
-  def create(params, current_user)
+  def create!(params)
+    params = params.sanitized current_user: @current_user
     secret = Secret.new(
       title: params[:title],
-      last_edited_by: current_user
+      last_edited_by: @current_user
     )
     entities = [secret]
 
-    entities += create_parts_from_hash(params[:parts], secret, current_user)
+    entities += create_parts_from_hash(params[:parts], secret)
 
     @errors = entity_errors(entities)
     entities.each(&:save)
@@ -75,7 +94,7 @@ class SecretFacade
 
   private
 
-  def create_parts_from_hash(parts, secret, current_user)
+  def create_parts_from_hash(parts, secret)
     entities = []
 
     parts.each_with_index do |part, index|
@@ -84,7 +103,7 @@ class SecretFacade
       part.each do |share|
         user_id = share[:user_id]
         user = User.first(username: 'server') if 'server' == user_id
-        user = current_user if 'me' == user_id
+        user = @current_user if 'me' == user_id
         user ||= User.get(user_id)
         entities << Share.new(
           user: user,

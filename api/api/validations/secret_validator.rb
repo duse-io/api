@@ -1,7 +1,7 @@
 class SecretValidator
   def initialize(current_user)
     @user_id   = current_user.id
-    @server_id = Server.get.id
+    @server_id = Duse::Models::Server.get.id
   end
 
   def validate(secret)
@@ -35,7 +35,7 @@ class SecretValidator
   private
 
   def user_exists?(user_id)
-    !User.get(user_id).nil?
+    !Duse::Models::User.get(user_id).nil?
   end
 
   def consistent_users?(allowed_users, requested_users)

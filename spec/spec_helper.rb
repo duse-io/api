@@ -48,7 +48,7 @@ def generate_key(size = 1024)
 end
 
 def create_default_user(options = {})
-  User.create(
+  Duse::Models::User.create(
     username: options[:username] || 'test',
     password: options[:password] || 'Passw0rd!',
     password_confirmation: options[:password_confirmation] || 'Passw0rd!',

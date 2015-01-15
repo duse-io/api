@@ -9,7 +9,7 @@ describe SecretJSON do
   end
 
   it 'should validate secrets correctly' do
-    server = Server.get
+    server = Duse::Models::Server.get
     user1  = create_default_user username: 'test1'
     user2  = create_default_user username: 'test2'
 

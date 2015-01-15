@@ -1,8 +1,8 @@
-describe API do
+describe Duse::API do
   include Rack::Test::Methods
 
   def app
-    API::API
+    Duse::API
   end
 
   before :each do
@@ -28,7 +28,7 @@ describe API do
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
-    user_id = User.first(username: 'flower-pot').id
+    user_id = Duse::Models::User.first(username: 'flower-pot').id
     expect(last_response.body).to eq(
       {
         id: user_id,
@@ -42,7 +42,7 @@ describe API do
         url: "http://example.org/v1/users/#{user_id}"
       }.to_json
     )
-    expect(User.all.count).to eq(1)
+    expect(Duse::Models::User.all.count).to eq(1)
   end
 
   it 'should error when a username is not given' do
@@ -57,7 +57,7 @@ describe API do
     expect(last_response.body).to eq({
       'message' => ['Username must not be blank']
     }.to_json)
-    expect(User.all.count).to eq(0)
+    expect(Duse::Models::User.all.count).to eq(0)
   end
 
   it 'should error when a username contains illegal characters' do
@@ -73,7 +73,7 @@ describe API do
     expect(last_response.body).to eq({
       'message' => ['Username must be only letters, numbers, "-" and "_"']
     }.to_json)
-    expect(User.all.count).to eq(0)
+    expect(Duse::Models::User.all.count).to eq(0)
   end
 
   it 'should correctly handle non rsa public keys' do
@@ -89,7 +89,7 @@ describe API do
     expect(last_response.body).to eq({
       'message' => ['Public key is not a valid RSA Public Key.']
     }.to_json)
-    expect(User.all.count).to eq(0)
+    expect(Duse::Models::User.all.count).to eq(0)
   end
 
   it 'should correctly handle no rsa public key' do
@@ -104,7 +104,7 @@ describe API do
     expect(last_response.body).to eq({
       'message' => ['Public key must not be blank']
     }.to_json)
-    expect(User.all.count).to eq(0)
+    expect(Duse::Models::User.all.count).to eq(0)
   end
 
   it 'should not validate further than blanks when nothing is given' do
@@ -119,7 +119,7 @@ describe API do
         'Public key must not be blank'
       ]
     }.to_json)
-    expect(User.all.count).to eq(0)
+    expect(Duse::Models::User.all.count).to eq(0)
   end
 
   it 'should not put the api token in the json response' do
@@ -198,7 +198,7 @@ describe API do
 
   it 'should return the correct user when requesting the server user' do
     user = create_default_user
-    server_user = Server.get
+    server_user = Duse::Models::Server.get
 
     header 'Authorization', user.api_token
     get '/v1/users/server', 'CONTENT_TYPE' => 'application/json'
@@ -223,7 +223,7 @@ describe API do
       api_token: user.api_token # this is still the old token before refreshing
     }.to_json)
     expect(last_response.body).to eq({
-      api_token: User.get(user.id).api_token
+      api_token: Duse::Models::User.get(user.id).api_token
     }.to_json)
   end
 end

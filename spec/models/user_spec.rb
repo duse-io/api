@@ -1,4 +1,4 @@
-describe User do
+describe Duse::Models::User do
   before :each do
     DatabaseCleaner.start
   end
@@ -10,7 +10,7 @@ describe User do
   context :public_key do
     it 'should be able to save and retrieve a public key' do
       key = generate_key
-      user = User.create(
+      user = Duse::Models::User.create(
         username: 'test',
         password: 'Passw0rd!',
         password_confirmation: 'Passw0rd!',
@@ -21,7 +21,7 @@ describe User do
 
     it 'should correctly handle plain text public keys' do
       key = generate_key
-      user = User.create(
+      user = Duse::Models::User.create(
         username: 'test',
         password: 'Passw0rd!',
         password_confirmation: 'Passw0rd!',
@@ -32,7 +32,7 @@ describe User do
 
     it 'should handle encryption/signing/verification correctly' do
       key = generate_key
-      user = User.create(
+      user = Duse::Models::User.create(
         username: 'test',
         password: 'Passw0rd!',
         password_confirmation: 'Passw0rd!',
@@ -45,7 +45,7 @@ describe User do
 
     it 'should reject everything that\'s not a public rsa keys' do
       public_key = 'not a public key'
-      user = User.new(
+      user = Duse::Models::User.new(
         username: 'test',
         password: 'Passw0rd!',
         password_confirmation: 'Passw0rd!',
@@ -61,7 +61,7 @@ describe User do
   context :username do
     it 'should make sure that usernames are only alphanumeric' do
       key = generate_key
-      user = User.new(
+      user = Duse::Models::User.new(
         username: 'test?',
         password: 'Passw0rd!',
         password_confirmation: 'Passw0rd!',
@@ -75,7 +75,7 @@ describe User do
 
     it 'should make sure that usernames are at least 4 characters long' do
       key = generate_key
-      user = User.new(
+      user = Duse::Models::User.new(
         username: 'tst',
         password: 'Passw0rd!',
         password_confirmation: 'Passw0rd!',
@@ -89,13 +89,13 @@ describe User do
 
     it 'should make sure that usernames are unique' do
       key = generate_key
-      User.create(
+      Duse::Models::User.create(
         username: 'test',
         password: 'Passw0rd!',
         password_confirmation: 'Passw0rd!',
         public_key: key.public_key.to_s
       )
-      user = User.new(
+      user = Duse::Models::User.new(
         username: 'test',
         password: 'Passw0rd!',
         password_confirmation: 'Passw0rd!',
@@ -109,7 +109,7 @@ describe User do
   context :password do
     it 'should prevent weak passwords' do
       key = generate_key
-      user = User.new(
+      user = Duse::Models::User.new(
         username: 'test',
         password: 'password',
         password_confirmation: 'password',
@@ -122,7 +122,7 @@ describe User do
     it 'should view "_" as a special character' do
       key = generate_key
       password = 'Passw0rd_'
-      user = User.new(
+      user = Duse::Models::User.new(
         username: 'test',
         password: password,
         password_confirmation: password,
@@ -133,7 +133,7 @@ describe User do
 
     it 'should check that passwords are at least 8 characters long' do
       key = generate_key
-      user = User.new(
+      user = Duse::Models::User.new(
         username: 'test',
         password: 'Psw0rd!',
         password_confirmation: 'Psw0rd!',
@@ -147,7 +147,7 @@ describe User do
 
     it 'should check that password confirmation equals password' do
       key = generate_key
-      user = User.new(
+      user = Duse::Models::User.new(
         username: 'test',
         password: 'password',
         password_confirmation: 'Passw0rd!',

@@ -17,7 +17,7 @@ require 'api/json_views/user'
 require 'api/json/secret'
 require 'api/json/user'
 
-module API
+module Duse
   class API < Grape::API
     version 'v1', using: :path
 
@@ -67,7 +67,7 @@ module API
     format :json
     content_type :txt, 'text/plain'
 
-    helpers APIHelpers
+    helpers Endpoints::Helpers
 
     desc 'API Root'
     get do
@@ -77,7 +77,7 @@ module API
       }
     end
 
-    mount Secrets
-    mount Users
+    mount Endpoints::Secrets
+    mount Endpoints::Users
   end
 end

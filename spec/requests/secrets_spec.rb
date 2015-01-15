@@ -1,8 +1,8 @@
-describe API do
+describe Duse::API do
   include Rack::Test::Methods
 
   def app
-    API::API
+    Duse::API
   end
 
   def share(user_id, raw_share, private_key, public_key)
@@ -26,7 +26,7 @@ describe API do
       title: options[:title] || 'my secret',
       parts: [
         [
-          share(Server.get.id, 'share1', user1_key, Server.public_key),
+          share(Duse::Models::Server.get.id, 'share1', user1_key, Duse::Models::Server.public_key),
           share(user1.id, 'share2', user1_key, user1.public_key),
           share(user2.id, 'share3', user1_key, user2.public_key)
         ]
@@ -35,15 +35,15 @@ describe API do
   end
 
   def expect_count(entities)
-    expect(User.all.count).to eq(entities[:user])
-    expect(Secret.all.count).to eq(entities[:secret])
-    expect(SecretPart.all.count).to eq(entities[:secret_part])
-    expect(Share.all.count).to eq(entities[:share])
+    expect(Duse::Models::User.all.count).to eq(entities[:user])
+    expect(Duse::Models::Secret.all.count).to eq(entities[:secret])
+    expect(Duse::Models::SecretPart.all.count).to eq(entities[:secret_part])
+    expect(Duse::Models::Share.all.count).to eq(entities[:share])
   end
 
   before :each do
     DatabaseCleaner.start
-    Server.ensure_user_exists
+    Duse::Models::Server.ensure_user_exists
   end
 
   after :each do
@@ -64,7 +64,7 @@ describe API do
       title: 'my secret',
       parts: [
         [
-          share(Server.get.id, 'share1', user1_key, Server.public_key),
+          share(Duse::Models::Server.get.id, 'share1', user1_key, Duse::Models::Server.public_key),
           share(user1.id, 'share2', user1_key, user1.public_key),
           share(user2.id, 'share3', user1_key, user2.public_key)
         ]
@@ -75,7 +75,7 @@ describe API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
-    secret_id = Secret.first.id
+    secret_id = Duse::Models::Secret.first.id
     expect(last_response.body).to eq({
       id: secret_id,
       title: 'my secret',
@@ -85,7 +85,7 @@ describe API do
 
     header 'Authorization', user1.api_token
     get "/v1/secrets/#{secret_id}"
-    users = User.all.map do |user|
+    users = Duse::Models::User.all.map do |user|
       {
         'id' => user.id,
         'username' => user.username,
@@ -125,7 +125,7 @@ describe API do
     )
 
     header 'Authorization', user1.api_token
-    user = User.first
+    user = Duse::Models::User.first
     get "/v1/users/#{user.id}"
     expect(last_response.body).to eq(
       {
@@ -168,7 +168,7 @@ describe API do
   it 'should error when title is empty' do
     secret_json = default_secret(title: '')
 
-    header 'Authorization', User.first(username: 'flower-pot').api_token
+    header 'Authorization', Duse::Models::User.first(username: 'flower-pot').api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -179,14 +179,14 @@ describe API do
   end
 
   it 'should error if the provided users don\'t exist' do
-    server = User.first(username: 'server')
+    server = Duse::Models::User.first(username: 'server')
     key = generate_key
     user = create_default_user(username: 'user123', public_key: key.public_key)
     # we're not creating user #3, which triggers this behaviour
     secret_json = {
       title: 'my secret',
       parts: [[
-        share(Server.get.id, '1-19810ad8', key, server.public_key),
+        share(Duse::Models::Server.get.id, '1-19810ad8', key, server.public_key),
         share(user.id, '2-2867e0bd', key, user.public_key),
         {
           user_id: 3,
@@ -224,7 +224,7 @@ describe API do
   end
 
   it 'should error when not all parts have shares for the same users' do
-    server_user = User.first username: 'server'
+    server_user = Duse::Models::User.first username: 'server'
     key1 = generate_key
     user1 = create_default_user(username: 'user1', public_key: key1.public_key)
     key2 = generate_key
@@ -255,14 +255,14 @@ describe API do
   end
 
   it 'should error when at least one of the provided users do not exist' do
-    server_user = User.first username: 'server'
+    server_user = Duse::Models::User.first username: 'server'
     key1 = generate_key
     user1 = create_default_user(username: 'user1', public_key: key1.public_key)
     secret_json = {
       title: 'my secret',
       parts: [
         [
-          share(Server.get.id, '1-19810ad8', key1, server_user.public_key),
+          share(Duse::Models::Server.get.id, '1-19810ad8', key1, server_user.public_key),
           share(user1.id, '2-2867e0bd', key1, user1.public_key),
           share(3, '3-374eb6a2', key1, user1.public_key)
         ]
@@ -297,7 +297,7 @@ describe API do
       title: 'my secret',
       parts: [
         [
-          share(Server.get.id, 'share1', user1_key, Server.public_key),
+          share(Duse::Models::Server.get.id, 'share1', user1_key, Duse::Models::Server.public_key),
           share(user1.id, 'share2', user1_key, user1.public_key),
           share(user2.id, 'share3', user1_key, user2.public_key)
         ]
@@ -311,7 +311,7 @@ describe API do
       title: 'new title',
       parts: [
         [
-          share(Server.get.id, 'new_share1', user1_key, Server.public_key),
+          share(Duse::Models::Server.get.id, 'new_share1', user1_key, Duse::Models::Server.public_key),
           share(user1.id, 'new_share2', user1_key, user1.public_key),
           share(user2.id, 'new_share3', user1_key, user2.public_key)
         ]

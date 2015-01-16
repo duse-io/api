@@ -23,24 +23,24 @@ module Duse
           present user, with: Duse::JSONViews::User, type: :full
         end
 
-        post '/token' do
-          authenticate! :password
-          status 200
-          { api_token: current_user.api_token }
-        end
+        resource :token do
+          post '/' do
+            authenticate! :password
+            status 200
+            { api_token: current_user.api_token }
+          end
 
-        post '/token/regenerate' do
-          authenticate!
-          current_user.set_new_token
-          current_user.save
-          { api_token: current_user.api_token }
+          post '/regenerate' do
+            authenticate!
+            current_user.set_new_token
+            current_user.save
+            { api_token: current_user.api_token }
+          end
         end
 
         post do
           json = UserJSON.new(params)
-          json.validate!
-
-          user = Duse::Models::User.new json.extract
+          user = Duse::Models::User.new(json.sanitize)
           begin
             user.save
             present user, with: Duse::JSONViews::User, type: :full

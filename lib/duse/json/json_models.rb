@@ -26,7 +26,7 @@ class DefaultJSON
     JSONExtractor.new(schema).extract(@json)
   end
 
-  def sanitized(options = {})
+  def sanitize(options = {})
     validate!(options)
     extract
   end

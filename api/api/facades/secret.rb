@@ -20,7 +20,7 @@ class SecretFacade
   end
 
   def update!(id, params)
-    params = params.sanitized strict: false, current_user: @current_user
+    params = params.sanitize strict: false, current_user: @current_user
     secret = Duse::Models::Secret.get!(id)
     Duse::SecretAuthorization.authorize! @current_user, :update, secret
     secret.last_edited_by = @current_user
@@ -41,7 +41,7 @@ class SecretFacade
   end
 
   def create!(params)
-    params = params.sanitized current_user: @current_user
+    params = params.sanitize current_user: @current_user
     secret = Duse::Models::Secret.new(
       title: params[:title],
       last_edited_by: @current_user

@@ -50,7 +50,7 @@ class SecretFacade
 
     entities += create_parts_from_hash(params[:parts], secret)
 
-    @errors = entity_errors(entities)
+    errors = entity_errors(entities)
     entities.each(&:save)
 
     secret
@@ -70,10 +70,6 @@ class SecretFacade
       'Secret must not be blank',
       'Secret part must not be blank'
     ]
-  end
-
-  def errors
-    @errors ||= Set.new
   end
 
   private

@@ -12,6 +12,7 @@ require 'api/endpoints/helpers'
 require 'api/endpoints/secrets'
 require 'api/endpoints/users'
 require 'api/endpoints/user_token'
+require 'api/endpoints/routes'
 require 'api/authorization/secret'
 require 'api/json_views/secret'
 require 'api/json_views/user'
@@ -70,14 +71,7 @@ module Duse
 
     helpers Endpoints::Helpers
 
-    desc 'API Root'
-    get do
-      {
-        secrets_url: '/secrets',
-        users_url:   '/users'
-      }
-    end
-
+    mount Endpoints::Routes
     mount Endpoints::Secrets
     mount Endpoints::Users
     mount Endpoints::UserToken

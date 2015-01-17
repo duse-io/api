@@ -23,21 +23,6 @@ module Duse
           present user, with: Duse::JSONViews::User, type: :full
         end
 
-        resource :token do
-          post '/' do
-            authenticate! :password
-            status 200
-            { api_token: current_user.api_token }
-          end
-
-          post '/regenerate' do
-            authenticate!
-            current_user.set_new_token
-            current_user.save
-            { api_token: current_user.api_token }
-          end
-        end
-
         post do
           json = UserJSON.new(params)
           user = Duse::Models::User.new(json.sanitize)

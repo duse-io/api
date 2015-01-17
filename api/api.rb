@@ -11,6 +11,7 @@ require 'api/warden_strategies/password'
 require 'api/endpoints/helpers'
 require 'api/endpoints/secrets'
 require 'api/endpoints/users'
+require 'api/endpoints/user_token'
 require 'api/authorization/secret'
 require 'api/json_views/secret'
 require 'api/json_views/user'
@@ -79,5 +80,6 @@ module Duse
 
     mount Endpoints::Secrets
     mount Endpoints::Users
+    mount Endpoints::UserToken
   end
 end

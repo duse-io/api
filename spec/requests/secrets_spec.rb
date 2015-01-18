@@ -337,4 +337,25 @@ describe Duse::API do
 
     expect(JSON.parse(last_response.body)['title']).to eq 'new title'
   end
+
+  it 'it should validate when updating just like when creating' do
+    secret_json = default_secret
+    user1 = Duse::Models::User.first(username: 'flower-pot')
+
+    header 'Authorization', user1.api_token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    secret = JSON.parse(last_response.body)
+    expect(last_response.status).to eq 201
+
+    header 'Authorization', user1.api_token
+    patch "/v1/secrets/#{secret['id']}", {
+      'title' => ''
+    }.to_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 422
+    expect(JSON.parse(last_response.body)['message']).to eq [
+      'Title must not be blank'
+    ]
+  end
 end

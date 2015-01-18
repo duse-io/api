@@ -101,10 +101,6 @@ module Duse
     class Server < User
       property :private_key, RSAKey
 
-      validates_with_method :private_key,
-                            method: :validate_private_key,
-                            if: ->(u) { !u.private_key.nil? }
-
       class << self
         def get
           Server.find_or_create
@@ -136,16 +132,6 @@ module Duse
         def private_key
           Server.get.private_key
         end
-      end
-
-      private
-
-      def validate_private_key
-        key = OpenSSL::PKey::RSA.new private_key
-        fail OpenSSL::PKey::RSAError unless key.private?
-        return true
-      rescue OpenSSL::PKey::RSAError
-        return [false, 'Public key is not a valid RSA Private Key.']
       end
     end
   end

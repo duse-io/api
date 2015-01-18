@@ -180,6 +180,13 @@ describe Duse::API do
     expect(last_response.status).to eq(401)
   end
 
+  it 'should return unauthenticated when a wrong api token is set' do
+    header 'Authorization', 'wrong-token'
+    get '/v1/users/me', 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 401
+  end
+
   it 'should return the correct user when request own profile' do
     public_key = generate_public_key
     user = create_default_user(public_key: public_key)

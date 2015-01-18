@@ -144,6 +144,14 @@ describe Duse::API do
     expect_count(user: 4, secret: 0, secret_part: 0, share: 0)
   end
 
+  it 'should return 404 for a non existant secret' do
+    user = create_default_user
+
+    header 'Authorization', user.api_token
+    get '/v1/secrets/1', 'CONTENT_TYPE' => 'application/json'
+    expect(last_response.status).to eq(404)
+  end
+
   it 'should not try to do semantic validate when json validation fails' do
     user = create_default_user
     secret_json = { title: 'test', parts: 'test' }.to_json

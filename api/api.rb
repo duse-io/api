@@ -1,4 +1,5 @@
 require 'duse/errors'
+require 'duse/entity_errors'
 require 'duse/authorization'
 require 'duse/encryption'
 require 'duse/json/json_validator'

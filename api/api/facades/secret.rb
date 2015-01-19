@@ -32,7 +32,7 @@ class SecretFacade
       entities += create_parts_from_hash(params[:parts], secret)
     end
 
-    errors = entity_errors(entities)
+    errors = EntityErrors.new(ignored_errors).collect_from(entities)
     entities.each(&:save)
 
     secret
@@ -50,7 +50,7 @@ class SecretFacade
 
     entities += create_parts_from_hash(params[:parts], secret)
 
-    errors = entity_errors(entities)
+    errors = EntityErrors.new(ignored_errors).collect_from(entities)
     entities.each(&:save)
 
     secret
@@ -58,21 +58,14 @@ class SecretFacade
     raise Duse::ValidationFailed, {message: errors}.to_json
   end
 
-  def entity_errors(entities)
-    errors = Set.new
+  private
 
-    entities.each do |entity|
-      errors = errors.merge entity.errors.full_messages unless entity.valid?
-    end
-
-    # these errors may occur since the entity ids do not exist yet
-    errors.subtract [
+  def ignored_errors
+    [
       'Secret must not be blank',
       'Secret part must not be blank'
     ]
   end
-
-  private
 
   def create_parts_from_hash(parts, secret)
     entities = []

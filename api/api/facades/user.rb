@@ -16,7 +16,9 @@ class UserFacade
   end
 
   def delete!(id)
-    # TODO
+    user = Duse::Models::User.get!(id)
+    Duse::UserAuthorization.authorize! @current_user, :delete, user
+    user.destroy
   end
 
   def update!(id, params)

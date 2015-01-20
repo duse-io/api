@@ -233,4 +233,33 @@ describe Duse::API do
       api_token: Duse::Models::User.get(user.id).api_token
     }.to_json)
   end
+
+  it 'should be able to delete ones own user' do
+    user = create_default_user
+
+    header 'Authorization', user.api_token
+    delete "/v1/users/#{user.id}", 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 204
+  end
+
+  it 'should error with not found when trying to delete not existant user' do
+    user = create_default_user
+
+    header 'Authorization', user.api_token
+    # user.id + 1 should be a non existant id
+    delete "/v1/users/#{user.id+1}", 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 404
+  end
+
+  it 'should error with forbidden when deleting a user without permission to' do
+    user1 = create_default_user
+    user2 = create_default_user(username: 'user2')
+
+    header 'Authorization', user1.api_token
+    delete "/v1/users/#{user2.id}", 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 403
+  end
 end

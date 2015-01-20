@@ -29,6 +29,12 @@ module Duse
           present user, with: Duse::JSONViews::User, type: :full
         end
 
+        delete '/:id' do
+          authenticate!
+          facade.delete! params[:id]
+          status 204
+        end
+
         post do
           user = facade.create!(UserJSON.new(params))
           present user, with: Duse::JSONViews::User, type: :full

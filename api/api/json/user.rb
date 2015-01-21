@@ -1,4 +1,8 @@
 class UserJSON < DefaultJSON
+  def semantic_errors(options)
+    UserValidator.new.validate(@json)
+  end
+
   def schema
     {
       type: Hash,

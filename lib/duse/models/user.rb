@@ -24,19 +24,6 @@ module Duse
                             method: :validate_public_key,
                             if: ->(user) { !user.public_key.nil? }
 
-      validates_with_method :password_confirmation,
-                            method: :validate_password_complexity,
-                            if: ->(user) { user.new? && !user.password.nil? }
-
-      validates_with_method :password_confirmation,
-                            method: :validate_password_equalness,
-                            if: ->(user) { user.new? && !user.password.nil? }
-
-      validates_length_of :password_confirmation,
-                          min: 8,
-                          if: ->(user) { user.new? && !user.password.nil? },
-                          message: 'Password must be at least 8 characters long'
-
       validates_length_of :username,
                           within: 4..30,
                           if: ->(user) { !user.username.nil? }
@@ -70,23 +57,6 @@ module Duse
           break if User.first(api_token: token).nil?
         end
         token
-      end
-
-      def validate_password_equalness
-        unless password == password_confirmation
-          return [false, 'Password and password confirmation do not match']
-        end
-        true
-      end
-
-      def validate_password_complexity
-        if (/.*[[:punct:]\W]+.*/ =~ password_confirmation).nil? || # special chars
-           (/.*[[:upper:]]+.*/   =~ password_confirmation).nil? || # upper chars
-           (/.*[[:lower:]]+.*/   =~ password_confirmation).nil? || # lower chars
-           (/.*\d+.*/            =~ password_confirmation).nil?    # digits
-          return [false, 'Password too weak.']
-        end
-        true
       end
 
       def validate_public_key

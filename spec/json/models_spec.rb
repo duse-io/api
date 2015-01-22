@@ -9,17 +9,18 @@ describe SecretJSON do
   end
 
   it 'should validate secrets correctly' do
+    key = generate_key
     server = Duse::Models::Server.get
-    user1  = create_default_user username: 'test1'
+    user1  = create_default_user username: 'test1', public_key: key.public_key.to_s
     user2  = create_default_user username: 'test2'
 
     json = SecretJSON.new({
       title: 'My secret',
       parts: [
         [
-          { user_id: server.id, content: 'content', signature: 'signature' },
-          { user_id: user1.id,  content: 'content', signature: 'signature' },
-          { user_id: user2.id,  content: 'content', signature: 'signature' }
+          share(server.id, 'share1', key, server.public_key),
+          share(user1.id,  'share2', key, user1.public_key),
+          share(user2.id,  'share3', key, user2.public_key)
         ]
       ]
     })

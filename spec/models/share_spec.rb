@@ -24,20 +24,4 @@ describe Duse::Models::Share do
     expect(share.valid?).to be true
     share.save
   end
-
-  it 'checks the signature against the content and the users key' do
-    server = Duse::Models::Server.find_or_create
-    user_key = generate_key
-    user = create_default_user(public_key: user_key.public_key)
-    secret = Duse::Models::Secret.create title: 'secret', last_edited_by: user
-    secret_part = Duse::Models::SecretPart.create index: 0, secret: secret
-    share = Duse::Models::Share.new(
-      content: 'some content',
-      signature: 'wrong signature',
-      secret_part: secret_part,
-      user: server
-    )
-    expect(share.valid?).to be false
-    expect(share.errors.full_messages).to eq ['Authenticity could not be verified. Wrong signature.']
-  end
 end

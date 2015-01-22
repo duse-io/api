@@ -47,6 +47,13 @@ def generate_key(size = 1024)
   OpenSSL::PKey::RSA.generate(size)
 end
 
+def share(user_id, raw_share, private_key, public_key)
+  encrypted_share, signature = Encryption.encrypt(
+    private_key, public_key, raw_share
+  )
+  { user_id: user_id, content: encrypted_share, signature: signature }
+end
+
 def create_default_user(options = {})
   Duse::Models::User.create(
     username: options[:username] || 'test',

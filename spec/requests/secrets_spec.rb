@@ -5,13 +5,6 @@ describe Duse::API do
     Duse::API
   end
 
-  def share(user_id, raw_share, private_key, public_key)
-    encrypted_share, signature = Encryption.encrypt(
-      private_key, public_key, raw_share
-    )
-    { user_id: user_id, content: encrypted_share, signature: signature }
-  end
-
   def default_secret(options = {})
     user1_key = generate_key
     user1 = create_default_user(

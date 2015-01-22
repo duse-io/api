@@ -18,6 +18,14 @@ class UserValidator
       errors << 'Public key is not a valid RSA Public Key.'
     end
 
+    if user[:username].length < 4 || user[:username].length > 30
+      errors << 'Username must be between 4 and 30 characters'
+    end
+
+    unless user[:username] =~ /[a-zA-Z0-9_-]+$/
+      errors << 'Username must be only letters, numbers, "-" and "_"'
+    end
+
     errors
   end
 

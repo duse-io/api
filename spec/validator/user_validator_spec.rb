@@ -48,5 +48,17 @@ describe UserValidator do
         'Password and password confirmation do not match'
       ])
     end
+
+    it 'should detect invalid rsa public keys' do
+      user = {
+        username: 'test',
+        password: 'Passw0rd!',
+        password_confirmation: 'Passw0rd!',
+        public_key: 'not a valid key'
+      }
+      expect(UserValidator.new.validate(user).to_a).to eq([
+        'Public key is not a valid RSA Public Key.'
+      ])
+    end
   end
 end

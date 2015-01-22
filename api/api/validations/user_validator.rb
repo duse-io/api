@@ -14,6 +14,10 @@ class UserValidator
       errors << 'Password must be at least 8 characters long'
     end
 
+    unless is_valid_public_key? user[:public_key]
+      errors << 'Public key is not a valid RSA Public Key.'
+    end
+
     errors
   end
 
@@ -27,5 +31,13 @@ class UserValidator
       return false
     end
     true
+  end
+
+  def is_valid_public_key?(public_key)
+    key = OpenSSL::PKey::RSA.new public_key
+    fail OpenSSL::PKey::RSAError unless key.public?
+    true
+  rescue OpenSSL::PKey::RSAError
+    false
   end
 end

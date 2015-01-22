@@ -20,10 +20,6 @@ module Duse
 
       has n, :shares
 
-      validates_with_method :public_key,
-                            method: :validate_public_key,
-                            if: ->(user) { !user.public_key.nil? }
-
       validates_length_of :username,
                           within: 4..30,
                           if: ->(user) { !user.username.nil? }
@@ -58,14 +54,6 @@ module Duse
         end
         token
       end
-
-      def validate_public_key
-        key = OpenSSL::PKey::RSA.new public_key
-        fail OpenSSL::PKey::RSAError unless key.public?
-        return true
-      rescue OpenSSL::PKey::RSAError
-        return [false, 'Public key is not a valid RSA Public Key.']
-      end
     end
 
     class Server < User
@@ -89,7 +77,6 @@ module Duse
           Server.create(
             username: 'server',
             password: password,
-            password_confirmation: password,
             public_key:  key.public_key.to_s,
             private_key: key.to_pem
           )

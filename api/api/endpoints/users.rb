@@ -35,6 +35,12 @@ module Duse
           status 204
         end
 
+        patch '/:id' do
+          authenticate!
+          user = facade.update!(params[:id], UserJSON.new(params))
+          present user, with: Duse::JSONViews::User
+        end
+
         post do
           user = facade.create!(UserJSON.new(params))
           present user, with: Duse::JSONViews::User, type: :full

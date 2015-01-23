@@ -262,4 +262,14 @@ describe Duse::API do
 
     expect(last_response.status).to eq 403
   end
+
+  it 'should be able to update a user' do
+    user = create_default_user
+
+    header 'Authorization', user.api_token
+    patch "/v1/users/#{user.id}", {username: 'works'}.to_json, 'CONTENT_TYPE' => 'application/json'
+
+    user = Duse::Models::User.get(user.id)
+    expect(user.username).to eq 'works'
+  end
 end

@@ -22,7 +22,12 @@ class UserFacade
   end
 
   def update!(id, params)
-    # TODO
+    user = Duse::Models::User.get!(id)
+    Duse::UserAuthorization.authorize! @current_user, :update, user
+    user.update params.sanitize(strict: false)
+    user
+  rescue DataMapper::SaveFailureError
+    raise Duse::ValidationFailed, { message: user.errors.full_messages }.to_json
   end
 
   def create!(params)

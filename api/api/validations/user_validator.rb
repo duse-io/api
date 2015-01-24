@@ -7,7 +7,7 @@ class UserValidator
     password_confirmation = user[:password_confirmation]
     public_key = user[:public_key]
 
-    if !password.nil? && password_confirmation.nil? && password != password_confirmation
+    if !password.nil? && !password_confirmation.nil? && password != password_confirmation
       errors << 'Password and password confirmation do not match'
     end
 

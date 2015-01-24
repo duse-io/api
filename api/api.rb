@@ -1,3 +1,4 @@
+require 'duse'
 require 'duse/errors'
 require 'duse/entity_errors'
 require 'duse/authorization'
@@ -27,7 +28,7 @@ module Duse
   class API < Grape::API
     version 'v1', using: :path
 
-    rescue_from DataMapper::ObjectNotFoundError do
+    rescue_from ActiveRecord::RecordNotFound do
       rack_response({ message: 'Not found' }.to_json, 404)
     end
 

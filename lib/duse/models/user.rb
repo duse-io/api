@@ -1,28 +1,26 @@
 require 'openssl'
 require 'securerandom'
-require 'duse/dm-types/rsa_key'
 
 module Duse
   module Models
-    class User
-      include DataMapper::Resource
-      include BCrypt
-
-      before :create, :set_new_token
+    class User < ActiveRecord::Base
+      has_secure_password
+      before_create :set_token
 
       attr_accessor :password_confirmation
 
-      property :id,         Serial
-      property :username,   String,     required: true, index: true, unique: true
-      property :password,   BCryptHash, required: true
-      property :api_token,  String,     index:    true, unique: true
-      property :public_key, RSAKey,     required: true
+      has_many :shares
+      has_many :secret_parts, through: :shares
+      has_many :secrets, through: :secret_parts
 
-      has n, :shares
+      def public_key
+        OpenSSL::PKey::RSA.new read_attribute(:public_key)
+      end
 
       def set_new_token
         self.api_token = generate_save_token
       end
+      alias_method :set_token, :set_new_token
 
       def encrypt(signing_key, text)
         Encryption.encrypt(signing_key, public_key, text)
@@ -33,7 +31,7 @@ module Duse
       end
 
       def has_access_to_secret?(secret)
-        !Share.all(user: self).secret_part.secret.get(secret.id).nil?
+        secrets.include? secret
       end
 
       private
@@ -42,14 +40,17 @@ module Duse
         token = nil
         loop do
           token = SecureRandom.urlsafe_base64(15).tr('lIO0', 'sxyz')
-          break if User.first(api_token: token).nil?
+          break if User.where(api_token: token).first.nil?
         end
         token
       end
     end
 
     class Server < User
-      property :private_key, RSAKey
+
+      def private_key
+        OpenSSL::PKey::RSA.new read_attribute(:private_key)
+      end
 
       class << self
         def get
@@ -57,7 +58,7 @@ module Duse
         end
 
         def find_or_create
-          user = Server.first(username: 'server')
+          user = Server.first
           user = create_server_user if user.nil?
           user
         end
@@ -82,6 +83,8 @@ module Duse
           Server.get.private_key
         end
       end
+
+      # private rsa key
     end
   end
 end

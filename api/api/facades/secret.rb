@@ -4,24 +4,24 @@ class SecretFacade
   end
 
   def all
-    Duse::Models::Share.all(user: @current_user).secret_part.secret
+    @current_user.secrets
   end
 
   def get!(id)
-    secret = Duse::Models::Secret.get! id
+    secret = Duse::Models::Secret.find id
     Duse::SecretAuthorization.authorize! @current_user, :read, secret
     secret
   end
 
   def delete!(id)
-    secret = Duse::Models::Secret.get! id
+    secret = Duse::Models::Secret.find id
     Duse::SecretAuthorization.authorize! @current_user, :delete, secret
     secret.destroy
   end
 
   def update!(id, params)
     params = params.sanitize strict: false, current_user: @current_user
-    secret = Duse::Models::Secret.get!(id)
+    secret = Duse::Models::Secret.find(id)
     Duse::SecretAuthorization.authorize! @current_user, :update, secret
     secret.last_edited_by = @current_user
     secret.title = params[:title] if params.key? :title
@@ -36,7 +36,7 @@ class SecretFacade
     entities.each(&:save)
 
     secret
-  rescue DataMapper::SaveFailureError
+  rescue ActiveRecord::RecordNotSaved
     raise Duse::ValidationFailed, {message: errors}.to_json
   end
 
@@ -54,7 +54,7 @@ class SecretFacade
     entities.each(&:save)
 
     secret
-  rescue DataMapper::SaveFailureError
+  rescue ActiveRecord::RecordNotSaved
     raise Duse::ValidationFailed, {message: errors}.to_json
   end
 
@@ -75,9 +75,9 @@ class SecretFacade
 
       part.each do |share|
         user_id = share[:user_id]
-        user = Duse::Models::User.first(username: 'server') if 'server' == user_id
+        user = Duse::Models::Server.get if 'server' == user_id
         user = @current_user if 'me' == user_id
-        user ||= Duse::Models::User.get(user_id)
+        user ||= Duse::Models::User.find(user_id)
         entities << Duse::Models::Share.new(
           user: user,
           secret_part: secret_part,

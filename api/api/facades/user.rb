@@ -8,7 +8,7 @@ class UserFacade
   end
 
   def get!(id)
-    Duse::Models::User.get!(id)
+    Duse::Models::User.find(id)
   end
 
   def server_user
@@ -16,17 +16,17 @@ class UserFacade
   end
 
   def delete!(id)
-    user = Duse::Models::User.get!(id)
+    user = Duse::Models::User.find(id)
     Duse::UserAuthorization.authorize! @current_user, :delete, user
     user.destroy
   end
 
   def update!(id, params)
-    user = Duse::Models::User.get!(id)
+    user = Duse::Models::User.find(id)
     Duse::UserAuthorization.authorize! @current_user, :update, user
     user.update params.sanitize(strict: false)
     user
-  rescue DataMapper::SaveFailureError
+  rescue ActiveRecord::RecordNotSaved
     raise Duse::ValidationFailed, { message: user.errors.full_messages }.to_json
   end
 
@@ -34,7 +34,7 @@ class UserFacade
     user = Duse::Models::User.new(params.sanitize)
     user.save
     user
-  rescue DataMapper::SaveFailureError
+  rescue ActiveRecord::RecordNotSaved
     raise Duse::ValidationFailed, { message: user.errors.full_messages }.to_json
   end
 end

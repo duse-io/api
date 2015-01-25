@@ -28,7 +28,7 @@ describe Duse::API do
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
-    user_id = Duse::Models::User.first(username: 'flower-pot').id
+    user_id = Duse::Models::User.find_by_username('flower-pot').id
     expect(last_response.body).to eq(
       {
         id: user_id,
@@ -230,7 +230,7 @@ describe Duse::API do
       api_token: user.api_token # this is still the old token before refreshing
     }.to_json)
     expect(last_response.body).to eq({
-      api_token: Duse::Models::User.get(user.id).api_token
+      api_token: Duse::Models::User.find(user.id).api_token
     }.to_json)
   end
 
@@ -269,7 +269,7 @@ describe Duse::API do
     header 'Authorization', user.api_token
     patch "/v1/users/#{user.id}", {username: 'works'}.to_json, 'CONTENT_TYPE' => 'application/json'
 
-    user = Duse::Models::User.get(user.id)
+    user = Duse::Models::User.find(user.id)
     expect(user.username).to eq 'works'
   end
 end

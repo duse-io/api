@@ -1,4 +1,5 @@
 require_relative 'config/environment'
+require 'api'
 
 begin
   require 'rspec/core/rake_task'
@@ -9,60 +10,25 @@ rescue LoadError
 end
 
 task :routes do
-  require 'api'
-
   Duse::API.routes.each do |api|
     puts "#{api.route_method.ljust(8)} #{api.route_path}"
   end
 end
 
-task :migrate do
-  require_relative 'config/database'
-  DataMapper.auto_migrate!
+include ActiveRecord::Tasks
+
+db_dir = File.expand_path('../db', __FILE__)
+config_dir = File.expand_path('../config', __FILE__)
+
+DatabaseTasks.env = ENV['ENV']
+DatabaseTasks.root = File.dirname(__FILE__)
+DatabaseTasks.db_dir = db_dir
+DatabaseTasks.database_configuration = YAML.load(File.read(File.join(config_dir, 'database.yml')))
+DatabaseTasks.migrations_paths = File.join(db_dir, 'migrate')
+
+task :environment do
+  ActiveRecord::Base.configurations = DatabaseTasks.database_configuration
+  ActiveRecord::Base.establish_connection DatabaseTasks.env.to_sym
 end
 
-task :create do
-  require_relative 'config/database'
-  require 'pg'
-  require 'uri'
-
-  uri = URI(ENV['DATABASE_URL'])
-  host = uri.host
-  dbname = uri.path[1, uri.path.length]
-  conn = PG.connect(dbname: 'postgres', host: host, user: 'postgres')
-  dbexists = false
-  conn.exec(
-    "SELECT EXISTS (
-       SELECT * FROM pg_catalog.pg_database
-       WHERE lower(datname) = lower('#{dbname}')
-     );"
-  ) do |result|
-    result.each do |row|
-      dbexists = row['exists'] == 't'
-    end
-  end
-  conn.exec("CREATE DATABASE #{dbname}") unless dbexists
-end
-
-task :drop do
-  require_relative 'config/database'
-  require 'pg'
-  require 'uri'
-
-  uri = URI(ENV['DATABASE_URL'])
-  host = uri.host
-  dbname = uri.path[1, uri.path.length]
-  conn = PG.connect(dbname: 'postgres', host: host, user: 'postgres')
-  dbexists = false
-  conn.exec(
-    "SELECT EXISTS (
-       SELECT * FROM pg_catalog.pg_database
-       WHERE lower(datname) = lower('#{dbname}')
-     );"
-  ) do |result|
-    result.each do |row|
-      dbexists = row['exists'] == 't'
-    end
-  end
-  conn.exec("DROP DATABASE #{dbname}") if dbexists
-end
+load 'active_record/railties/databases.rake'

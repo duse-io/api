@@ -5,7 +5,7 @@ module Duse
     end
 
     def authenticate!
-      user = Duse::Models::User.first(api_token: api_token)
+      user = Duse::Models::User.find_by_api_token api_token
       if user.nil?
         fail! 'Unauthenticated'
       else

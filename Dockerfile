@@ -1,4 +1,4 @@
-FROM ruby:2.1.5
+FROM ruby:2.2.0
 
 RUN apt-get update
 RUN apt-get install -y libpq-dev postgresql-server-dev-all

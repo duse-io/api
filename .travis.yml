@@ -6,6 +6,7 @@ bundler_args: "--without development"
 before_script:
 - psql -c 'create database duse_api_test;' -U postgres
 - cp config/database.yml.travis config/database.yml
+- bundle exec rake db:setup
 before_install:
 - sudo apt-get update && sudo apt-get install -qq libpq-dev postgresql-server-dev-9.3
 addons:

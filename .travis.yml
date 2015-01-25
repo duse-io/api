@@ -3,12 +3,11 @@ rvm:
   - 2.2.0
 cache: bundler
 bundler_args: "--without development"
+sudo: false
 before_script:
 - psql -c 'create database duse_api_test;' -U postgres
 - cp config/database.yml.travis config/database.yml
 - bundle exec rake db:migrate
-before_install:
-- sudo apt-get update && sudo apt-get install -qq libpq-dev postgresql-server-dev-9.3
 addons:
   postgresql: '9.3'
 notifications:
@@ -19,6 +18,6 @@ deploy:
   api_key:
     secure: EBb54/sfFUppPtekHCXH9gKnt4DXFlmYuP1FvR2PPXZAMAOImkCIPgkHB22tpl2DUIsQh0W/yL0QTQb1RJOo2LLVRKspzmyvQjPd9Sxvd2iBa/D4Qj9QgS4K7XufIJXQw2bdU1RMygAqh7Hubl13jnjdb3sm24CyTJChmlleE3w=
   app: duse
-  run: "rake migrate"
+  run: "rake db:migrate"
   on:
     repo: duse-io/api

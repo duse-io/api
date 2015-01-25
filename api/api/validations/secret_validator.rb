@@ -7,6 +7,8 @@ class SecretValidator
   def validate(secret)
     errors = Set.new
 
+    errors << 'Title must not be blank' if !secret[:title].nil? && secret[:title].empty?
+
     secret_parts = secret[:parts]
 
     unless secret_parts.nil?
@@ -38,7 +40,7 @@ class SecretValidator
   private
 
   def user_exists?(user_id)
-    !Duse::Models::User.get(user_id).nil?
+    Duse::Models::User.exists?(user_id)
   end
 
   def consistent_users?(allowed_users, requested_users)

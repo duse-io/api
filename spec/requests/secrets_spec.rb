@@ -169,7 +169,7 @@ describe Duse::API do
   it 'should error when title is empty' do
     secret_json = default_secret(title: '')
 
-    header 'Authorization', Duse::Models::User.first(username: 'flower-pot').api_token
+    header 'Authorization', Duse::Models::User.find_by_username('flower-pot').api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -180,7 +180,7 @@ describe Duse::API do
   end
 
   it 'should error if the provided users don\'t exist' do
-    server = Duse::Models::User.first(username: 'server')
+    server = Duse::Models::Server.get
     key = generate_key
     user = create_default_user(username: 'user123', public_key: key.public_key)
     # we're not creating user #3, which triggers this behaviour
@@ -225,7 +225,7 @@ describe Duse::API do
   end
 
   it 'should error when not all parts have shares for the same users' do
-    server_user = Duse::Models::User.first username: 'server'
+    server_user = Duse::Models::Server.get
     key1 = generate_key
     user1 = create_default_user(username: 'user1', public_key: key1.public_key)
     key2 = generate_key
@@ -256,7 +256,7 @@ describe Duse::API do
   end
 
   it 'should error when at least one of the provided users do not exist' do
-    server_user = Duse::Models::User.first username: 'server'
+    server_user = Duse::Models::Server.get
     key1 = generate_key
     user1 = create_default_user(username: 'user1', public_key: key1.public_key)
     secret_json = {
@@ -333,7 +333,7 @@ describe Duse::API do
 
   it 'it should validate when updating just like when creating' do
     secret_json = default_secret
-    user1 = Duse::Models::User.first(username: 'flower-pot')
+    user1 = Duse::Models::User.find_by_username('flower-pot')
 
     header 'Authorization', user1.api_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'

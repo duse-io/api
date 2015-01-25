@@ -5,8 +5,10 @@ module Duse
     end
 
     def authenticate!
-      user = Duse::Models::User.first(username: params['username'])
-      return success! user if !user.nil? && user.password == params['password']
+      user = Duse::Models::User.find_by_username params['username']
+      if !user.nil? && user.try(:authenticate, params['password'])
+        return success! user
+      end
       fail! 'Username or password incorrect.'
     end
   end

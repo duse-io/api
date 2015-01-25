@@ -34,10 +34,8 @@ require 'rack/test'
 require 'json'
 require 'openssl'
 
-DataMapper.auto_migrate!
-DatabaseCleaner[:data_mapper].strategy = :truncation
+DatabaseCleaner.strategy = :truncation
 DatabaseCleaner.clean # start with a clean database
-DatabaseCleaner[:data_mapper].strategy = :transaction
 
 def generate_public_key(size = 1024)
   generate_key(size).public_key.to_s

@@ -13,3 +13,4 @@ class CreateUsers < ActiveRecord::Migration
     add_index :users, :api_token, unique: true
   end
 end
+

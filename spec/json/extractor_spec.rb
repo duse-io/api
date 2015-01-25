@@ -73,3 +73,4 @@ describe JSONExtractor do
     expect(JSONExtractor.new(schema).extract({title: 'test'})).to eq({title: 'test'})
   end
 end
+

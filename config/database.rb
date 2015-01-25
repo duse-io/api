@@ -5,3 +5,4 @@ require 'duse/models/user'
 require 'duse/models/secret'
 require 'duse/models/secret_part'
 require 'duse/models/share'
+

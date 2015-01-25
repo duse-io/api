@@ -99,3 +99,4 @@ class JSONValidator
     errors
   end
 end
+

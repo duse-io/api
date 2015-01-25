@@ -118,3 +118,4 @@ describe JSONValidator do
     expect(JSONValidator.new(schema, strict: false) .validate({})).to eq Set.new
   end
 end
+

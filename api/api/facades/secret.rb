@@ -92,3 +92,4 @@ class SecretFacade
     entities
   end
 end
+

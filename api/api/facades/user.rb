@@ -38,3 +38,4 @@ class UserFacade
     raise Duse::ValidationFailed, { message: user.errors.full_messages }.to_json
   end
 end
+

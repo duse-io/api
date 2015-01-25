@@ -352,3 +352,4 @@ describe Duse::API do
     ]
   end
 end
+

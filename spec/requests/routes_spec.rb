@@ -14,3 +14,4 @@ describe Duse::API do
     expect(response.keys.length).to eq 2
   end
 end
+

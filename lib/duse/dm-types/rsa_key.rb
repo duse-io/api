@@ -30,3 +30,4 @@ module DataMapper
     end # class RSAKey
   end # class Property
 end # module DataMapper
+

@@ -16,3 +16,4 @@ class UserJSON < DefaultJSON
     }
   end
 end
+

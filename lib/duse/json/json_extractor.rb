@@ -32,3 +32,4 @@ class JSONExtractor
     result
   end
 end
+

@@ -28,3 +28,4 @@ describe SecretJSON do
     json.validate!(current_user: user1)
   end
 end
+

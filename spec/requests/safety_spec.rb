@@ -36,3 +36,4 @@ describe Duse::API do
     ).to be true
   end
 end
+

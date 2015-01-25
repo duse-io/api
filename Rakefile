@@ -32,3 +32,4 @@ task :environment do
 end
 
 load 'active_record/railties/databases.rake'
+

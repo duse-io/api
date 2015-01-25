@@ -15,3 +15,4 @@ module Duse
 end
 
 Warden::Strategies.add(:password, Duse::PasswordStrategy)
+

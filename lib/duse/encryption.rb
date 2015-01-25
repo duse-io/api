@@ -34,3 +34,4 @@ module Encryption
     Base64.decode64 encoded_text.encode('ascii-8bit')
   end
 end
+

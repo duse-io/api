@@ -82,3 +82,4 @@ module Duse
     mount Endpoints::UserToken
   end
 end
+

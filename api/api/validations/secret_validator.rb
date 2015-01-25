@@ -55,3 +55,4 @@ class SecretValidator
     user_ids == user_ids.uniq
   end
 end
+

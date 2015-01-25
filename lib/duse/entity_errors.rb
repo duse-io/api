@@ -13,3 +13,4 @@ class EntityErrors
     errors.subtract @errors_to_ignore
   end
 end
+

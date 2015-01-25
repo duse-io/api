@@ -10,3 +10,4 @@ development: &default
 test:
   <<: *default
   database: duse_test
+

@@ -6,3 +6,4 @@ class CreateSecrets < ActiveRecord::Migration
     end
   end
 end
+

@@ -27,3 +27,4 @@ class DefaultJSON
     extract
   end
 end
+

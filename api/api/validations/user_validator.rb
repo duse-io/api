@@ -54,3 +54,4 @@ class UserValidator
     false
   end
 end
+

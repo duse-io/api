@@ -273,3 +273,4 @@ describe Duse::API do
     expect(user.username).to eq 'works'
   end
 end
+

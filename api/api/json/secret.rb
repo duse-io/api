@@ -30,3 +30,4 @@ class SecretJSON < DefaultJSON
     }
   end
 end
+

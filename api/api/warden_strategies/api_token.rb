@@ -22,3 +22,4 @@ module Duse
 end
 
 Warden::Strategies.add(:api_token, Duse::APITokenStrategy)
+

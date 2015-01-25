@@ -6,3 +6,4 @@ class CreateSecretParts < ActiveRecord::Migration
     end
   end
 end
+

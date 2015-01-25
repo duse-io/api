@@ -68,3 +68,4 @@ describe Duse::Authorization do
     TestAuthorization.authorize! user, :create, {}
   end
 end
+

@@ -20,3 +20,4 @@ describe Encryption do
     expect(Encryption.decrypt key2, encrypted).to eq 'text'
   end
 end
+

@@ -25,3 +25,4 @@ describe Duse::Models::Share do
     share.save
   end
 end
+

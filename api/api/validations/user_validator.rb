@@ -4,12 +4,7 @@ class UserValidator
 
     username = user[:username]
     password = user[:password]
-    password_confirmation = user[:password_confirmation]
     public_key = user[:public_key]
-
-    if !password.nil? && !password_confirmation.nil? && password != password_confirmation
-      errors << 'Password and password confirmation do not match'
-    end
 
     if !password.nil? && !is_password_complex_enough?(password)
       errors << 'Password too weak.'

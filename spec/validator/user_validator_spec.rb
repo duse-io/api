@@ -36,19 +36,6 @@ describe UserValidator do
       ])
     end
 
-    it 'should check that password confirmation equals password' do
-      key = generate_key
-      user = {
-        username: 'test',
-        password: 'Passw0rd!!',
-        password_confirmation: 'Passw0rd!',
-        public_key: key.public_key.to_s
-      }
-      expect(UserValidator.new.validate(user).to_a).to eq([
-        'Password and password confirmation do not match'
-      ])
-    end
-
     it 'should detect invalid rsa public keys' do
       user = {
         username: 'test',

@@ -19,5 +19,12 @@ describe Encryption do
     encrypted, _ = Encryption.encrypt key1, key2.public_key, 'text'
     expect(Encryption.decrypt key2, encrypted).to eq 'text'
   end
+
+  it 'should correctly handle umlauts' do
+    key1 = generate_key
+    key2 = generate_key
+    encrypted, _ = Encryption.encrypt key1, key2.public_key, 'ä'
+    expect(Encryption.decrypt key2, encrypted).to eq 'ä'
+  end
 end
 

@@ -87,7 +87,7 @@ describe Duse::API do
       }
     end
     response = JSON.parse last_response.body
-    response['shares'].map! do |part|
+    response['parts'].map! do |part|
       part.map do |share|
         Encryption.decrypt user1_key, share
       end
@@ -95,7 +95,7 @@ describe Duse::API do
     expect(response).to eq({
       'id' => secret_id,
       'title' => 'my secret',
-      'shares' => [%w(share1 share2)],
+      'parts' => [%w(share1 share2)],
       'users' => users,
       'url' => "http://example.org/v1/secrets/#{secret_id}",
     })

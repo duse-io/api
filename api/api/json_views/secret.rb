@@ -3,7 +3,7 @@ module Duse
     class Secret < Grape::Entity
       expose :id
       expose :title
-      expose :shares, if: { type: :full } do |secret, options|
+      expose :parts, if: { type: :full } do |secret, options|
         secret.secret_parts_for options[:user]
       end
       expose :users, using: 'Duse::JSONViews::User', if: { type: :full }

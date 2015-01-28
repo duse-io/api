@@ -5,9 +5,9 @@ module Duse
       belongs_to :secret
 
       def raw_shares_from(user)
-        server_share = shares user: Server.get
+        server_share = shares.where(user: Server.get).first
         server_share = Encryption.decrypt(
-          Server.private_key, server_share.first.content
+          Server.private_key, server_share.content
         )
         server_share, _ = Encryption.encrypt(
           Server.private_key, user.public_key, server_share

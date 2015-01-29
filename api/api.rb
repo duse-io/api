@@ -29,15 +29,15 @@ module Duse
     version 'v1', using: :path
 
     rescue_from ActiveRecord::RecordNotFound do
-      rack_response({ message: 'Not found' }.to_json, 404)
+      Rack::Response.new({ message: 'Not found' }.to_json, 404)
     end
 
     rescue_from Duse::InvalidAuthorization do
-      rack_response({ message: 'Forbidden' }.to_json, 403)
+      Rack::Response.new({ message: 'Forbidden' }.to_json, 403)
     end
 
     rescue_from Duse::ValidationFailed do |e|
-      rack_response(e.message, 422)
+      Rack::Response.new(e.message, 422)
     end
 
     rescue_from :all do |exception|
@@ -50,7 +50,7 @@ module Duse
       message << '  ' << trace.join("\n  ")
 
       API.logger.add Logger::FATAL, message
-      rack_response({ message: '500 Internal Server Error' }.to_json, 500)
+      Rack::Response.new({ message: '500 Internal Server Error' }.to_json, 500)
     end
 
     use Warden::Manager do |config|

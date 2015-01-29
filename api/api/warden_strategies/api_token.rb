@@ -5,11 +5,12 @@ module Duse
     end
 
     def authenticate!
-      user = Duse::Models::User.find_by_api_token api_token
-      if user.nil?
+      hash = Encryption.hmac('key', api_token)
+      token = Duse::Models::Token.find_by_token_hash hash
+      if token.nil?
         fail! 'Unauthenticated'
       else
-        success! user
+        success! token.user
       end
     end
 

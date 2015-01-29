@@ -121,20 +121,11 @@ describe Duse::API do
     expect(Duse::Models::User.all.count).to eq(0)
   end
 
-  it 'should not put the api token in the json response' do
-    user = create_default_user
-
-    header 'Authorization', user.api_token
-    get "/v1/users/#{user.id}", 'CONTENT_TYPE' => 'application/json'
-
-    expect(last_response.status).to eq(200)
-    expect(JSON.parse(last_response.body).key? 'api_token').to eq(false)
-  end
-
   it 'should respond to listing users correctly' do
     user = create_default_user
+    token = TokenFacade.new(user).create!
 
-    header 'Authorization', user.api_token
+    header 'Authorization', token
     get '/v1/users', 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(200)
@@ -147,50 +138,12 @@ describe Duse::API do
     )
   end
 
-  it 'should return the users api token correctly' do
-    user = create_default_user(username: 'test', password: 'Passw0rd!')
-
-    post '/v1/users/token', {
-      username: 'test',
-      password: 'Passw0rd!'
-    }.to_json, 'CONTENT_TYPE' => 'application/json'
-
-    expect(last_response.status).to eq(200)
-    expect(last_response.body).to eq(
-      { 'api_token' => user.api_token }.to_json
-    )
-  end
-
-  it 'should return unauthenticated on wrong username or password' do
-    create_default_user(username: 'test')
-
-    post '/v1/users/token', {
-      username: 'test',
-      password: 'wrong-password'
-    }.to_json, 'CONTENT_TYPE' => 'application/json'
-
-    expect(last_response.status).to eq(401)
-
-    post '/v1/users/token', {
-      username: 'wrong-username',
-      password: 'some-password'
-    }.to_json, 'CONTENT_TYPE' => 'application/json'
-
-    expect(last_response.status).to eq(401)
-  end
-
-  it 'should return unauthenticated when a wrong api token is set' do
-    header 'Authorization', 'wrong-token'
-    get '/v1/users/me', 'CONTENT_TYPE' => 'application/json'
-
-    expect(last_response.status).to eq 401
-  end
-
   it 'should return the correct user when request own profile' do
     public_key = generate_public_key
     user = create_default_user(public_key: public_key)
+    token = TokenFacade.new(user).create!
 
-    header 'Authorization', user.api_token
+    header 'Authorization', token
     get '/v1/users/me', 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(200)
@@ -204,9 +157,10 @@ describe Duse::API do
 
   it 'should return the correct user when requesting the server user' do
     user = create_default_user
+    token = TokenFacade.new(user).create!
     server_user = Duse::Models::Server.get
 
-    header 'Authorization', user.api_token
+    header 'Authorization', token
     get '/v1/users/server', 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(200)
@@ -218,25 +172,11 @@ describe Duse::API do
     }.to_json)
   end
 
-  it 'should return the new token when requesting a new one' do
-    user = create_default_user
-
-    header 'Authorization', user.api_token
-    post '/v1/users/token/regenerate', 'CONTENT_TYPE' => 'application/json'
-
-    expect(last_response.status).to eq(201)
-    expect(last_response.body).not_to eq({
-      api_token: user.api_token # this is still the old token before refreshing
-    }.to_json)
-    expect(last_response.body).to eq({
-      api_token: Duse::Models::User.find(user.id).api_token
-    }.to_json)
-  end
-
   it 'should be able to delete ones own user' do
     user = create_default_user
+    token = TokenFacade.new(user).create!
 
-    header 'Authorization', user.api_token
+    header 'Authorization', token
     delete "/v1/users/#{user.id}", 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq 204
@@ -244,8 +184,9 @@ describe Duse::API do
 
   it 'should error with not found when trying to delete not existant user' do
     user = create_default_user
+    token = TokenFacade.new(user).create!
 
-    header 'Authorization', user.api_token
+    header 'Authorization', token
     # user.id + 1 should be a non existant id
     delete "/v1/users/#{user.id+1}", 'CONTENT_TYPE' => 'application/json'
 
@@ -255,8 +196,9 @@ describe Duse::API do
   it 'should error with forbidden when deleting a user without permission to' do
     user1 = create_default_user
     user2 = create_default_user(username: 'user2')
+    token = TokenFacade.new(user1).create!
 
-    header 'Authorization', user1.api_token
+    header 'Authorization', token
     delete "/v1/users/#{user2.id}", 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq 403
@@ -264,8 +206,9 @@ describe Duse::API do
 
   it 'should be able to update a user' do
     user = create_default_user
+    token = TokenFacade.new(user).create!
 
-    header 'Authorization', user.api_token
+    header 'Authorization', token
     patch "/v1/users/#{user.id}", {username: 'works'}.to_json, 'CONTENT_TYPE' => 'application/json'
 
     user = Duse::Models::User.find(user.id)

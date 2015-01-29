@@ -49,6 +49,7 @@ describe Duse::API do
     user1 = create_default_user(
       username: 'flower-pot', public_key: user1_key.public_key
     )
+    token = TokenFacade.new(user1).create!
     user2_key = generate_key
     user2 = create_default_user(
       username: 'adracus', public_key: user2_key.public_key
@@ -64,7 +65,7 @@ describe Duse::API do
       ]
     }.to_json
 
-    header 'Authorization', user1.api_token
+    header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
@@ -76,7 +77,7 @@ describe Duse::API do
     }.to_json)
     expect_count(user: 3, secret: 1, secret_part: 1, share: 3)
 
-    header 'Authorization', user1.api_token
+    header 'Authorization', token
     get "/v1/secrets/#{secret_id}"
     users = Duse::Models::User.all.map do |user|
       {
@@ -101,11 +102,12 @@ describe Duse::API do
     })
 
     other_user = create_default_user
-    header 'Authorization', other_user.api_token
+    other_token = TokenFacade.new(other_user).create!
+    header 'Authorization', other_token
     get "/v1/secrets/#{secret_id}"
     expect(last_response.status).to eq 403
 
-    header 'Authorization', user1.api_token
+    header 'Authorization', token
     get '/v1/secrets'
     expect(last_response.body).to eq(
       [
@@ -117,7 +119,7 @@ describe Duse::API do
       ].to_json
     )
 
-    header 'Authorization', user1.api_token
+    header 'Authorization', token
     user = Duse::Models::User.first
     get "/v1/users/#{user.id}"
     expect(last_response.body).to eq(
@@ -129,7 +131,7 @@ describe Duse::API do
       }.to_json
     )
 
-    header 'Authorization', user1.api_token
+    header 'Authorization', token
     delete "/v1/secrets/#{secret_id}"
     expect(last_response.status).to eq(204)
     expect(last_response.body).to eq('')
@@ -140,7 +142,7 @@ describe Duse::API do
   it 'should return 404 for a non existant secret' do
     user = create_default_user
 
-    header 'Authorization', user.api_token
+    header 'Authorization', TokenFacade.new(user).create!
     get '/v1/secrets/1', 'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq(404)
   end
@@ -149,7 +151,7 @@ describe Duse::API do
     user = create_default_user
     secret_json = { title: 'test', parts: 'test' }.to_json
 
-    header 'Authorization', user.api_token
+    header 'Authorization', TokenFacade.new(user).create!
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -159,7 +161,7 @@ describe Duse::API do
   it 'should error on malformed json' do
     user = create_default_user
 
-    header 'Authorization', user.api_token
+    header 'Authorization', TokenFacade.new(user).create!
     post '/v1/secrets', '{ ', 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(400)
@@ -168,8 +170,9 @@ describe Duse::API do
 
   it 'should error when title is empty' do
     secret_json = default_secret(title: '')
+    user = Duse::Models::User.find_by_username('flower-pot')
 
-    header 'Authorization', Duse::Models::User.find_by_username('flower-pot').api_token
+    header 'Authorization', TokenFacade.new(user).create!
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -197,7 +200,7 @@ describe Duse::API do
       ]]
     }.to_json
 
-    header 'Authorization', user.api_token
+    header 'Authorization', TokenFacade.new(user).create!
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -217,7 +220,7 @@ describe Duse::API do
       ]]
     }.to_json
 
-    header 'Authorization', user1.api_token
+    header 'Authorization', TokenFacade.new(user1).create!
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -248,7 +251,7 @@ describe Duse::API do
       ]
     }.to_json
 
-    header 'Authorization', user1.api_token
+    header 'Authorization', TokenFacade.new(user1).create!
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -270,7 +273,7 @@ describe Duse::API do
       ]
     }.to_json
 
-    header 'Authorization', user1.api_token
+    header 'Authorization', TokenFacade.new(user1).create!
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -290,6 +293,7 @@ describe Duse::API do
     user1 = create_default_user(
       username: 'flower-pot', public_key: user1_key.public_key
     )
+    token = TokenFacade.new(user1).create!
     user2_key = generate_key
     user2 = create_default_user(
       username: 'adracus', public_key: user2_key.public_key
@@ -305,7 +309,7 @@ describe Duse::API do
       ]
     }.to_json
 
-    header 'Authorization', user1.api_token
+    header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     new_secret_json = {
@@ -319,13 +323,13 @@ describe Duse::API do
       ]
     }.to_json
     secret = JSON.parse(last_response.body)
-    header 'Authorization', user1.api_token
+    header 'Authorization', token
     patch "/v1/secrets/#{secret['id']}",
           new_secret_json,
           'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq 200
 
-    header 'Authorization', user1.api_token
+    header 'Authorization', TokenFacade.new(user1).create!
     get "/v1/secrets/#{secret['id']}", 'CONTENT_TYPE' => 'application/json'
 
     expect(JSON.parse(last_response.body)['title']).to eq 'new title'
@@ -333,15 +337,16 @@ describe Duse::API do
 
   it 'it should validate when updating just like when creating' do
     secret_json = default_secret
-    user1 = Duse::Models::User.find_by_username('flower-pot')
+    user = Duse::Models::User.find_by_username('flower-pot')
+    token = TokenFacade.new(user).create!
 
-    header 'Authorization', user1.api_token
+    header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     secret = JSON.parse(last_response.body)
     expect(last_response.status).to eq 201
 
-    header 'Authorization', user1.api_token
+    header 'Authorization', token
     patch "/v1/secrets/#{secret['id']}", {
       'title' => ''
     }.to_json, 'CONTENT_TYPE' => 'application/json'

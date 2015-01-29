@@ -22,6 +22,10 @@ module Encryption
     public_key.verify digest, decode(signature), decode(encrypted)
   end
 
+  def hmac(key, data)
+    encode(OpenSSL::HMAC.digest(digest, key, data))
+  end
+
   def digest
     OpenSSL::Digest::SHA256.new
   end

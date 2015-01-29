@@ -5,10 +5,10 @@ module Duse
   module Models
     class User < ActiveRecord::Base
       has_secure_password
-      before_create :set_token
 
       attr_accessor :password_confirmation
 
+      has_many :tokens
       has_many :shares
       has_many :secret_parts, through: :shares
       has_many :secrets, through: :secret_parts
@@ -16,11 +16,6 @@ module Duse
       def public_key
         OpenSSL::PKey::RSA.new read_attribute(:public_key)
       end
-
-      def set_new_token
-        self.api_token = generate_save_token
-      end
-      alias_method :set_token, :set_new_token
 
       def encrypt(signing_key, text)
         Encryption.encrypt(signing_key, public_key, text)
@@ -32,17 +27,6 @@ module Duse
 
       def has_access_to_secret?(secret)
         secrets.include? secret
-      end
-
-      private
-
-      def generate_save_token
-        token = nil
-        loop do
-          token = SecureRandom.urlsafe_base64(15).tr('lIO0', 'sxyz')
-          break if User.where(api_token: token).first.nil?
-        end
-        token
       end
     end
 
@@ -83,8 +67,6 @@ module Duse
           Server.get.private_key
         end
       end
-
-      # private rsa key
     end
   end
 end

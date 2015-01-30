@@ -12,6 +12,7 @@ gem 'pg'
 gem 'warden'
 gem 'bcrypt'
 gem 'puma'
+gem 'dotenv'
 
 group :test do
   gem 'rspec'

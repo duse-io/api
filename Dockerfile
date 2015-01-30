@@ -16,5 +16,5 @@ RUN bundle install
 COPY . /usr/src/app
 
 EXPOSE 5000
-CMD ["sudo rackup -p 5000"]
+CMD ["sudo rackup -p 5000 --host 0.0.0.0"]
 

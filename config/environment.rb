@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'bundler'
+require 'dotenv'
+Dotenv.load
 
 ENV['ENV'] ||= 'development'
 

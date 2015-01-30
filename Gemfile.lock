@@ -132,6 +132,7 @@ DEPENDENCIES
   bundler (~> 1.6)
   coveralls
   database_cleaner
+  dotenv
   foreman
   grape
   grape-entity

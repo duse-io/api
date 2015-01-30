@@ -82,4 +82,18 @@ describe Duse::Models::Token do
 
     expect(last_response.status).to eq 401
   end
+
+  it 'should update the last used attribute when using a token' do
+    user = create_default_user
+    raw_token = TokenFacade.new(user).create!
+    token = user.tokens.first
+    token.update_column(:last_used_at, 2.days.ago)
+    allow(Time).to receive(:now).and_return(Time.mktime(2015,1,1,0,0,0))
+
+    header 'Authorization', raw_token
+    get '/v1/users/me', 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 200
+    expect(user.tokens.first.last_used_at).to eq Time.mktime(2015,1,1,0,0,0)
+  end
 end

@@ -8,8 +8,10 @@ module Duse
       hash = Encryption.hmac('key', api_token)
       token = Duse::Models::Token.find_by_token_hash hash
       if token.nil?
-        fail! 'Unauthenticated'
-      else
+        return fail! 'Unauthenticated'
+      end
+      if token.still_valid?
+        token.use!
         success! token.user
       end
     end

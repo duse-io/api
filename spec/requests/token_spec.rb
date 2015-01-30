@@ -70,4 +70,16 @@ describe Duse::Models::Token do
 
     expect(last_response.status).to eq 200
   end
+
+  it 'should return unauthenticated when token is older than 30 days' do
+    user = create_default_user
+    raw_token = TokenFacade.new(user).create!
+    token = user.tokens.first
+    token.update_column(:last_used_at, 31.days.ago)
+
+    header 'Authorization', raw_token
+    get '/v1/users/me', 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 401
+  end
 end

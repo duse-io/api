@@ -127,6 +127,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord
+  activesupport
   bcrypt
   bundler (~> 1.6)
   coveralls

@@ -4,7 +4,21 @@ require 'securerandom'
 module Duse
   module Models
     class Token < ActiveRecord::Base
+      before_save :renew_last_used
       belongs_to :user
+
+      def still_valid?
+        self.last_used_at > 30.days.ago
+      end
+
+      def use!
+        renew_last_used
+        save
+      end
+
+      def renew_last_used
+        self.last_used_at = Time.now
+      end
 
       def self.generate_save_token
         token = nil

@@ -27,6 +27,8 @@ if ENV['CI']
   Coveralls.wear!
 end
 
+ENV['SECRET_KEY'] ||= 'le_super_secret_key'
+
 require_relative '../config/environment'
 require 'api'
 require 'database_cleaner'

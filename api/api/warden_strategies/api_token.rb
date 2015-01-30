@@ -5,7 +5,7 @@ module Duse
     end
 
     def authenticate!
-      hash = Encryption.hmac('key', api_token)
+      hash = Encryption.hmac(Duse.secret_key, api_token)
       token = Duse::Models::Token.find_by_token_hash hash
       if token.nil?
         return fail! 'Unauthenticated'

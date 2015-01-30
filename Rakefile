@@ -15,6 +15,16 @@ task :routes do
   end
 end
 
+task :env do
+  require 'securerandom'
+
+  secret_key = SecureRandom.base64(64)
+  File.open '.env', 'w' do |f|
+    f.write "export SECRET_KEY=\"#{secret_key}\""
+    f.write "\n"
+  end
+end
+
 include ActiveRecord::Tasks
 
 db_dir = File.expand_path('../db', __FILE__)

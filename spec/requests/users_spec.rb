@@ -123,7 +123,7 @@ describe Duse::API do
 
   it 'should respond to listing users correctly' do
     user = create_default_user
-    token = TokenFacade.new(user).create!
+    token = user.create_new_token
 
     header 'Authorization', token
     get '/v1/users', 'CONTENT_TYPE' => 'application/json'
@@ -141,7 +141,7 @@ describe Duse::API do
   it 'should return the correct user when request own profile' do
     public_key = generate_public_key
     user = create_default_user(public_key: public_key)
-    token = TokenFacade.new(user).create!
+    token = user.create_new_token
 
     header 'Authorization', token
     get '/v1/users/me', 'CONTENT_TYPE' => 'application/json'
@@ -157,7 +157,7 @@ describe Duse::API do
 
   it 'should return the correct user when requesting the server user' do
     user = create_default_user
-    token = TokenFacade.new(user).create!
+    token = user.create_new_token
     server_user = Duse::Models::Server.get
 
     header 'Authorization', token
@@ -174,7 +174,7 @@ describe Duse::API do
 
   it 'should be able to delete ones own user' do
     user = create_default_user
-    token = TokenFacade.new(user).create!
+    token = user.create_new_token
 
     header 'Authorization', token
     delete "/v1/users/#{user.id}", 'CONTENT_TYPE' => 'application/json'
@@ -184,7 +184,7 @@ describe Duse::API do
 
   it 'should error with not found when trying to delete not existant user' do
     user = create_default_user
-    token = TokenFacade.new(user).create!
+    token = user.create_new_token
 
     header 'Authorization', token
     # user.id + 1 should be a non existant id
@@ -196,7 +196,7 @@ describe Duse::API do
   it 'should error with forbidden when deleting a user without permission to' do
     user1 = create_default_user
     user2 = create_default_user(username: 'user2')
-    token = TokenFacade.new(user1).create!
+    token = user1.create_new_token
 
     header 'Authorization', token
     delete "/v1/users/#{user2.id}", 'CONTENT_TYPE' => 'application/json'
@@ -206,7 +206,7 @@ describe Duse::API do
 
   it 'should be able to update a user' do
     user = create_default_user
-    token = TokenFacade.new(user).create!
+    token = user.create_new_token
 
     header 'Authorization', token
     patch "/v1/users/#{user.id}", {username: 'works'}.to_json, 'CONTENT_TYPE' => 'application/json'

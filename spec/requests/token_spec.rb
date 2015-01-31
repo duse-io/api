@@ -63,9 +63,8 @@ describe Duse::Models::Token do
 
   it 'should correctly authenticate with a correct token' do
     user = create_default_user(username: 'test', password: 'Passw0rd!')
-    token = TokenFacade.new(user).create!
 
-    header 'Authorization', token
+    header 'Authorization', user.create_new_token
     get '/v1/users/me', 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq 200
@@ -73,7 +72,7 @@ describe Duse::Models::Token do
 
   it 'should return unauthenticated when token is older than 30 days' do
     user = create_default_user
-    raw_token = TokenFacade.new(user).create!
+    raw_token = user.create_new_token
     token = user.tokens.first
     token.update_column(:last_used_at, 31.days.ago)
 
@@ -85,7 +84,7 @@ describe Duse::Models::Token do
 
   it 'should update the last used attribute when using a token' do
     user = create_default_user
-    raw_token = TokenFacade.new(user).create!
+    raw_token = user.create_new_token
     token = user.tokens.first
     token.update_column(:last_used_at, 2.days.ago)
     allow(Time).to receive(:now).and_return(Time.mktime(2015,1,1,0,0,0))

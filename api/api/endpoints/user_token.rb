@@ -1,17 +1,11 @@
 module Duse
   module Endpoints
     class UserToken < Grape::API
-      helpers do
-        def facade
-          TokenFacade.new(current_user)
-        end
-      end
-
       resource :users do
         resource :token do
           post '/' do
             authenticate! :password
-            { api_token: facade.create! }
+            { api_token: current_user.create_new_token }
           end
         end
       end

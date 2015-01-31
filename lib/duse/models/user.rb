@@ -28,6 +28,12 @@ module Duse
       def has_access_to_secret?(secret)
         secrets.include? secret
       end
+
+      def create_new_token
+        raw_token, token_hash = Duse::Models::Token.generate_save_token
+        tokens << Duse::Models::Token.create(token_hash: token_hash)
+        raw_token
+      end
     end
 
     class Server < User

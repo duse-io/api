@@ -49,7 +49,7 @@ describe Duse::API do
     user1 = create_default_user(
       username: 'flower-pot', public_key: user1_key.public_key
     )
-    token = TokenFacade.new(user1).create!
+    token = user1.create_new_token
     user2_key = generate_key
     user2 = create_default_user(
       username: 'adracus', public_key: user2_key.public_key
@@ -102,7 +102,7 @@ describe Duse::API do
     })
 
     other_user = create_default_user
-    other_token = TokenFacade.new(other_user).create!
+    other_token = other_user.create_new_token
     header 'Authorization', other_token
     get "/v1/secrets/#{secret_id}"
     expect(last_response.status).to eq 403
@@ -142,7 +142,7 @@ describe Duse::API do
   it 'should return 404 for a non existant secret' do
     user = create_default_user
 
-    header 'Authorization', TokenFacade.new(user).create!
+    header 'Authorization', user.create_new_token
     get '/v1/secrets/1', 'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq(404)
   end
@@ -151,7 +151,7 @@ describe Duse::API do
     user = create_default_user
     secret_json = { title: 'test', parts: 'test' }.to_json
 
-    header 'Authorization', TokenFacade.new(user).create!
+    header 'Authorization', user.create_new_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -161,7 +161,7 @@ describe Duse::API do
   it 'should error on malformed json' do
     user = create_default_user
 
-    header 'Authorization', TokenFacade.new(user).create!
+    header 'Authorization', user.create_new_token
     post '/v1/secrets', '{ ', 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(400)
@@ -172,7 +172,7 @@ describe Duse::API do
     secret_json = default_secret(title: '')
     user = Duse::Models::User.find_by_username('flower-pot')
 
-    header 'Authorization', TokenFacade.new(user).create!
+    header 'Authorization', user.create_new_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -200,7 +200,7 @@ describe Duse::API do
       ]]
     }.to_json
 
-    header 'Authorization', TokenFacade.new(user).create!
+    header 'Authorization', user.create_new_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -220,7 +220,7 @@ describe Duse::API do
       ]]
     }.to_json
 
-    header 'Authorization', TokenFacade.new(user1).create!
+    header 'Authorization', user1.create_new_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -251,7 +251,7 @@ describe Duse::API do
       ]
     }.to_json
 
-    header 'Authorization', TokenFacade.new(user1).create!
+    header 'Authorization', user1.create_new_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -273,7 +273,7 @@ describe Duse::API do
       ]
     }.to_json
 
-    header 'Authorization', TokenFacade.new(user1).create!
+    header 'Authorization', user1.create_new_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -293,7 +293,7 @@ describe Duse::API do
     user1 = create_default_user(
       username: 'flower-pot', public_key: user1_key.public_key
     )
-    token = TokenFacade.new(user1).create!
+    token = user1.create_new_token
     user2_key = generate_key
     user2 = create_default_user(
       username: 'adracus', public_key: user2_key.public_key
@@ -329,7 +329,7 @@ describe Duse::API do
           'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq 200
 
-    header 'Authorization', TokenFacade.new(user1).create!
+    header 'Authorization', user1.create_new_token
     get "/v1/secrets/#{secret['id']}", 'CONTENT_TYPE' => 'application/json'
 
     expect(JSON.parse(last_response.body)['title']).to eq 'new title'
@@ -338,7 +338,7 @@ describe Duse::API do
   it 'it should validate when updating just like when creating' do
     secret_json = default_secret
     user = Duse::Models::User.find_by_username('flower-pot')
-    token = TokenFacade.new(user).create!
+    token = user.create_new_token
 
     header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'

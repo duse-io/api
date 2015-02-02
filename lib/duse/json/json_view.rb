@@ -32,16 +32,23 @@ class JSONView
     @options = options
   end
 
-  def serialize_as_json
+  def render
+    return convert_to_hash(subject).to_json unless subject.respond_to? :to_ary
+    subject.map do |s|
+      convert_to_hash(s)
+    end.to_json
+  end
+
+  private
+
+  def convert_to_hash(object)
     result = {}
       
-    properties.each do |property|
-      if property.show?(subject, options)
-        result[property.name] = property.value_for subject, options
-      end
+    properties.keep_if{|p| p.show?(object, options)}.map do |property|
+      result[property.name] = property.value_for object, options
     end
 
-    result.to_json
+    result
   end
 
   def properties

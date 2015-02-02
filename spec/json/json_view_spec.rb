@@ -6,7 +6,7 @@ describe JSONExtractor do
 
     subject = OpenStruct.new({ test_string: 'test', test_integer: 1 })
 
-    expect(test_class.new(subject).serialize_as_json).to eq({
+    expect(test_class.new(subject).render).to eq({
       test_string: 'test',
       test_integer: 1
     }.to_json)
@@ -21,7 +21,7 @@ describe JSONExtractor do
 
     subject = OpenStruct.new({ test_string: 'test' })
 
-    expect(test_class.new(subject).serialize_as_json).to eq({
+    expect(test_class.new(subject).render).to eq({
       test_string: 'test',
       test_integer: 1
     }.to_json)
@@ -34,7 +34,7 @@ describe JSONExtractor do
 
     subject = OpenStruct.new({ test_string: 'test', test_integer: 1 })
 
-    expect(test_class.new(subject, type: :full).serialize_as_json).to eq({
+    expect(test_class.new(subject, type: :full).render).to eq({
       test_string: 'test',
       test_integer: 1
     }.to_json)
@@ -47,9 +47,40 @@ describe JSONExtractor do
 
     subject = OpenStruct.new({ test_string: 'test', test_integer: 1 })
 
-    expect(test_class.new(subject).serialize_as_json).to eq({
+    expect(test_class.new(subject).render).to eq({
       test_integer: 1
     }.to_json)
+  end
+
+  it 'should serialize arrays of objects correctly' do
+    test_class = Class.new(JSONView)
+    test_class.property :test_string
+    test_class.property :test_integer
+
+    subject = []
+    subject << OpenStruct.new({ test_string: 'test1', test_integer: 1 })
+    subject << OpenStruct.new({ test_string: 'test2', test_integer: 2 })
+
+    expect(test_class.new(subject).render).to eq([
+      {
+        test_string: 'test1',
+        test_integer: 1
+      },
+      {
+        test_string: 'test2',
+        test_integer: 2
+      },
+    ].to_json)
+  end
+
+  it 'should serialize active relations correctly' do
+    test_class = Class.new(JSONView)
+    test_class.property :test_string
+    test_class.property :test_integer
+
+    subject = Duse::Models::Secret.all
+
+    expect(test_class.new(subject).render).to eq([].to_json)
   end
 end
 

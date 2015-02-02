@@ -33,10 +33,10 @@ class JSONView
   end
 
   def render
-    return convert_to_hash(subject).to_json unless subject.respond_to? :to_ary
+    return convert_to_hash(subject) unless subject.respond_to? :to_ary
     subject.map do |s|
       convert_to_hash(s)
-    end.to_json
+    end
   end
 
   private
@@ -44,8 +44,10 @@ class JSONView
   def convert_to_hash(object)
     result = {}
       
-    properties.keep_if{|p| p.show?(object, options)}.map do |property|
-      result[property.name] = property.value_for object, options
+    properties.each do |property|
+      if property.show?(object, options)
+        result[property.name] = property.value_for object, options
+      end
     end
 
     result

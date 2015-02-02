@@ -9,7 +9,7 @@ describe JSONExtractor do
     expect(test_class.new(subject).render).to eq({
       test_string: 'test',
       test_integer: 1
-    }.to_json)
+    })
   end
 
   it 'should call the block for a properties value when a block is defined' do
@@ -24,7 +24,7 @@ describe JSONExtractor do
     expect(test_class.new(subject).render).to eq({
       test_string: 'test',
       test_integer: 1
-    }.to_json)
+    })
   end
 
   it 'should extract properties according to the type' do
@@ -37,7 +37,7 @@ describe JSONExtractor do
     expect(test_class.new(subject, type: :full).render).to eq({
       test_string: 'test',
       test_integer: 1
-    }.to_json)
+    })
   end
 
   it 'should ignore properties that do not match the type' do
@@ -49,7 +49,7 @@ describe JSONExtractor do
 
     expect(test_class.new(subject).render).to eq({
       test_integer: 1
-    }.to_json)
+    })
   end
 
   it 'should serialize arrays of objects correctly' do
@@ -70,7 +70,7 @@ describe JSONExtractor do
         test_string: 'test2',
         test_integer: 2
       },
-    ].to_json)
+    ])
   end
 
   it 'should serialize active relations correctly' do
@@ -80,7 +80,7 @@ describe JSONExtractor do
 
     subject = Duse::Models::Secret.all
 
-    expect(test_class.new(subject).render).to eq([].to_json)
+    expect(test_class.new(subject).render).to eq([])
   end
 end
 

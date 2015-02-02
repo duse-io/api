@@ -5,28 +5,32 @@ module Duse
         def facade
           UserFacade.new(current_user)
         end
+
+        def view(subject, options = {})
+          JSONViews::User.new(subject, options.merge({host: 'example.org'}))
+        end
       end
 
       resource :users do
         get do
           authenticate!
-          present facade.all, with: Duse::JSONViews::User
+          view(facade.all).render
         end
 
         get '/me' do
           authenticate!
-          present current_user, with: Duse::JSONViews::User, type: :full
+          view(current_user, type: :full).render
         end
 
         get '/server' do
           authenticate!
-          present facade.server_user, with: Duse::JSONViews::User, type: :full
+          view(facade.server_user, type: :full).render
         end
 
         get '/:id' do
           authenticate!
           user = facade.get!(params[:id])
-          present user, with: Duse::JSONViews::User, type: :full
+          view(user, type: :full).render
         end
 
         delete '/:id' do
@@ -38,12 +42,12 @@ module Duse
         patch '/:id' do
           authenticate!
           user = facade.update!(params[:id], UserJSON.new(params))
-          present user, with: Duse::JSONViews::User
+          view(user).render
         end
 
         post do
           user = facade.create!(UserJSON.new(params))
-          present user, with: Duse::JSONViews::User, type: :full
+          view(user, type: :full).render
         end
       end
     end

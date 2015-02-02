@@ -11,7 +11,9 @@ class JSONView
     end
 
     def value_for(subject, options)
-      @value_block.call(subject, options)
+      value = @value_block.call(subject, options)
+      return nested_view.new(value, options).render if nested?
+      value
     end
 
     def show?(subject, options)
@@ -21,6 +23,14 @@ class JSONView
 
     def type
       @options[:type]
+    end
+
+    def nested?
+      !!nested_view
+    end
+
+    def nested_view
+      @options[:as]
     end
   end
 

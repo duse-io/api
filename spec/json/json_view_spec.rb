@@ -82,5 +82,30 @@ describe JSONExtractor do
 
     expect(test_class.new(subject).render).to eq([])
   end
+
+  it 'should serialize active relations correctly' do
+    inner_test_class = Class.new(JSONView)
+    inner_test_class.property :inner_test_string
+    inner_test_class.property :inner_test_integer
+    test_class = Class.new(JSONView)
+    test_class.property :test_string
+    test_class.property :inner_object, as: inner_test_class
+
+    subject = OpenStruct.new({
+      test_string: 'test',
+      inner_object: OpenStruct.new({
+        inner_test_string: 'inner_test',
+        inner_test_integer: 1
+      })
+    })
+
+    expect(test_class.new(subject).render).to eq({
+      test_string: 'test',
+      inner_object: {
+        inner_test_string: 'inner_test',
+        inner_test_integer: 1
+      }
+    })
+  end
 end
 

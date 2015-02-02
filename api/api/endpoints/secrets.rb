@@ -7,16 +7,20 @@ module Duse
         def facade
           SecretFacade.new(current_user)
         end
+
+        def view(subject, options = {})
+          JSONViews::Secret.new(subject, options.merge({host: 'example.org'}))
+        end
       end
 
       resource :secrets do
         get do
-          present facade.all, with: Duse::JSONViews::Secret
+          view(facade.all).render
         end
 
         get '/:id' do
           secret = facade.get!(params[:id])
-          present secret, with: Duse::JSONViews::Secret, type: :full, user: current_user
+          view(secret, type: :full, user: current_user).render
         end
 
         delete '/:id' do
@@ -26,12 +30,12 @@ module Duse
 
         patch '/:id' do
           secret = facade.update!(params[:id], SecretJSON.new(params))
-          present secret, with: Duse::JSONViews::Secret
+          view(secret).render
         end
 
         post do
           secret = facade.create!(SecretJSON.new(params))
-          present secret, with: Duse::JSONViews::Secret
+          view(secret).render
         end
       end
     end

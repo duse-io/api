@@ -11,7 +11,16 @@ class JSONView
     end
 
     def value_for(subject, options)
-      @value_block.call(subject, @options.merge(options))
+      @value_block.call(subject, options)
+    end
+
+    def show?(subject, options)
+      return true if type.nil?
+      return type == options[:type]
+    end
+
+    def type
+      @options[:type]
     end
   end
 
@@ -27,7 +36,9 @@ class JSONView
     result = {}
       
     properties.each do |property|
-      result[property.name] = property.value_for subject, options
+      if property.show?(subject, options)
+        result[property.name] = property.value_for subject, options
+      end
     end
 
     result.to_json

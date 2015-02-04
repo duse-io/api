@@ -14,6 +14,7 @@ require 'api/validations/user_validator'
 require 'api/warden_strategies/api_token'
 require 'api/warden_strategies/password'
 require 'api/endpoints/helpers'
+require 'api/endpoints/base'
 require 'api/endpoints/secrets'
 require 'api/endpoints/users'
 require 'api/endpoints/user_token'
@@ -77,7 +78,6 @@ module Duse
 
     helpers Endpoints::Helpers
 
-    mount Endpoints::Routes
     mount Endpoints::Secrets
     mount Endpoints::Users
     mount Endpoints::UserToken

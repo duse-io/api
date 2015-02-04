@@ -1,11 +1,11 @@
 module Duse
   module Endpoints
-    class Routes < Grape::API
-      get do
-        {
+    class Routes < Base
+      get '/v1' do
+        json({
           secrets_url: '/secrets',
           users_url:   '/users'
-        }
+        })
       end
     end
   end

@@ -2,7 +2,7 @@ describe Duse::API do
   include Rack::Test::Methods
 
   def app
-    Duse::API
+    Duse::Endpoints::Routes
   end
 
   it 'should have a route documenting all routes' do

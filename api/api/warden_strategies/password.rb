@@ -1,15 +1,27 @@
 module Duse
   class PasswordStrategy < ::Warden::Strategies::Base
     def valid?
-      params['username'] && params['password']
+      username && password
     end
 
     def authenticate!
-      user = Duse::Models::User.find_by_username params['username']
-      if !user.nil? && user.try(:authenticate, params['password'])
+      user = Duse::Models::User.find_by_username username
+      if !user.nil? && user.try(:authenticate, password)
         return success! user
       end
       fail! 'Username or password incorrect.'
+    end
+
+    def username
+      post_params['username']
+    end
+
+    def password
+      post_params['password']
+    end
+
+    def post_params
+      JSON.parse(request.body.string)
     end
   end
 end

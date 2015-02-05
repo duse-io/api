@@ -1,6 +1,6 @@
 class DefaultJSON
   def initialize(json)
-    @json = json
+    @json = JSON.parse(json, symbolize_names: true)
   end
 
   def validate!(options = {})

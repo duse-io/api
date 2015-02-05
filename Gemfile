@@ -4,7 +4,6 @@ ruby '2.2.0'
 
 gem 'bundler', '~> 1.6'
 gem 'rake'
-gem 'grape'
 gem 'sinatra'
 gem 'sinatra-contrib'
 gem 'sinatra-activerecord'

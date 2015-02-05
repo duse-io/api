@@ -2,11 +2,7 @@ describe Duse::Models::Token do
   include Rack::Test::Methods
 
   def app
-    Rack::Cascade.new [
-      Duse::API,
-      Duse::Endpoints::Routes,
-      Duse::Endpoints::UserToken
-    ]
+    Duse::API
   end
 
   before :each do

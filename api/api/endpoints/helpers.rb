@@ -8,6 +8,10 @@ module Duse
       def authenticate!(scope = :api_token)
         env['warden'].authenticate!(scope)
       end
+
+      def request_body
+        request.body.string
+      end
     end
   end
 end

@@ -23,7 +23,7 @@ describe SecretJSON do
           share(user2.id,  'share3', key, user2.public_key)
         ]
       ]
-    })
+    }.to_json)
 
     json.validate!(current_user: user1)
   end

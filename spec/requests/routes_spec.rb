@@ -3,9 +3,7 @@ describe Duse::API do
 
   def app
     Rack::Cascade.new [
-      Duse::API,
-      Duse::Endpoints::Routes,
-      Duse::Endpoints::UserToken
+      Duse::API
     ]
   end
 

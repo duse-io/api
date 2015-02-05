@@ -1,8 +1,6 @@
 module Duse
   module Endpoints
-    class Secrets < Grape::API
-      before { authenticate! }
-
+    class Secrets < Base
       helpers do
         def facade
           SecretFacade.new(current_user)
@@ -13,29 +11,34 @@ module Duse
         end
       end
 
-      resource :secrets do
-        get do
-          view(facade.all).render
-        end
+      namespace '/v1' do
+        namespace '/secrets' do
+          before { authenticate! }
 
-        get '/:id' do
-          secret = facade.get!(params[:id])
-          view(secret, type: :full, user: current_user).render
-        end
+          get do
+            json(view(facade.all).render)
+          end
 
-        delete '/:id' do
-          facade.delete! params[:id]
-          status 204
-        end
+          get '/:id' do
+            secret = facade.get!(params[:id])
+            json(view(secret, type: :full, user: current_user).render)
+          end
 
-        patch '/:id' do
-          secret = facade.update!(params[:id], SecretJSON.new(params))
-          view(secret).render
-        end
+          delete '/:id' do
+            facade.delete! params[:id]
+            status 204
+          end
 
-        post do
-          secret = facade.create!(SecretJSON.new(params))
-          view(secret).render
+          patch '/:id' do
+            secret = facade.update!(params[:id], SecretJSON.new(request_body))
+            json(view(secret).render)
+          end
+
+          post do
+            secret = facade.create!(SecretJSON.new(request_body))
+            status 201
+            json(view(secret).render)
+          end
         end
       end
     end

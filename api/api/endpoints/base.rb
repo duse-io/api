@@ -9,6 +9,7 @@ module Duse
       helpers Helpers
       helpers Sinatra::JSON
       register Sinatra::Namespace
+      register Sinatra::ActiveRecordExtension
 
       error JSON::ParserError do
         halt 400

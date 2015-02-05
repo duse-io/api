@@ -14,6 +14,3 @@ require 'sinatra/base'
 require 'sinatra/namespace'
 require 'sinatra/json'
 require 'sinatra/activerecord'
-
-require_relative 'database'
-

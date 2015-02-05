@@ -1,3 +1,5 @@
+require 'duse/json/json_view'
+
 module Duse
   module JSONViews
     class User < JSONView

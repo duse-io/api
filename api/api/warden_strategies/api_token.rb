@@ -1,3 +1,5 @@
+require 'duse'
+
 module Duse
   class APITokenStrategy < ::Warden::Strategies::Base
     def valid?

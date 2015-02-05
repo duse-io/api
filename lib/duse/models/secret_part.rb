@@ -1,3 +1,6 @@
+require 'duse/models/user'
+require 'duse/encryption'
+
 module Duse
   module Models
     class SecretPart < ActiveRecord::Base

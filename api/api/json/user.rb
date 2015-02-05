@@ -1,3 +1,6 @@
+require 'duse/json/json_models'
+require 'api/validations/user_validator'
+
 class UserJSON < DefaultJSON
   def semantic_errors(options)
     UserValidator.new.validate(@json)

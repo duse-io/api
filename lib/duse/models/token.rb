@@ -1,5 +1,6 @@
 require 'openssl'
 require 'securerandom'
+require 'duse'
 
 module Duse
   module Models

@@ -1,3 +1,9 @@
+require 'duse/errors'
+require 'duse/authorization'
+require 'api/endpoints/helpers'
+require 'api/warden_strategies/api_token'
+require 'api/warden_strategies/password'
+
 module Duse
   module Endpoints
     class Base < Sinatra::Base

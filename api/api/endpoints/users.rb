@@ -1,3 +1,8 @@
+require 'api/endpoints/base'
+require 'api/json_views/user'
+require 'api/facades/user'
+require 'api/json/user'
+
 module Duse
   module Endpoints
     class Users < Base

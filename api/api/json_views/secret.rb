@@ -1,3 +1,6 @@
+require 'duse/json/json_view'
+require 'api/json_views/user'
+
 module Duse
   module JSONViews
     class Secret < JSONView

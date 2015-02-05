@@ -1,3 +1,5 @@
+require 'api/endpoints/base'
+
 module Duse
   module Endpoints
     class Routes < Base

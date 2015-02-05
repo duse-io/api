@@ -1,3 +1,7 @@
+require 'duse/models/user'
+require 'api/authorization/user'
+require 'duse/errors'
+
 class UserFacade
   def initialize(current_user)
     @current_user = current_user

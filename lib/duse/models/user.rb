@@ -1,6 +1,8 @@
 require 'openssl'
 require 'securerandom'
 
+require 'duse/models/token'
+
 module Duse
   module Models
     class User < ActiveRecord::Base

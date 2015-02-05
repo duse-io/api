@@ -1,3 +1,5 @@
+require 'duse/authorization'
+
 module Duse
   class SecretAuthorization < Authorization
     allow :read do |user, secret|

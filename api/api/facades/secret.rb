@@ -1,3 +1,10 @@
+require 'duse/models/secret'
+require 'duse/models/secret_part'
+require 'duse/models/share'
+require 'api/authorization/secret'
+require 'duse/entity_errors'
+require 'duse/errors'
+
 class SecretFacade
   def initialize(current_user)
     @current_user = current_user

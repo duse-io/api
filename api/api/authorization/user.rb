@@ -1,3 +1,5 @@
+require 'duse/authorization'
+
 module Duse
   class UserAuthorization < Authorization
     allow :delete do |current_user, user|

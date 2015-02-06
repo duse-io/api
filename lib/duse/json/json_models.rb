@@ -17,10 +17,6 @@ class DefaultJSON
     fail Duse::ValidationFailed, { message: errors }.to_json unless errors.empty?
   end
 
-  def semantic_errors(options)
-    Set.new # by default only validate by schema, no semantic validation
-  end
-
   def extract
     JSONExtractor.new(schema).extract(@json)
   end

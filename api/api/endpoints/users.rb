@@ -12,7 +12,7 @@ module Duse
         end
 
         def view(subject, options = {})
-          JSONViews::User.new(subject, options.merge({host: 'example.org'}))
+          JSONViews::User.new(subject, options.merge({host: request.host}))
         end
       end
 

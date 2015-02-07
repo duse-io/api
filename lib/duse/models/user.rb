@@ -15,6 +15,8 @@ module Duse
       has_many :secret_parts, through: :shares
       has_many :secrets, through: :secret_parts
 
+      validates_uniqueness_of :username
+
       def public_key
         OpenSSL::PKey::RSA.new read_attribute(:public_key)
       end

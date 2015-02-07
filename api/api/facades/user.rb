@@ -28,18 +28,17 @@ class UserFacade
   def update!(id, params)
     user = Duse::Models::User.find(id)
     Duse::UserAuthorization.authorize! @current_user, :update, user
-    user.update params.sanitize(strict: false)
+    unless user.update(params.sanitize(strict: false))
+      fail Duse::ValidationFailed, { message: user.errors.full_messages }.to_json
+    end
     user
-  rescue ActiveRecord::RecordNotSaved
-    raise Duse::ValidationFailed, { message: user.errors.full_messages }.to_json
   end
 
   def create!(params)
     user = Duse::Models::User.new(params.sanitize)
+    fail Duse::ValidationFailed, { message: user.errors.full_messages }.to_json unless user.valid?
     user.save
     user
-  rescue ActiveRecord::RecordNotSaved
-    raise Duse::ValidationFailed, { message: user.errors.full_messages }.to_json
   end
 end
 

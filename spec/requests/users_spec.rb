@@ -139,6 +139,22 @@ describe Duse::API do
     expect(Duse::Models::User.all.count).to eq(0)
   end
 
+  it 'should be able to retrieve single users' do
+    user1 = create_default_user
+    user2 = create_default_user(username: 'test2')
+
+    header 'Authorization', user1.create_new_token
+    get "/v1/users/#{user2.id}"
+
+    expect(last_response.status).to eq(200)
+    expect(last_response.body).to eq({
+      id: user2.id,
+      username: 'test2',
+      public_key: user2.public_key.to_s,
+      url: "http://example.org/v1/users/#{user2.id}"
+    }.to_json)
+  end
+
   it 'should respond to listing users correctly' do
     user = create_default_user
     token = user.create_new_token

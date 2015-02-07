@@ -45,9 +45,11 @@ describe Duse::Models::Token do
     }.to_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(401)
+  end
 
+  it 'should return unauthenticated on not existant user' do
     post '/v1/users/token', {
-      username: 'wrong-username',
+      username: 'not-existant-user',
       password: 'some-password'
     }.to_json, 'CONTENT_TYPE' => 'application/json'
 

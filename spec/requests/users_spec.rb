@@ -61,15 +61,13 @@ describe Duse::API do
   end
 
   it 'should error if a username is already taken' do
+    Duse::Models::User.create(username: 'test', password: 'test')
     user_json = {
       username: 'test',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
       public_key: generate_public_key
     }.to_json
-    post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
-
-    expect(last_response.status).to eq(201)
 
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 

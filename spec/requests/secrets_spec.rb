@@ -43,7 +43,6 @@ describe Duse::API do
     DatabaseCleaner.clean
   end
 
-  # big integration test, testing usual workflow
   it 'persists a new secret correctly' do
     user1_key = generate_key
     user1 = create_default_user(
@@ -100,13 +99,16 @@ describe Duse::API do
       'users' => users,
       'url' => "http://example.org/v1/secrets/#{secret_id}",
     })
+  end
 
-    other_user = create_default_user
-    other_token = other_user.create_new_token
-    header 'Authorization', other_token
-    get "/v1/secrets/#{secret_id}"
-    expect(last_response.status).to eq 403
+  it 'should error if an unauthorized user tries to access a secret' do
+    secret_json = default_secret
+    user = Duse::Models::User.find_by_username('flower-pot')
+    token = user.create_new_token
+    header 'Authorization', token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
+    secret_id = JSON.parse(last_response.body)['id']
     header 'Authorization', token
     get '/v1/secrets'
     expect(last_response.body).to eq(
@@ -118,25 +120,39 @@ describe Duse::API do
         }
       ].to_json
     )
+    expect_count(user: 3, secret: 1, secret_part: 1, share: 3)
+  end
+
+  it 'should error if an unauthorized user tries to access a secret' do
+    secret_json = default_secret
+    user = Duse::Models::User.find_by_username('flower-pot')
+    header 'Authorization', user.create_new_token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    header 'Authorization', create_default_user.create_new_token
+    secret_id = JSON.parse(last_response.body)['id']
+    get "/v1/secrets/#{secret_id}", {}, 'CONTENT_TYPE' => 'application/json'
+    expect(last_response.status).to eq(403)
+
+    expect_count(user: 4, secret: 1, secret_part: 1, share: 3)
+  end
+
+  it 'should be able to delete a secret' do
+    secret_json = default_secret
+    user = Duse::Models::User.find_by_username('flower-pot')
+    token = user.create_new_token
 
     header 'Authorization', token
-    user = Duse::Models::User.first
-    get "/v1/users/#{user.id}"
-    expect(last_response.body).to eq(
-      {
-        id: user.id,
-        username: user.username,
-        public_key: user.public_key.to_s,
-        url: "http://example.org/v1/users/#{user.id}"
-      }.to_json
-    )
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+    expect(last_response.status).to eq(201)
 
+    secret_id = JSON.parse(last_response.body)['id']
     header 'Authorization', token
     delete "/v1/secrets/#{secret_id}"
     expect(last_response.status).to eq(204)
     expect(last_response.body).to eq('')
 
-    expect_count(user: 4, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
   end
 
   it 'should return 404 for a non existant secret' do

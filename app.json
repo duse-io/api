@@ -1,0 +1,17 @@
+{
+  "name": "Duse-API",
+  "description": "The RESTful API for Duse",
+  "repository": "https://github.com/duse-io/api",
+  "env": {
+    "SECRET_KEY": {
+      "description": "A secret key to check an api tokens integrity with.",
+      "generator": "secret"
+    }
+  },
+  "addons": [
+    "heroku-postgresql:hobby-dev"
+  ],
+  "scripts": {
+    "postdeploy": "bundle exec rake db:migrate"
+  }
+}

@@ -7,7 +7,6 @@ require 'api/warden_strategies/password'
 module Duse
   module Endpoints
     class Base < Sinatra::Base
-      enable :logging
       enable :dump_errors
       disable :show_exceptions # disable middleware displaying errors as html
 

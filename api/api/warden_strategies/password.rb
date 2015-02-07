@@ -21,7 +21,9 @@ module Duse
     end
 
     def post_params
-      JSON.parse(request.body.string)
+      json = request.body.gets
+      request.body.rewind
+      JSON.parse(json)
     end
   end
 end

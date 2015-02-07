@@ -10,7 +10,9 @@ module Duse
       end
 
       def request_body
-        request.body.string
+        result = request.body.gets
+        request.body.rewind
+        result
       end
     end
   end

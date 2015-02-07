@@ -19,7 +19,7 @@ describe Duse::API do
     expect(response.keys.length).to eq 2
   end
 
-  it 'should have a route documenting all routes' do
+  it 'should use the api version specified in the path' do
     get '/v1', {}, {
       'CONTENT_TYPE' => 'application/json'
     }

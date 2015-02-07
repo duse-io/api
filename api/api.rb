@@ -2,11 +2,11 @@ require 'api/endpoints/base'
 require 'api/endpoints/secrets'
 require 'api/endpoints/users'
 require 'api/endpoints/routes'
-require 'api/middlewares/version_switch'
+require 'api/middlewares/v1'
 
 module Duse
   class API < Endpoints::Base
-    use VersionSwitch
+    use V1
     use Endpoints::Routes
     use Endpoints::Secrets
     use Endpoints::Users

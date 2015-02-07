@@ -1,4 +1,4 @@
-class V1
+class V1Switch
   attr_reader :prefix, :accept, :version_header
 
   def initialize(app, prefix = '/v1', accept = 'application/vnd.duse.1+json', version_header = 'HTTP_DUSE_API_VERSION')

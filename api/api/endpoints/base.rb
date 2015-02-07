@@ -1,13 +1,12 @@
 require 'duse/errors'
 require 'duse/authorization'
 require 'api/endpoints/helpers'
-require 'api/warden_strategies/api_token'
-require 'api/warden_strategies/password'
 
 module Duse
   module Endpoints
     class Base < Sinatra::Base
       enable :dump_errors
+      enable :raise_errors
       disable :show_exceptions # disable middleware displaying errors as html
 
       helpers Helpers
@@ -29,24 +28,6 @@ module Duse
 
       error Duse::ValidationFailed do
         halt 422, env['sinatra.error'].message
-      end
-
-      use Warden::Manager do |config|
-        config.default_scope = :api
-        config.failure_app = -> _env { [401, { 'Content-Length' => '0' }, ['']] }
-        config.scope_defaults(
-          :password,
-          strategies: [:password],
-          store: false,
-          action: 'unauthenticated'
-        )
-
-        config.scope_defaults(
-          :api,
-          strategies: [:api_token],
-          store: false,
-          action: 'unauthenticated'
-        )
       end
     end
   end

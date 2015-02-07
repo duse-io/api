@@ -2,7 +2,7 @@ describe Duse::API do
   include Rack::Test::Methods
 
   def app
-    Duse::API
+    Duse::API::App.new
   end
 
   before :each do

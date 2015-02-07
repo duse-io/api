@@ -2,9 +2,7 @@ describe Duse::API do
   include Rack::Test::Methods
 
   def app
-    Rack::Cascade.new [
-      Duse::API
-    ]
+    Duse::API::App.new
   end
 
   it 'should have a route documenting all routes' do

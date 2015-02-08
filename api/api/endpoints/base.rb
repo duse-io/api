@@ -6,7 +6,7 @@ module Duse
   module Endpoints
     class Base < Sinatra::Base
       enable :dump_errors
-      enable :raise_errors
+      disable :raise_errors
       disable :show_exceptions # disable middleware displaying errors as html
 
       helpers Helpers
@@ -28,6 +28,10 @@ module Duse
 
       error Duse::ValidationFailed do
         halt 422, env['sinatra.error'].message
+      end
+
+      error do
+        halt 500, JSON.generate(message: 'Whoops, an error occured in duse')
       end
     end
   end

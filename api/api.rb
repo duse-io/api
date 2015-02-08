@@ -6,8 +6,6 @@ require 'api/warden_strategies/password'
 module Duse
   module API
     class App
-      ERROR_MESSAGE = JSON.generate({ message: 'Whoops, an error occured in duse' })
-
       attr_accessor :app
 
       def initialize
@@ -38,8 +36,6 @@ module Duse
 
       def call(env)
         app.call(env)
-      rescue
-        [500, {'Content-Type' => 'application/json'}, ERROR_MESSAGE]
       end
     end
   end

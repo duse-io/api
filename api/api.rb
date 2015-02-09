@@ -10,6 +10,13 @@ module Duse
 
       def initialize
         @app = Rack::Builder.app do
+          use Rack::Cors do
+            allow do
+              origins '*'
+              resource '*', headers: :any, methods: [:get, :post, :patch, :put, :delete]
+            end
+          end
+
           use V1Switch
 
           use Warden::Manager do |config|

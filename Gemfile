@@ -14,6 +14,7 @@ gem 'warden'
 gem 'bcrypt'
 gem 'puma'
 gem 'dotenv'
+gem 'rack-cors', require: 'rack/cors'
 
 group :test do
   gem 'rspec'

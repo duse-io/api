@@ -2,6 +2,8 @@ require 'duse/json/json_validator'
 require 'duse/json/json_extractor'
 
 class DefaultJSON
+  attr_accessor :validator, :schema
+
   def initialize(json)
     @json = JSON.parse(json, symbolize_names: true)
   end

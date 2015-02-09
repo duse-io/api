@@ -2,12 +2,10 @@ require 'duse/json/json_models'
 require 'api/validations/user_validator'
 
 class UserJSON < DefaultJSON
-  def validator
-    UserValidator
-  end
-
-  def schema
-    {
+  def initialize(*args)
+    super(*args)
+    self.validator = UserValidator
+    self.schema = {
       type: Hash,
       message: 'User must be an object',
       properties: {

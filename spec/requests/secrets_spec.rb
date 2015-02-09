@@ -82,6 +82,7 @@ describe Duse::API do
       {
         'id' => user.id,
         'username' => user.username,
+        'email' => user.email,
         'public_key' => user.public_key.to_s,
         'url' => "http://example.org/v1/users/#{user.id}"
       }

@@ -5,6 +5,7 @@ module Duse
     class User < JSONView
       property :id
       property :username
+      property :email
       property :public_key, type: :full do |user, _|
         user.public_key.to_s
       end

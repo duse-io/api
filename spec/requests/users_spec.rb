@@ -16,6 +16,7 @@ describe Duse::API do
   it 'should persist the user correctly' do
     user_json = {
       username: 'flower-pot',
+      email: 'flower-pot@example.org',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
       public_key: "-----BEGIN PUBLIC KEY-----\n" \
@@ -33,6 +34,7 @@ describe Duse::API do
       {
         id: user_id,
         username: 'flower-pot',
+        email: 'flower-pot@example.org',
         public_key: "-----BEGIN PUBLIC KEY-----\n" \
         "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDR1pYkhBVekZZvcgRaMR6iZTJt\n" \
         "fr6ALzIg1MHkkWonMXIJ5qvN+3Xeucf8Wk6c8I01T2PviQtnw/h+NjkBcvTKi/3y\n" \
@@ -47,6 +49,7 @@ describe Duse::API do
 
   it 'should error when a username is not given' do
     user_json = {
+      email: 'flower-pot@example.org',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
       public_key: generate_public_key
@@ -61,9 +64,10 @@ describe Duse::API do
   end
 
   it 'should error if a username is already taken' do
-    Duse::Models::User.create(username: 'test', password: 'test')
+    Duse::Models::User.create(username: 'test', email: 'test@example.org', password: 'test')
     user_json = {
       username: 'test',
+      email: 'test2@example.org',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
       public_key: generate_public_key
@@ -78,9 +82,45 @@ describe Duse::API do
     expect(Duse::Models::User.all.count).to eq(1)
   end
 
+  it 'should error when an email is not given' do
+    user_json = {
+      username: 'test',
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: generate_public_key
+    }.to_json
+    post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(422)
+    expect(last_response.body).to eq({
+      'message' => ['Email must not be blank']
+    }.to_json)
+    expect(Duse::Models::User.all.count).to eq(0)
+  end
+
+  it 'should error if an email is already taken' do
+    Duse::Models::User.create(username: 'test', email: 'test@example.org', password: 'test')
+    user_json = {
+      username: 'test2',
+      email: 'test@example.org',
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: generate_public_key
+    }.to_json
+
+    post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(422)
+    expect(last_response.body).to eq({
+      'message' => ['Email has already been taken']
+    }.to_json)
+    expect(Duse::Models::User.all.count).to eq(1)
+  end
+
   it 'should error when a username contains illegal characters' do
     user_json = {
       username: 'test?',
+      email: 'test@example.org',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
       public_key: generate_public_key
@@ -97,6 +137,7 @@ describe Duse::API do
   it 'should correctly handle non rsa public keys' do
     user_json = {
       username: 'test',
+      email: 'test@example.org',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
       public_key: 'non rsa public key'
@@ -113,6 +154,7 @@ describe Duse::API do
   it 'should correctly handle no rsa public key' do
     user_json = {
       username: 'test',
+      email: 'test@example.org',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!'
     }.to_json
@@ -132,6 +174,7 @@ describe Duse::API do
     expect(last_response.body).to eq({
       'message' => [
         'Username must not be blank',
+        'Email must not be blank',
         'Password must not be blank',
         'Public key must not be blank'
       ]
@@ -150,6 +193,7 @@ describe Duse::API do
     expect(last_response.body).to eq({
       id: user2.id,
       username: 'test2',
+      email: 'test2@example.org',
       public_key: user2.public_key.to_s,
       url: "http://example.org/v1/users/#{user2.id}"
     }.to_json)
@@ -167,6 +211,7 @@ describe Duse::API do
       [{
         id: user.id,
         username: 'test',
+        email: 'test@example.org',
         url: "http://example.org/v1/users/#{user.id}"
       }].to_json
     )
@@ -184,6 +229,7 @@ describe Duse::API do
     expect(last_response.body).to eq({
       id: user.id,
       username: 'test',
+      email: 'test@example.org',
       public_key: public_key,
       url: "http://example.org/v1/users/#{user.id}"
     }.to_json)
@@ -201,6 +247,7 @@ describe Duse::API do
     expect(last_response.body).to eq({
       id: server_user.id,
       username: 'server',
+      email: 'server@localhost',
       public_key: server_user.public_key.to_s,
       url: "http://example.org/v1/users/#{server_user.id}"
     }.to_json)

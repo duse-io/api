@@ -55,8 +55,10 @@ def share(user_id, raw_share, private_key, public_key)
 end
 
 def create_default_user(options = {})
+  username = options[:username] || 'test'
   Duse::Models::User.create(
-    username: options[:username] || 'test',
+    username: username,
+    email: options[:email] || "#{username}@example.org",
     password: options[:password] || 'Passw0rd!',
     password_confirmation: options[:password_confirmation] || 'Passw0rd!',
     public_key: options[:public_key] || generate_public_key

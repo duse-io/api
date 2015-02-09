@@ -16,6 +16,7 @@ module Duse
       has_many :secrets, through: :secret_parts
 
       validates_uniqueness_of :username
+      validates_uniqueness_of :email
 
       def public_key
         OpenSSL::PKey::RSA.new read_attribute(:public_key)
@@ -63,8 +64,9 @@ module Duse
           password = SecureRandom.base64(32)
           Server.create(
             username: 'server',
+            email: 'server@localhost',
             password: password,
-            public_key:  key.public_key.to_s,
+            public_key: key.public_key.to_s,
             private_key: key.to_pem
           )
         end

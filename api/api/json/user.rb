@@ -10,6 +10,7 @@ class UserJSON < DefaultJSON
       message: 'User must be an object',
       properties: {
         username:   { type: String, name: 'Username' },
+        email:      { type: String, name: 'Email' },
         password:   { type: String, name: 'Password' },
         public_key: { type: String, name: 'Public key' }
       }

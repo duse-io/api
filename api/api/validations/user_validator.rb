@@ -1,4 +1,8 @@
 class UserValidator
+  def initialize(options = {})
+    @options = options
+  end
+
   def validate(user)
     errors = Set.new
 

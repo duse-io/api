@@ -2,8 +2,8 @@ require 'duse/json/json_models'
 require 'api/validations/secret_validator'
 
 class SecretJSON < DefaultJSON
-  def semantic_errors(options)
-    SecretValidator.new(options[:current_user]).validate(@json)
+  def validator
+    SecretValidator
   end
 
   def schema

@@ -17,6 +17,10 @@ class DefaultJSON
     fail Duse::ValidationFailed, { message: errors }.to_json unless errors.empty?
   end
 
+  def semantic_errors(options)
+    validator.new(options).validate(@json)
+  end
+
   def extract
     JSONExtractor.new(schema).extract(@json)
   end

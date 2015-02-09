@@ -1,6 +1,6 @@
 class SecretValidator
-  def initialize(current_user)
-    @user   = current_user
+  def initialize(options)
+    @user   = options[:current_user]
     @server = Duse::Models::Server.get
   end
 

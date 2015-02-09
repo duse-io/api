@@ -7,6 +7,7 @@ class UserValidator
     errors = Set.new
 
     username = user[:username]
+    email = user[:email]
     password = user[:password]
     public_key = user[:public_key]
 
@@ -16,6 +17,10 @@ class UserValidator
 
     if !password.nil? && password.length < 8
       errors << 'Password must be at least 8 characters long'
+    end
+
+    if !email.nil? && email !~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/
+      errors << 'Email is not a valid email address'
     end
 
     if !public_key.nil? && !is_valid_public_key?(public_key)

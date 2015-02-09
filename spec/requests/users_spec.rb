@@ -117,6 +117,24 @@ describe Duse::API do
     expect(Duse::Models::User.all.count).to eq(1)
   end
 
+  it 'should error when an email address is invalid' do
+    user_json = {
+      username: 'test2',
+      email: 'test@not-a-host-name-we-accept',
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: generate_public_key
+    }.to_json
+
+    post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(422)
+    expect(last_response.body).to eq({
+      'message' => ['Email is not a valid email address']
+    }.to_json)
+    expect(Duse::Models::User.all.count).to eq(0)
+  end
+
   it 'should error when a username contains illegal characters' do
     user_json = {
       username: 'test?',

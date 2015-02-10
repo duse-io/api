@@ -2,10 +2,8 @@ require 'duse/json/json_models'
 require 'api/validations/user_validator'
 
 class UserJSON < DefaultJSON
-  def initialize(*args)
-    super(*args)
-    self.validator = UserValidator
-    self.schema = {
+  def initialize(json)
+    super(json, UserValidator, {
       type: Hash,
       message: 'User must be an object',
       properties: {
@@ -14,7 +12,7 @@ class UserJSON < DefaultJSON
         password:   { type: String, name: 'Password' },
         public_key: { type: String, name: 'Public key' }
       }
-    }
+    })
   end
 end
 

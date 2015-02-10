@@ -20,24 +20,28 @@ class SecretPartsValidator
       secret.errors[:base] << 'Shares for your user must be present'  unless user_ids.include? @user.id
 
       secret_parts.each do |secret_part|
-        share_user_ids = extract_user_ids(secret_part)
-        unless consistent_users?(user_ids, share_user_ids)
-          secret.errors[:base] << 'Users referenced in shares do not match in all parts'
-        end
-
-        secret_part.each do |share|
-          unless user_exists? share[:user_id]
-            secret.errors[:base] << 'One or more of the provided users do not exist'
-          end
-          unless @user.verify_authenticity share[:signature], share[:content]
-            secret.errors[:base] << 'Authenticity could not be verified. Wrong signature.'
-          end
-        end
+        validate_secret_part(secret_part, user_ids, secret.errors[:base])
       end
     end
   end
 
   private
+
+  def validate_secret_part(secret_part, allowed_user_ids, errors)
+    share_user_ids = extract_user_ids(secret_part)
+    unless consistent_users?(allowed_user_ids, share_user_ids)
+      errors << 'Users referenced in shares do not match in all parts'
+    end
+
+    secret_part.each do |share|
+      unless user_exists? share[:user_id]
+        errors << 'One or more of the provided users do not exist'
+      end
+      unless @user.verify_authenticity share[:signature], share[:content]
+        errors << 'Authenticity could not be verified. Wrong signature.'
+      end
+    end
+  end
 
   def user_exists?(user_id)
     Duse::Models::User.exists?(user_id)

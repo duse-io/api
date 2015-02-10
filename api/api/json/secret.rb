@@ -7,9 +7,8 @@ class SecretJSON < DefaultJSON
       type: Hash,
       message: 'Secret must be an object',
       properties: {
-        title:    { name: 'Title',    type: String },
+        title: { type: String },
         parts: {
-          name: 'Parts',
           type: Array,
           items: {
             name: 'Shares',
@@ -18,9 +17,9 @@ class SecretJSON < DefaultJSON
               name: 'Share',
               type: Hash,
               properties: {
-                user_id:   { name: 'User id',   type: [String, Integer], message: 'User id must be "me", "server", or the users id' },
-                content:   { name: 'Content',   type: String },
-                signature: { name: 'Signature', type: String }
+                user_id:   { name: 'User id', type: [String, Integer], message: 'User id must be "me", "server", or the users id' },
+                content:   { type: String },
+                signature: { type: String }
               }
             }
           }

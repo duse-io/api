@@ -20,11 +20,13 @@ class JSONValidator
 
   private
 
-  def validate_value(value, schema)
+  def validate_value(value, schema, key = nil)
     return Set.new if value.nil? && !strict?
 
+    name = schema[:name]
+    name ||= key.to_s.capitalize unless key.nil?
     if value.nil?
-      return Set.new ["#{schema[:name]} must not be blank"]
+      return Set.new ["#{name} must not be blank"]
     end
 
     if schema[:type].is_a? Array
@@ -93,7 +95,7 @@ class JSONValidator
     errors = Set.new
 
     schema.each do |key, type|
-      errors.merge(validate_value(hash[key], type))
+      errors.merge(validate_value(hash[key], type, key))
     end
 
     errors

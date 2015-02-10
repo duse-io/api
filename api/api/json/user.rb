@@ -7,9 +7,9 @@ class UserJSON < DefaultJSON
       type: Hash,
       message: 'User must be an object',
       properties: {
-        username:   { type: String, name: 'Username' },
-        email:      { type: String, name: 'Email' },
-        password:   { type: String, name: 'Password' },
+        username:   { type: String },
+        email:      { type: String },
+        password:   { type: String },
         public_key: { type: String, name: 'Public key' }
       }
     })

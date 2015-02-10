@@ -313,5 +313,11 @@ describe Duse::API do
     user = Duse::Models::User.find(user.id)
     expect(user.username).to eq 'works'
   end
+
+  it 'should not error when unnecessary properties are provided' do
+    post "/v1/users", {test: 'test'}.to_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 422
+  end
 end
 

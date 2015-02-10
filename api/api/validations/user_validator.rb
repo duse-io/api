@@ -1,41 +1,12 @@
-class UserValidator
-  def initialize(options = {})
-    @options = options
-  end
-
+class PasswordValidator
   def validate(user)
-    errors = Set.new
-
-    username = user[:username]
-    email = user[:email]
-    password = user[:password]
-    public_key = user[:public_key]
-
-    if !password.nil? && !is_password_complex_enough?(password)
-      errors << 'Password too weak.'
+    if !user.password.nil? && user.password.length < 8
+      user.errors[:base] << 'Password must be at least 8 characters long'
     end
 
-    if !password.nil? && password.length < 8
-      errors << 'Password must be at least 8 characters long'
+    if !user.password.nil? && !is_password_complex_enough?(user.password)
+      user.errors[:base] << 'Password too weak.'
     end
-
-    if !email.nil? && email !~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/
-      errors << 'Email is not a valid email address'
-    end
-
-    if !public_key.nil? && !is_valid_public_key?(public_key)
-      errors << 'Public key is not a valid RSA Public Key.'
-    end
-
-    if !username.nil? && (username.length < 4 || username.length > 30)
-      errors << 'Username must be between 4 and 30 characters'
-    end
-
-    if !username.nil? && username !~ /[a-zA-Z0-9_-]+$/
-      errors << 'Username must be only letters, numbers, "-" and "_"'
-    end
-
-    errors
   end
 
   private
@@ -49,6 +20,36 @@ class UserValidator
     end
     true
   end
+end
+
+class UsernameValidator
+  def validate(user)
+    if !user.username.nil? && (user.username.length < 4 || user.username.length > 30)
+      user.errors[:base] << 'Username must be between 4 and 30 characters'
+    end
+
+    if !user.username.nil? && user.username !~ /[a-zA-Z0-9_-]+$/
+      user.errors[:base] << 'Username must be only letters, numbers, "-" and "_"'
+    end
+  end
+end
+
+class EmailValidator
+  def validate(user)
+    if !user.email.nil? && user.email !~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/
+      user.errors[:base] << 'Email is not a valid email address'
+    end
+  end
+end
+
+class PublicKeyValidator
+  def validate(user)
+    if !user.public_key.nil? && !is_valid_public_key?(user.public_key)
+      user.errors[:base] << 'Public key is not a valid RSA Public Key.'
+    end
+  end
+
+  private
 
   def is_valid_public_key?(public_key)
     key = OpenSSL::PKey::RSA.new public_key
@@ -56,6 +57,31 @@ class UserValidator
     true
   rescue OpenSSL::PKey::RSAError
     false
+  end
+end
+
+class UserValidator
+  class User
+    include ActiveModel::Model
+
+    attr_accessor :username, :password, :password_confirmation, :email, :public_key
+
+    validate do |user|
+      PasswordValidator.new.validate(user)
+      UsernameValidator.new.validate(user)
+      EmailValidator.new.validate(user)
+      PublicKeyValidator.new.validate(user)
+    end
+  end
+
+  def initialize(options = {})
+    @options = options
+  end
+
+  def validate(user)
+    user = User.new(user)
+    user.valid?
+    user.errors.full_messages
   end
 end
 

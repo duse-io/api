@@ -22,11 +22,11 @@ class DefaultJSON
   end
 
   def semantic_errors(options)
-    validator.new(options).validate(@json)
+    validator.new(options).validate(extract)
   end
 
   def extract
-    JSONExtractor.new(schema).extract(@json)
+    @extracted_json ||= JSONExtractor.new(schema).extract(@json)
   end
 
   def sanitize(options = {})

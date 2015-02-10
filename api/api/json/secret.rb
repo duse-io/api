@@ -17,7 +17,7 @@ class SecretJSON < DefaultJSON
               name: 'Share',
               type: Hash,
               properties: {
-                user_id:   { name: 'User id', type: [String, Integer], message: 'User id must be "me", "server", or the users id' },
+                user_id:   { name: 'User id', type: Integer },
                 content:   { type: String },
                 signature: { type: String }
               }

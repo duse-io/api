@@ -29,19 +29,7 @@ class JSONValidator
       return Set.new ["#{name} must not be blank"]
     end
 
-    if schema[:type].is_a? Array
-      return validate_multi_type(value, schema)
-    end
     validate_type value, schema
-  end
-
-  def validate_multi_type(value, schema)
-    errors = Set.new
-    types = schema[:type]
-    result = false
-    types.each { |type| result = true if value.is_a? type }
-    errors.add(schema[:message]) unless result
-    errors
   end
 
   def validate_type(value, schema)

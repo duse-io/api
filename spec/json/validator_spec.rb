@@ -59,27 +59,6 @@ describe JSONValidator do
     expect(validator.validate([[1]])).to eq Set.new
   end
 
-  it 'should handle multiple types' do
-    schema = {
-      name: 'Test hash',
-      type: Hash,
-      properties: {
-        property: {
-          name: 'Test property',
-          type: [String, Integer],
-          message: 'Test property must be string or integer'
-        }
-      }
-    }
-
-    validator = JSONValidator.new(schema)
-    expect(validator.validate({ property: 1 })).to eq Set.new
-    expect(validator.validate({ property: '1' })).to eq Set.new
-    expect(validator.validate({ property: 1.0 })).to eq Set.new([
-      'Test property must be string or integer'
-    ])
-  end
-
   it 'should check for presence by default' do
     schema = {
       name: 'Test hash',

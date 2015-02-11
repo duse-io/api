@@ -28,6 +28,7 @@ if ENV['CI']
 end
 
 ENV['SECRET_KEY'] ||= 'le_super_secret_key'
+ENV['RACK_ENV'] ||= 'test'
 
 require_relative '../config/environment'
 require 'api'
@@ -35,6 +36,10 @@ require 'database_cleaner'
 require 'rack/test'
 require 'json'
 require 'openssl'
+
+Mail.defaults do
+  delivery_method :test
+end
 
 DatabaseCleaner.strategy = :truncation
 DatabaseCleaner.clean # start with a clean database

@@ -26,7 +26,7 @@ module Duse
         token_hash = nil
         loop do
           token = SecureRandom.urlsafe_base64(15).tr('lIO0', 'sxyz')
-          token_hash = Encryption.hmac(Duse.secret_key, token)
+          token_hash = Encryption.hmac(Duse.config.secret_key, token)
           break if Token.find_by_token_hash(token_hash).nil?
         end
         [token, token_hash]

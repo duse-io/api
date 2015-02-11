@@ -14,6 +14,7 @@ describe Duse::API do
   end
 
   it 'should persist the user correctly' do
+    Mail::TestMailer.deliveries.clear
     user_json = {
       username: 'flower-pot',
       email: 'flower-pot@example.org',
@@ -44,6 +45,10 @@ describe Duse::API do
         url: "http://example.org/v1/users/#{user_id}"
       }.to_json
     )
+    mail = Mail::TestMailer.deliveries.first
+    expect(mail.to).to eq ['flower-pot@example.org']
+    expect(mail.from).to eq ['noreply@duse.io']
+    expect(mail.subject).to eq 'Verify your signup'
     expect(Duse::Models::User.all.count).to eq(1)
   end
 

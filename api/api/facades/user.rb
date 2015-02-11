@@ -1,6 +1,7 @@
 require 'duse/models/user'
 require 'api/authorization/user'
 require 'duse/errors'
+require 'api/emails/verification_email'
 
 class UserFacade
   def initialize(current_user)
@@ -38,6 +39,7 @@ class UserFacade
     user = Duse::Models::User.new(params.sanitize)
     fail Duse::ValidationFailed, { message: user.errors.full_messages }.to_json unless user.valid?
     user.save
+    VerificationEmail.new(user).send
     user
   end
 end

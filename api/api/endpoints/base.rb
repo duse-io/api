@@ -1,6 +1,7 @@
 require 'duse/errors'
 require 'duse/authorization'
 require 'api/endpoints/helpers'
+require 'duse'
 
 module Duse
   module Endpoints

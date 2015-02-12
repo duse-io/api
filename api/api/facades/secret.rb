@@ -18,17 +18,19 @@ class SecretFacade
     secret = Duse::Models::Secret.find id
     Duse::SecretAuthorization.authorize! @current_user, :read, secret
     secret
+  rescue ActiveRecord::RecordNotFound
+    raise Duse::NotFound
   end
 
   def delete!(id)
-    secret = Duse::Models::Secret.find id
+    secret = get! id
     Duse::SecretAuthorization.authorize! @current_user, :delete, secret
     secret.destroy
   end
 
   def update!(id, params)
     params = params.sanitize strict: false, current_user: @current_user
-    secret = Duse::Models::Secret.find(id)
+    secret = get! id
     Duse::SecretAuthorization.authorize! @current_user, :update, secret
     secret.last_edited_by = @current_user
     secret.title = params[:title] if params.key? :title

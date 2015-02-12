@@ -13,7 +13,7 @@ module Duse
     end
 
     def confirmation_link(confirmation_token)
-      build_url("/v1/users/confirm?token=#{URI::encode(confirmation_token)}")
+      build_url("/v1/users/confirm?token=#{confirmation_token}")
     end
   end
 end

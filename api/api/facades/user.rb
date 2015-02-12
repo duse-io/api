@@ -14,6 +14,8 @@ class UserFacade
 
   def get!(id)
     Duse::Models::User.find(id)
+  rescue ActiveRecord::RecordNotFound
+    raise Duse::NotFound
   end
 
   def server_user
@@ -21,13 +23,20 @@ class UserFacade
   end
 
   def delete!(id)
-    user = Duse::Models::User.find(id)
+    user = get! id
     Duse::UserAuthorization.authorize! @current_user, :delete, user
     user.destroy
   end
 
+  def confirm!(confirmation_token)
+    user = Duse::Models::User.find_by_confirmation_token(confirmation_token)
+    fail Duse::NotFound if user.nil?
+    user.confirm!
+    'User successfully confirmed'
+  end
+
   def update!(id, params)
-    user = Duse::Models::User.find(id)
+    user = get! id
     Duse::UserAuthorization.authorize! @current_user, :update, user
     unless user.update(params.sanitize(strict: false))
       fail Duse::ValidationFailed, { message: user.errors.full_messages }.to_json

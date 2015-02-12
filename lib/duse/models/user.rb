@@ -43,7 +43,16 @@ module Duse
       end
 
       def set_new_confirmation_token
-        self.confirmation_token = SecureRandom.base64(32)
+        self.confirmation_token = SecureRandom.urlsafe_base64(32)
+      end
+
+      def confirm!
+        fail Duse::AlreadyConfirmed if confirmed?
+        update(confirmed_at: Time.now)
+      end
+
+      def confirmed?
+        !!confirmed_at
       end
     end
 

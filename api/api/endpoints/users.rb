@@ -33,6 +33,15 @@ module Duse
             json(view(facade.server_user, type: :full).render)
           end
 
+          get '/confirm' do
+            content_type 'text/html'
+            begin
+              facade.confirm! params['token']
+            rescue Duse::AlreadyConfirmed
+              'Your user has already been confirmed.'
+            end
+          end
+
           get '/:id' do
             authenticate!
             user = facade.get!(params[:id])

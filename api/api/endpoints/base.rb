@@ -23,7 +23,7 @@ module Duse
         halt 403
       end
 
-      error ActiveRecord::RecordNotFound do
+      error Duse::NotFound do
         halt 404
       end
 

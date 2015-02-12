@@ -4,7 +4,7 @@ module Duse
       module_function
 
       def enabled?
-        !!smtp_host
+        !!host
       end
 
       def host

@@ -21,16 +21,21 @@ module Duse
         self.last_used_at = Time.now
       end
 
-      def self.generate_save_token
-        token = nil
-        token_hash = nil
-        loop do
-          token = SecureRandom.urlsafe_base64(15).tr('lIO0', 'sxyz')
-          token_hash = Encryption.hmac(Duse.config.secret_key, token)
-          break if Token.find_by_token_hash(token_hash).nil?
+      class << self
+        def generate_save_token
+          token = nil
+          token_hash = nil
+          loop do
+            token = SecureRandom.urlsafe_base64(15).tr('lIO0', 'sxyz')
+            token_hash = Encryption.hmac(Duse.config.secret_key, token)
+            break if find_by_token_hash(token_hash).nil?
+          end
+          [token, token_hash]
         end
-        [token, token_hash]
       end
+    end
+
+    class ApiToken < Token
     end
   end
 end

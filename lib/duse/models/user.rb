@@ -38,7 +38,7 @@ module Duse
 
       def create_new_token
         raw_token, token_hash = Duse::Models::Token.generate_save_token
-        tokens << Duse::Models::Token.create(token_hash: token_hash)
+        tokens << Duse::Models::ApiToken.create(token_hash: token_hash)
         raw_token
       end
 

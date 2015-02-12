@@ -35,6 +35,7 @@ ActiveRecord::Schema.define(version: 20150124174719) do
 
   create_table "tokens", force: :cascade do |t|
     t.string   "token_hash"
+    t.string   "type"
     t.integer  "user_id"
     t.datetime "last_used_at"
   end

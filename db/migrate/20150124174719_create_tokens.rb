@@ -2,6 +2,7 @@ class CreateTokens < ActiveRecord::Migration
   def change
     create_table :tokens do |t|
       t.string :token_hash
+      t.string :type
       t.integer :user_id
       t.timestamp :last_used_at
     end

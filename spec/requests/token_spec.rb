@@ -16,7 +16,6 @@ describe Duse::Models::Token do
 
   it 'should return the users api token correctly' do
     user = create_default_user(username: 'test', password: 'Passw0rd!')
-    user.confirm!
 
     post '/v1/users/token', {
       username: 'test',

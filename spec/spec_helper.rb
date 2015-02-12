@@ -64,13 +64,15 @@ end
 
 def create_default_user(options = {})
   username = options[:username] || 'test'
-  Duse::Models::User.create(
+  user = Duse::Models::User.create(
     username: username,
     email: options[:email] || "#{username}@example.org",
     password: options[:password] || 'Passw0rd!',
     password_confirmation: options[:password_confirmation] || 'Passw0rd!',
     public_key: options[:public_key] || generate_public_key
   )
+  user.confirm!
+  user
 end
 
 RSpec.configure do |config|

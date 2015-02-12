@@ -5,7 +5,7 @@ module Duse
   module_function
 
   def config
-    @config ||= Config.build
+    Config
   end
 
   def logger=(logger)

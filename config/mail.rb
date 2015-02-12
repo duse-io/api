@@ -5,7 +5,7 @@ Mail.defaults do
   delivery_method :sendmail
 end
 
-if Duse.config.smtp.enabled
+if Duse.config.smtp.enabled?
   Mail.defaults do
     delivery_method :smtp, {
       port: Duse.config.smtp.port,

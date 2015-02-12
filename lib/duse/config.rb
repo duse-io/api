@@ -1,26 +1,62 @@
 module Duse
   module Config
-    module_function
+    module SMTP
+      module_function
 
-    def build
-      config = OpenStruct.new
-      config.secret_key = ENV['SECRET_KEY']
-      config.protocol = 'http'
-      config.protocol = 'https' if ENV['SSL'] == 'true'
-      config.host = ENV['HOST']
-      config.email = ENV['EMAIL']
-
-      config.smtp = OpenStruct.new
-      config.smtp.enabled = !!ENV['SMTP_HOST']
-      if config.smtp.enabled
-        config.smtp.host = ENV['SMTP_HOST']
-        config.smtp.port = ENV['SMTP_PORT']
-        config.smtp.user = ENV['SMTP_USER']
-        config.smtp.password = ENV['SMTP_PASSWORD']
-        config.smtp.domain = ENV['SMTP_DOMAIN']
+      def enabled?
+        !!smtp_host
       end
 
-      config
+      def smtp_host
+        ENV['SMTP_HOST']
+      end
+
+      def smtp_port
+        ENV['SMTP_PORT']
+      end
+
+      def smtp_user
+        ENV['SMTP_USER']
+      end
+
+      def smtp_password
+        ENV['SMTP_PASSWORD']
+      end
+
+      def smtp_domain
+        ENV['SMTP_DOMAIN']
+      end
+    end
+
+    module_function
+
+    def secret_key
+      ENV['SECRET_KEY']
+    end
+
+    def ssl
+      ENV['SSL']
+    end
+
+    def ssl?
+      ssl == 'true'
+    end
+
+    def protocol
+      return 'https' if ssl?
+      'http'
+    end
+
+    def host
+      ENV['HOST']
+    end
+
+    def email
+      ENV['EMAIL']
+    end
+
+    def smtp
+      SMTP
     end
   end
 end

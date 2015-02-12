@@ -7,23 +7,23 @@ module Duse
         !!smtp_host
       end
 
-      def smtp_host
+      def host
         ENV['SMTP_HOST']
       end
 
-      def smtp_port
+      def port
         ENV['SMTP_PORT']
       end
 
-      def smtp_user
+      def user
         ENV['SMTP_USER']
       end
 
-      def smtp_password
+      def password
         ENV['SMTP_PASSWORD']
       end
 
-      def smtp_domain
+      def domain
         ENV['SMTP_DOMAIN']
       end
     end

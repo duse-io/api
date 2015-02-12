@@ -27,8 +27,11 @@ if ENV['CI']
   Coveralls.wear!
 end
 
-ENV['SECRET_KEY'] ||= 'le_super_secret_key'
-ENV['RACK_ENV'] ||= 'test'
+ENV['SECRET_KEY'] = 'le_super_secret_key'
+ENV['RACK_ENV'] = 'test'
+ENV['EMAIL'] = 'noreply@example.org'
+ENV['HOST'] = 'example.org'
+ENV['SSL'] = 'false'
 
 require_relative '../config/environment'
 require 'api'

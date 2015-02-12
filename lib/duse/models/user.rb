@@ -8,6 +8,8 @@ module Duse
     class User < ActiveRecord::Base
       has_secure_password
 
+      before_create :set_new_confirmation_token
+
       attr_accessor :password_confirmation
 
       has_many :tokens
@@ -38,6 +40,10 @@ module Duse
         raw_token, token_hash = Duse::Models::Token.generate_save_token
         tokens << Duse::Models::Token.create(token_hash: token_hash)
         raw_token
+      end
+
+      def set_new_confirmation_token
+        self.confirmation_token = SecureRandom.base64(32)
       end
     end
 

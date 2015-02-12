@@ -5,6 +5,8 @@ module Duse
     def build
       config = OpenStruct.new
       config.secret_key = ENV['SECRET_KEY']
+      config.protocol = 'http'
+      config.protocol = 'https' if ENV['SSL'] == 'true'
       config.host = ENV['HOST']
       config.email = ENV['EMAIL']
 

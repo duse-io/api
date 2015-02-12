@@ -42,9 +42,10 @@ ActiveRecord::Schema.define(version: 20150124174719) do
   add_index "tokens", ["token_hash"], name: "index_tokens_on_token_hash", unique: true, using: :btree
 
   create_table "users", force: :cascade do |t|
-    t.string "username",        default: "", null: false
-    t.string "email",           default: "", null: false
-    t.string "password_digest",              null: false
+    t.string "username",           default: "", null: false
+    t.string "email",              default: "", null: false
+    t.string "password_digest",                 null: false
+    t.string "confirmation_token"
     t.string "type"
     t.text   "public_key"
     t.text   "private_key"

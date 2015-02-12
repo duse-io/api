@@ -30,10 +30,11 @@ describe Duse::API do
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(201)
-    user_id = Duse::Models::User.find_by_username('flower-pot').id
+    user = Duse::Models::User.find_by_username('flower-pot')
+    expect(user.confirmation_token).to be_truthy
     expect(last_response.body).to eq(
       {
-        id: user_id,
+        id: user.id,
         username: 'flower-pot',
         email: 'flower-pot@example.org',
         public_key: "-----BEGIN PUBLIC KEY-----\n" \
@@ -42,13 +43,16 @@ describe Duse::API do
         "2eMatpsu1QK5iaarWx25RcfFCkcElBZ8FibMfC2/DH+11kKIjlQN3iZaC3qd2Mpq\n" \
         "a042HsjIOuVQqTb/mQIDAQAB\n" \
         "-----END PUBLIC KEY-----\n",
-        url: "http://example.org/v1/users/#{user_id}"
+        url: "http://example.org/v1/users/#{user.id}"
       }.to_json
     )
     mail = Mail::TestMailer.deliveries.first
     expect(mail.to).to eq ['flower-pot@example.org']
-    expect(mail.from).to eq ['noreply@duse.io']
-    expect(mail.subject).to eq 'Verify your signup'
+    expect(mail.from).to eq ['noreply@example.org']
+    expect(mail.subject).to eq 'Confirm your signup'
+    expect(
+      mail.html_part.to_s.include? URI::encode(user.confirmation_token)
+    ).to be true
     expect(Duse::Models::User.all.count).to eq(1)
   end
 

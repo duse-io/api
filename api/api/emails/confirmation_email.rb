@@ -1,6 +1,8 @@
 require 'duse'
+require 'uri'
+require 'duse/links'
 
-class VerificationEmail
+class ConfirmationEmail
   attr_reader :user
 
   def initialize(user)
@@ -10,7 +12,7 @@ class VerificationEmail
   def send
     mail = Mail.new do
       from    Duse.config.email
-      subject 'Verify your signup'
+      subject 'Confirm your signup'
     end
     mail.to user.email
     mail.html_part = Mail::Part.new do
@@ -24,10 +26,11 @@ class VerificationEmail
   private
 
   def html_body
-    "<a href=\"#{verification_link}\">Click here to activate your Account</a>"
+    "<a href=\"#{confirmation_link}\">Click here to activate your Account</a>"
   end
 
-  def verification_link
-    ""
+  def confirmation_link
+    Duse::Links.confirmation_link(user.confirmation_token)
   end
 end
+

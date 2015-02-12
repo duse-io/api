@@ -4,7 +4,6 @@ class CreateUsers < ActiveRecord::Migration
       t.string :username, null: false, default: ''
       t.string :email,    null: false, default: ''
       t.string :password_digest, null: false
-      t.string :confirmation_token
       t.timestamp :confirmed_at
       t.string :type
       t.text   :public_key
@@ -13,7 +12,6 @@ class CreateUsers < ActiveRecord::Migration
 
     add_index :users, :username, unique: true
     add_index :users, :email,    unique: true
-    add_index :users, :confirmation_token, unique: true
   end
 end
 

@@ -37,6 +37,9 @@ module Duse
 
     class ApiToken < Token
     end
+
+    class ConfirmationToken < Token
+    end
   end
 end
 

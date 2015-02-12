@@ -31,7 +31,6 @@ describe Duse::API do
 
     expect(last_response.status).to eq(201)
     user = Duse::Models::User.find_by_username('flower-pot')
-    expect(user.confirmation_token).to be_truthy
     expect(last_response.body).to eq(
       {
         id: user.id,
@@ -46,17 +45,11 @@ describe Duse::API do
         url: "http://example.org/v1/users/#{user.id}"
       }.to_json
     )
-    mail = Mail::TestMailer.deliveries.first
-    expect(mail.to).to eq ['flower-pot@example.org']
-    expect(mail.from).to eq ['noreply@example.org']
-    expect(mail.subject).to eq 'Confirm your signup'
-    expect(
-      mail.html_part.to_s.include? user.confirmation_token
-    ).to be true
     expect(Duse::Models::User.all.count).to eq(1)
   end
 
   it 'should successfully confirm the user when using the confirmation token' do
+    Mail::TestMailer.deliveries.clear
     user_json = {
       username: 'test',
       email: 'test@example.org',
@@ -66,8 +59,15 @@ describe Duse::API do
     }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
-    user = Duse::Models::User.find_by_username 'test'
-    get "/v1/users/confirm?token=#{user.confirmation_token}"
+    mail = Mail::TestMailer.deliveries.first
+    expect(mail.to).to eq ['test@example.org']
+    expect(mail.from).to eq ['noreply@example.org']
+    expect(mail.subject).to eq 'Confirm your signup'
+
+    confirmation_link = URI::parse(URI::extract(mail.html_part.to_s)[2])
+    confirmation_link.scheme = nil
+    confirmation_link.host = nil
+    get "#{confirmation_link.to_s}"
 
     expect(last_response.status).to eq 200
     user = Duse::Models::User.find_by_username('test') # we need the new values

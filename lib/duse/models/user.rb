@@ -8,8 +8,6 @@ module Duse
     class User < ActiveRecord::Base
       has_secure_password
 
-      before_create :set_new_confirmation_token
-
       attr_accessor :password_confirmation
 
       has_many :tokens
@@ -42,12 +40,7 @@ module Duse
         raw_token
       end
 
-      def set_new_confirmation_token
-        self.confirmation_token = SecureRandom.urlsafe_base64(32)
-      end
-
       def confirm!
-        fail Duse::AlreadyConfirmed if confirmed?
         update(confirmed_at: Time.now)
       end
 

@@ -30,7 +30,9 @@ class ConfirmationEmail
   end
 
   def confirmation_link
-    Duse::Links.confirmation_link(user.confirmation_token)
+    raw_token, hash = Duse::Models::Token.generate_save_token
+    token = Duse::Models::ConfirmationToken.create(token_hash: hash, user: user)
+    Duse::Links.confirmation_link(raw_token)
   end
 end
 

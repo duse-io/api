@@ -4,6 +4,10 @@ class SecretValidator
       if !secret.title.nil? && secret.title.empty?
         secret.errors[:base] << 'Title must not be blank'
       end
+
+      if !secret.title.nil? && secret.title.length > 80
+        secret.errors[:base] << 'Title must not be longer than 80 characters'
+      end
     end
   end
 

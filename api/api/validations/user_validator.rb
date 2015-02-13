@@ -1,8 +1,8 @@
 class UserValidator
   class PasswordValidator
     def validate(user)
-      if !user.password.nil? && user.password.length < 8
-        user.errors[:base] << 'Password must be at least 8 characters long'
+      if !user.password.nil? && (user.password.length < 8 || user.password.length > 128)
+        user.errors[:base] << 'Password must be between least 8 characters and 128 characters long'
       end
 
       if !user.password.nil? && !is_password_complex_enough?(user.password)
@@ -39,6 +39,10 @@ class UserValidator
     def validate(user)
       if !user.email.nil? && user.email !~ /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/
         user.errors[:base] << 'Email is not a valid email address'
+      end
+
+      if !user.email.nil? && user.email.length > 128
+        user.errors[:base] << 'Email must not be longer than 128 characters'
       end
     end
   end

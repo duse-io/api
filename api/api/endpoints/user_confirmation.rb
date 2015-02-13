@@ -6,13 +6,10 @@ module Duse
     class UserConfirmation < Base
       namespace '/v1' do
         namespace '/users' do
-          get '/confirm' do
-            content_type 'text/html'
-            begin
-              UserFacade.new.confirm! params['token']
-            rescue Duse::AlreadyConfirmed
-              'Your user has already been confirmed.'
-            end
+          patch '/confirm' do
+            confirmation_token = JSON.parse(request_body)['token']
+            UserFacade.new.confirm! confirmation_token
+            status 204
           end
         end
       end

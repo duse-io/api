@@ -64,12 +64,11 @@ describe Duse::API do
     expect(mail.from).to eq ['noreply@example.org']
     expect(mail.subject).to eq 'Confirm your signup'
 
-    confirmation_link = URI::parse(URI::extract(mail.html_part.to_s)[2])
-    confirmation_link.scheme = nil
-    confirmation_link.host = nil
-    get "#{confirmation_link.to_s}"
+    words = mail.html_part.to_s.split
+    confirmation_token = words.last
+    patch "/v1/users/confirm", { token: confirmation_token }.to_json, 'CONTENT_TYPE' => 'application/json'
 
-    expect(last_response.status).to eq 200
+    expect(last_response.status).to eq 204
     user = Duse::Models::User.find_by_username('test') # we need the new values
     expect(user.confirmed?).to be true
   end

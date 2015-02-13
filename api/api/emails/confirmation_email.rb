@@ -26,13 +26,13 @@ class ConfirmationEmail
   private
 
   def html_body
-    "<a href=\"#{confirmation_link}\">Click here to activate your Account</a>"
+    "Use the following command to confirm your account: duse account confirm --token #{create_confirmation_token}"
   end
 
-  def confirmation_link
+  def create_confirmation_token
     raw_token, hash = Duse::Models::Token.generate_save_token
     token = Duse::Models::ConfirmationToken.create(token_hash: hash, user: user)
-    Duse::Links.confirmation_link(raw_token)
+    raw_token
   end
 end
 

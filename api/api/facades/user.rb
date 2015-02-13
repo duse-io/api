@@ -32,10 +32,8 @@ class UserFacade
     hash = Encryption.hmac(Duse.config.secret_key, token)
     token = Duse::Models::ConfirmationToken.find_by_token_hash(hash)
     fail Duse::NotFound if token.nil?
-    fail Duse::AlreadyConfirmed if token.user.confirmed?
     token.user.confirm!
     token.destroy
-    'User successfully confirmed'
   end
 
   def update!(id, params)

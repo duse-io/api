@@ -60,12 +60,6 @@ module Duse
             json(view(user).render)
           end
 
-          post '/token' do
-            authenticate! :password
-            status 201
-            json({ api_token: current_user.create_new_token })
-          end
-
           post do
             user = facade.create!(UserJSON.new(request_body))
             status 201

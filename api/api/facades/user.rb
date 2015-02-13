@@ -4,7 +4,7 @@ require 'duse/errors'
 require 'api/emails/confirmation_email'
 
 class UserFacade
-  def initialize(current_user)
+  def initialize(current_user = nil)
     @current_user = current_user
   end
 

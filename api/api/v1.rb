@@ -1,6 +1,8 @@
-require 'api/endpoints/secrets'
-require 'api/endpoints/users'
 require 'api/endpoints/routes'
+require 'api/endpoints/secrets'
+require 'api/endpoints/user_token'
+require 'api/endpoints/user_confirmation'
+require 'api/endpoints/users'
 
 module Duse
   module API
@@ -11,6 +13,8 @@ module Duse
         @app = Rack::Cascade.new([
           Endpoints::Routes,
           Endpoints::Secrets,
+          Endpoints::UserToken,
+          Endpoints::UserConfirmation,
           Endpoints::Users
         ])
       end

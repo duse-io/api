@@ -32,7 +32,7 @@ describe UserValidator do
         public_key: key.public_key.to_s
       }
       expect(UserValidator.new.validate(user).to_a).to eq([
-        'Password must be at least 8 characters long'
+        'Password must be between least 8 characters and 128 characters long'
       ])
     end
 

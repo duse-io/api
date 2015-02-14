@@ -36,6 +36,13 @@ class UserFacade
     token.destroy
   end
 
+  def resend_confirmation!(email)
+    user = Duse::Models::User.find_by_email email
+    fail Duse::NotFound if user.nil?
+    user.confirmation_tokens.destroy
+    ConfirmationEmail.new(user).send
+  end
+
   def update!(id, params)
     user = get! id
     Duse::UserAuthorization.authorize! @current_user, :update, user

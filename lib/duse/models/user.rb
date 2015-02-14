@@ -11,6 +11,7 @@ module Duse
       attr_accessor :password_confirmation
 
       has_many :tokens
+      has_many :confirmation_tokens
       has_many :shares
       has_many :secret_parts, through: :shares
       has_many :secrets, through: :secret_parts

@@ -7,6 +7,7 @@ describe Duse::API do
 
   before :each do
     DatabaseCleaner.start
+    Mail::TestMailer.deliveries.clear
   end
 
   after :each do
@@ -14,7 +15,6 @@ describe Duse::API do
   end
 
   it 'should persist the user correctly and send a confirmation email' do
-    Mail::TestMailer.deliveries.clear
     user_json = {
       username: 'flower-pot',
       email: 'flower-pot@example.org',
@@ -49,7 +49,6 @@ describe Duse::API do
   end
 
   it 'should successfully confirm the user when using the confirmation token' do
-    Mail::TestMailer.deliveries.clear
     user_json = {
       username: 'test',
       email: 'test@example.org',
@@ -71,6 +70,17 @@ describe Duse::API do
     expect(last_response.status).to eq 204
     user = Duse::Models::User.find_by_username('test') # we need the new values
     expect(user.confirmed?).to be true
+  end
+
+  it 'should create a new confirmation process' do
+    user = create_default_user
+    post '/v1/users/confirm', { email: user.email }.to_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 201
+    mail = Mail::TestMailer.deliveries.first
+    expect(mail.to).to eq ['test@example.org']
+    expect(mail.from).to eq ['noreply@example.org']
+    expect(mail.subject).to eq 'Confirm your signup'
   end
 
   it 'should error when a username is not given' do

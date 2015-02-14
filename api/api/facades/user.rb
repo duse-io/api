@@ -39,7 +39,7 @@ class UserFacade
   def resend_confirmation!(email)
     user = Duse::Models::User.find_by_email email
     fail Duse::NotFound if user.nil?
-    user.confirmation_tokens.destroy
+    Duse::Models::ConfirmationToken.delete_all(user: user)
     ConfirmationEmail.new(user).send
   end
 

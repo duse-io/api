@@ -83,6 +83,23 @@ describe Duse::API do
     expect(mail.subject).to eq 'Confirm your signup'
   end
 
+  it 'should remove all confirmation tokens but the latest' do
+    user_json = {
+      username: 'test',
+      email: 'test@example.org',
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: generate_public_key
+    }.to_json
+    post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
+
+    user = Duse::Models::User.find_by_username 'test'
+    post '/v1/users/confirm', { email: user.email }.to_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 201
+    expect(user.confirmation_tokens.length).to eq 1
+  end
+
   it 'should error when a username is not given' do
     user_json = {
       email: 'flower-pot@example.org',

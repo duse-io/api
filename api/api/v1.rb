@@ -2,6 +2,7 @@ require 'api/endpoints/routes'
 require 'api/endpoints/secrets'
 require 'api/endpoints/user_token'
 require 'api/endpoints/user_confirmation'
+require 'api/endpoints/user_password'
 require 'api/endpoints/users'
 
 module Duse
@@ -15,6 +16,7 @@ module Duse
           Endpoints::Secrets,
           Endpoints::UserToken,
           Endpoints::UserConfirmation,
+          Endpoints::UserPassword,
           Endpoints::Users
         ])
       end

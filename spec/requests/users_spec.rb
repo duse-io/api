@@ -70,6 +70,7 @@ describe Duse::API do
     expect(last_response.status).to eq 204
     user = Duse::Models::User.find_by_username('test') # we need the new values
     expect(user.confirmed?).to be true
+    expect(user.confirmation_tokens.length).to be 0
   end
 
   it 'should create a new confirmation process' do
@@ -98,6 +99,23 @@ describe Duse::API do
 
     expect(last_response.status).to eq 201
     expect(user.confirmation_tokens.length).to eq 1
+  end
+
+  it 'should send an email with the reset token when requesting password reset' do
+    user = create_default_user
+    post '/v1/users/forgot_password', { email: user.email }.to_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 201
+    mail = Mail::TestMailer.deliveries.first
+    expect(mail.to).to eq ['test@example.org']
+    expect(mail.from).to eq ['noreply@example.org']
+    expect(mail.subject).to eq 'Reset your password'
+    words = mail.html_part.to_s.split
+    reset_token = words.last
+
+    patch '/v1/users/password', { token: reset_token, password: 'Passw000rd!' }.to_json, 'CONTENT_TYPE' => 'application/json'
+    expect(last_response.status).to eq 204
+    expect(Duse::Models::User.find_by_username('test').try(:authenticate, 'Passw000rd!')).to be_truthy
   end
 
   it 'should error when a username is not given' do

@@ -9,6 +9,14 @@ module Duse
         env['warden'].authenticate!(scope)
       end
 
+      def authenticate(scope = :api_token)
+        env['warden'].authenticate(scope)
+      end
+
+      def authenticated?(scope = :api_token)
+        env['warden'].authenticated?(scope)
+      end
+
       def request_body
         result = request.body.gets
         request.body.rewind

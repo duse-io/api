@@ -2,6 +2,7 @@ require 'duse/models/user'
 require 'api/authorization/user'
 require 'duse/errors'
 require 'api/emails/confirmation_email'
+require 'api/emails/forgot_password_email'
 
 class UserFacade
   def initialize(current_user = nil)
@@ -41,6 +42,28 @@ class UserFacade
     fail Duse::NotFound if user.nil?
     Duse::Models::ConfirmationToken.delete_all(user: user)
     ConfirmationEmail.new(user).send
+  end
+
+  def send_forgot_password!(email)
+    user = Duse::Models::User.find_by_email email
+    fail Duse::NotFound if user.nil?
+    Duse::Models::ForgotPasswordToken.delete_all(user: user)
+    ForgotPasswordEmail.new(user).send
+  end
+
+  def update_password(request_body)
+    json = JSON.parse(request_body)
+    user = @current_user
+    if user.nil?
+      hash = Encryption.hmac(Duse.config.secret_key, json['token'])
+      token = Duse::Models::ForgotPasswordToken.find_by_token_hash hash
+      fail Duse::NotFound if token.nil?
+      user = token.user
+      token.destroy
+    end
+
+    password = UserJSON.new(request_body).sanitize(strict: false)[:password]
+    user.update(password: password)
   end
 
   def update!(id, params)

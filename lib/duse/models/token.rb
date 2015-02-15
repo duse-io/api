@@ -40,6 +40,9 @@ module Duse
 
     class ConfirmationToken < Token
     end
+
+    class ForgotPasswordToken < Token
+    end
   end
 end
 

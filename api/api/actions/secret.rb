@@ -5,7 +5,7 @@ require 'api/authorization/secret'
 require 'duse/entity_errors'
 require 'duse/errors'
 
-class SecretFacade
+class Secret
   def initialize(current_user)
     @current_user = current_user
   end
@@ -14,7 +14,7 @@ class SecretFacade
     @current_user.secrets
   end
 
-  def get!(id)
+  def get(id)
     secret = Duse::Models::Secret.find id
     Duse::SecretAuthorization.authorize! @current_user, :read, secret
     secret
@@ -22,15 +22,15 @@ class SecretFacade
     raise Duse::NotFound
   end
 
-  def delete!(id)
-    secret = get! id
+  def delete(id)
+    secret = get id
     Duse::SecretAuthorization.authorize! @current_user, :delete, secret
     secret.destroy
   end
 
-  def update!(id, params)
+  def update(id, params)
     params = params.sanitize strict: false, current_user: @current_user
-    secret = get! id
+    secret = get id
     Duse::SecretAuthorization.authorize! @current_user, :update, secret
     secret.last_edited_by = @current_user
     secret.title = params[:title] if params.key? :title
@@ -49,7 +49,7 @@ class SecretFacade
     raise Duse::ValidationFailed, {message: errors}.to_json
   end
 
-  def create!(params)
+  def create(params)
     params = params.sanitize current_user: @current_user
     secret = Duse::Models::Secret.new(
       title: params[:title],

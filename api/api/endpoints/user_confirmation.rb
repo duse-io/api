@@ -1,6 +1,5 @@
 require 'api/endpoints/base'
-require 'api/actions/resend_confirmation'
-require 'api/actions/confirm_user'
+require 'api/actions/user_confirmation'
 
 module Duse
   module Endpoints
@@ -14,13 +13,13 @@ module Duse
         namespace '/users' do
           post '/confirm' do
             email = JSON.parse(request_body)['email']
-            ResendConfirmation.new.execute email
+            User::Confirmation.new.resend email
             status 201
           end
 
           patch '/confirm' do
             confirmation_token = JSON.parse(request_body)['token']
-            ConfirmUser.new.execute confirmation_token
+            User::Confirmation.new.confirm confirmation_token
             status 204
           end
         end

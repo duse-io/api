@@ -7,8 +7,8 @@ module Duse
   module Endpoints
     class Secrets < Base
       helpers do
-        def facade
-          SecretFacade.new(current_user)
+        def actions
+          Secret.new(current_user)
         end
 
         def view(subject, options = {})
@@ -21,26 +21,26 @@ module Duse
           before { authenticate! }
 
           get do
-            json(view(facade.all).render)
+            json(view(actions.all).render)
           end
 
           get '/:id' do
-            secret = facade.get!(params[:id])
+            secret = actions.get(params[:id])
             json(view(secret, type: :full, user: current_user).render)
           end
 
           delete '/:id' do
-            facade.delete! params[:id]
+            actions.delete params[:id]
             status 204
           end
 
           patch '/:id' do
-            secret = facade.update!(params[:id], SecretJSON.new(request_body))
+            secret = actions.update(params[:id], SecretJSON.new(request_body))
             json(view(secret).render)
           end
 
           post do
-            secret = facade.create!(SecretJSON.new(request_body))
+            secret = actions.create(SecretJSON.new(request_body))
             status 201
             json(view(secret).render)
           end

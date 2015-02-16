@@ -1,6 +1,5 @@
 require 'api/endpoints/base'
-require 'api/actions/request_password_reset'
-require 'api/actions/update_password'
+require 'api/actions/user_password'
 
 module Duse
   module Endpoints
@@ -9,13 +8,13 @@ module Duse
         namespace '/users' do
           post '/forgot_password' do
             email = JSON.parse(request_body)['email']
-            RequestPasswordReset.new.execute email
+            User::Password.new.request_reset email
             status 201
           end
 
           patch '/password' do
             authenticate
-            UpdatePassword.new.execute(current_user, request_body)
+            User::Password.new.update(current_user, request_body)
             status 204
           end
         end

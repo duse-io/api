@@ -1,9 +1,6 @@
 require 'api/endpoints/base'
 require 'api/json_views/user'
-require 'api/actions/create_user'
-require 'api/actions/update_user'
-require 'api/actions/get_user'
-require 'api/actions/delete_user'
+require 'api/actions/user'
 require 'api/json/user'
 require 'duse/models/user'
 
@@ -35,24 +32,24 @@ module Duse
 
           get '/:id' do
             authenticate!
-            user = GetUser.new.execute(params[:id])
+            user = User.new.get params[:id]
             json(view(user, type: :full).render)
           end
 
           delete '/:id' do
             authenticate!
-            DeleteUser.new.execute current_user, params[:id]
+            User.new.delete current_user, params[:id]
             status 204
           end
 
           patch '/:id' do
             authenticate!
-            user = UpdateUser.new.execute(current_user, params[:id], UserJSON.new(request_body))
+            user = User.new.update current_user, params[:id], UserJSON.new(request_body)
             json(view(user).render)
           end
 
           post do
-            user = CreateUser.new.execute(UserJSON.new(request_body))
+            user = User.new.create UserJSON.new(request_body)
             status 201
             json(view(user, type: :full).render)
           end

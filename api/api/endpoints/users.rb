@@ -1,16 +1,16 @@
 require 'api/endpoints/base'
 require 'api/json_views/user'
-require 'api/facades/user'
+require 'api/actions/create_user'
+require 'api/actions/update_user'
+require 'api/actions/get_user'
+require 'api/actions/delete_user'
 require 'api/json/user'
+require 'duse/models/user'
 
 module Duse
   module Endpoints
     class Users < Base
       helpers do
-        def facade
-          UserFacade.new(current_user)
-        end
-
         def view(subject, options = {})
           JSONViews::User.new(subject, options.merge({host: request.host}))
         end
@@ -20,7 +20,7 @@ module Duse
         namespace '/users' do
           get do
             authenticate!
-            json(view(facade.all).render)
+            json(view(Duse::Models::User.all).render)
           end
 
           get '/me' do
@@ -30,38 +30,29 @@ module Duse
 
           get '/server' do
             authenticate!
-            json(view(facade.server_user, type: :full).render)
-          end
-
-          get '/confirm' do
-            content_type 'text/html'
-            begin
-              facade.confirm! params['token']
-            rescue Duse::AlreadyConfirmed
-              'Your user has already been confirmed.'
-            end
+            json(view(Duse::Models::Server.get, type: :full).render)
           end
 
           get '/:id' do
             authenticate!
-            user = facade.get!(params[:id])
+            user = GetUser.new.execute(params[:id])
             json(view(user, type: :full).render)
           end
 
           delete '/:id' do
             authenticate!
-            facade.delete! params[:id]
+            DeleteUser.new.execute current_user, params[:id]
             status 204
           end
 
           patch '/:id' do
             authenticate!
-            user = facade.update!(params[:id], UserJSON.new(request_body))
+            user = UpdateUser.new.execute(current_user, params[:id], UserJSON.new(request_body))
             json(view(user).render)
           end
 
           post do
-            user = facade.create!(UserJSON.new(request_body))
+            user = CreateUser.new.execute(UserJSON.new(request_body))
             status 201
             json(view(user, type: :full).render)
           end

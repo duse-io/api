@@ -1,5 +1,5 @@
 require 'api/endpoints/base'
-require 'api/facades/secret'
+require 'api/actions/secret'
 require 'api/json_views/secret'
 require 'api/json/secret'
 

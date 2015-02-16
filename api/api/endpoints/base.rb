@@ -16,15 +16,15 @@ module Duse
       register Sinatra::ActiveRecordExtension
 
       error JSON::ParserError do
-        halt 400
+        halt 400, { message: 'Invalid json' }.to_json
       end
 
       error Duse::InvalidAuthorization do
-        halt 403
+        halt 403, { message: 'You are not authorized to access a resource' }.to_json
       end
 
       error Duse::NotFound do
-        halt 404
+        halt 404, { message: 'Not found' }.to_json
       end
 
       error Duse::ValidationFailed do

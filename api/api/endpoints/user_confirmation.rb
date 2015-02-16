@@ -4,6 +4,11 @@ require 'api/facades/user'
 module Duse
   module Endpoints
     class UserConfirmation < Base
+
+      error Duse::AlreadyConfirmed do
+        halt 400, { message: 'Account already confirmed' }.to_json
+      end
+
       namespace '/v1' do
         namespace '/users' do
           post '/confirm' do

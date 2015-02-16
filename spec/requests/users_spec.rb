@@ -75,6 +75,7 @@ describe Duse::API do
 
   it 'should create a new confirmation process' do
     user = create_default_user
+    user.update(confirmed_at: nil)
     post '/v1/users/confirm', { email: user.email }.to_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq 201
@@ -82,6 +83,17 @@ describe Duse::API do
     expect(mail.to).to eq ['test@example.org']
     expect(mail.from).to eq ['noreply@example.org']
     expect(mail.subject).to eq 'Confirm your signup'
+  end
+
+  it 'should create a new confirmation process' do
+    user = create_default_user
+    user.confirm!
+    post '/v1/users/confirm', { email: user.email }.to_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 400
+    expect(last_response.body).to eq({
+      message: 'Account already confirmed'
+    }.to_json)
   end
 
   it 'should remove all confirmation tokens but the latest' do

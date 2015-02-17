@@ -30,6 +30,14 @@ module Duse
 
     module_function
 
+    def use_sentry?
+      !!ENV['SENTRY_DSN']
+    end
+
+    def sentry_dsn
+      ENV['SENTRY_DSN']
+    end
+
     def secret_key
       ENV['SECRET_KEY']
     end

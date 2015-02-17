@@ -5,7 +5,7 @@ ruby '2.2.0'
 gem 'bundler', '~> 1.6'
 gem 'rake'
 gem 'sinatra'
-gem 'sinatra-contrib'
+gem 'sinatra-contrib', require: false
 gem 'sinatra-activerecord'
 gem 'activerecord', require: 'active_record'
 gem 'activesupport', require: 'active_support/all'
@@ -16,6 +16,7 @@ gem 'bcrypt'
 gem 'puma'
 gem 'dotenv'
 gem 'rack-cors', require: 'rack/cors'
+gem 'sentry-raven'
 
 group :test do
   gem 'rspec'

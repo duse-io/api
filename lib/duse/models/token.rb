@@ -22,7 +22,7 @@ module Duse
       end
 
       class << self
-        def generate_save_token
+        def generate_safe_token
           token = nil
           token_hash = nil
           loop do
@@ -31,6 +31,12 @@ module Duse
             break if find_by_token_hash(token_hash).nil?
           end
           [token, token_hash]
+        end
+
+        def create_safe_token(user)
+          raw_token, hash = generate_safe_token
+          token = create(token_hash: hash, user: user)
+          raw_token
         end
       end
     end

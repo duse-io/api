@@ -1,38 +1,23 @@
-require 'duse'
-require 'uri'
-require 'duse/links'
+require 'duse/models/token'
+require 'api/emails/html_email'
+require 'forwardable'
 
 class ForgotPasswordEmail
-  attr_reader :user
+  extend Forwardable
+  def_delegators :@mail, :send
 
   def initialize(user)
-    @user = user
-  end
-
-  def send
-    mail = Mail.new do
-      from    Duse.config.email
-      subject 'Reset your password'
-    end
-    mail.to user.email
-    mail.html_part = Mail::Part.new do
-      content_type 'text/html; charset=UTF-8'
-    end
-    mail.html_part.body html_body
-
-    mail.deliver!
+    @mail = HtmlEmail.new(
+      subject: 'Reset your password',
+      recipient: user.email,
+      html_body: "Use the following command to set a new password: duse account password --token #{create_forgot_password_token(user)}"
+    )
   end
 
   private
 
-  def html_body
-    "Use the following command to set a new password: duse account password --token #{create_forgot_password_token}"
-  end
-
-  def create_forgot_password_token
-    raw_token, hash = Duse::Models::Token.generate_save_token
-    token = Duse::Models::ForgotPasswordToken.create(token_hash: hash, user: user)
-    raw_token
+  def create_forgot_password_token(user)
+    Duse::Models::ForgotPasswordToken.create_safe_token(user)
   end
 end
 

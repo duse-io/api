@@ -1,7 +1,7 @@
 class UserValidator
   class PasswordValidator
     def validate(user)
-      if !user.password.nil? && (user.password.length < 8 || user.password.length > 128)
+      if !user.password.nil? && !user.password.length.between?(8, 128)
         user.errors[:base] << 'Password must be between least 8 characters and 128 characters long'
       end
 
@@ -25,7 +25,7 @@ class UserValidator
 
   class UsernameValidator
     def validate(user)
-      if !user.username.nil? && (user.username.length < 4 || user.username.length > 30)
+      if !user.username.nil? && !user.username.length.between?(4, 30)
         user.errors[:base] << 'Username must be between 4 and 30 characters'
       end
 

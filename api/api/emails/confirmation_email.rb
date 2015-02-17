@@ -1,16 +1,12 @@
 require 'duse/models/token'
-require 'api/emails/html_email'
-require 'forwardable'
+require 'api/emails/user_email'
 
-class ConfirmationEmail
-  extend Forwardable
-  def_delegators :@mail, :send
-
+class ConfirmationEmail < UserEmail
   def initialize(user)
-    @mail = HtmlEmail.new(
-      subject: 'Confirm your signup',
-      recipient: user.email,
-      html_body: "Use the following command to confirm your account: duse account confirm --token #{create_confirmation_token(user)}"
+    super(
+      user,
+      'Confirm your signup',
+      "Use the following command to confirm your account: duse account confirm --token #{create_confirmation_token(user)}"
     )
   end
 

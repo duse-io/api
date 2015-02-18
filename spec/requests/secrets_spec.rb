@@ -323,6 +323,7 @@ describe Duse::API do
 
     secret_id = JSON.parse(last_response.body)['id']
     expect(Duse::Models::Secret.find(secret_id).users.length).to eq 2
+    expect(user.secrets.length).to eq 1
 
     expect_count(user: 2, secret: 1, secret_part: 2, share: 4)
   end

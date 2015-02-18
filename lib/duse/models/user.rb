@@ -14,7 +14,7 @@ module Duse
       has_many :confirmation_tokens
       has_many :shares
       has_many :secret_parts, through: :shares
-      has_many :secrets, through: :secret_parts
+      has_many :secrets, -> { uniq.order :id }, through: :secret_parts
 
       validates_uniqueness_of :username
       validates_uniqueness_of :email

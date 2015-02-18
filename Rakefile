@@ -15,12 +15,32 @@ task :routes do
   end
 end
 
-task :env do
-  require 'securerandom'
+namespace :config do
+  task :check do
+    require_relative 'config/environment'
+    require 'duse'
 
-  secret_key = SecureRandom.base64(64)
-  File.open '.env', 'w' do |f|
-    f.write "export SECRET_KEY=\"#{secret_key}\""
-    f.write "\n"
+    unless Duse.config.valid?
+      puts Duse.config.errors.full_messages
+    end
+
+    unless Duse.config.smtp.valid?
+      puts Duse.config.smtp.errors.full_messages
+    end
+
+    if Duse.config.valid? && Duse.config.smtp.valid?
+      puts 'All configs valid'
+    end
+  end
+
+  task :generate do
+    require 'securerandom'
+
+    secret_key = SecureRandom.base64(64)
+    File.open '.env', 'w' do |f|
+      f.write "export SECRET_KEY=\"#{secret_key}\""
+      f.write "\n"
+    end
   end
 end
+

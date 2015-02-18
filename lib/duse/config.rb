@@ -1,49 +1,27 @@
+require 'uri'
+
 module Duse
-  module Config
-    module SMTP
-      module_function
+  class Config
+    class SMTP
+      include ActiveModel::Model
+
+      attr_accessor :host, :port, :user, :password, :domain
+
+      validates_presence_of :host, :port, :user, :password, :domain, if: :enabled?
 
       def enabled?
         !!host
       end
-
-      def host
-        ENV['SMTP_HOST']
-      end
-
-      def port
-        ENV['SMTP_PORT']
-      end
-
-      def user
-        ENV['SMTP_USER']
-      end
-
-      def password
-        ENV['SMTP_PASSWORD']
-      end
-
-      def domain
-        ENV['SMTP_DOMAIN']
-      end
     end
 
-    module_function
+    include ActiveModel::Model
+
+    attr_accessor :sentry_dsn, :secret_key, :ssl, :host, :email
+
+    validates_presence_of :secret_key, :host, :email
 
     def use_sentry?
-      !!ENV['SENTRY_DSN']
-    end
-
-    def sentry_dsn
-      ENV['SENTRY_DSN']
-    end
-
-    def secret_key
-      ENV['SECRET_KEY']
-    end
-
-    def ssl
-      ENV['SSL']
+      !!sentry_dsn
     end
 
     def ssl?
@@ -55,16 +33,14 @@ module Duse
       'http'
     end
 
-    def host
-      ENV['HOST']
-    end
-
-    def email
-      ENV['EMAIL']
-    end
-
     def smtp
-      SMTP
+      @smtp ||= SMTP.new(
+        host: ENV['SMTP_HOST'],
+        port: ENV['SMTP_PORT'],
+        user: ENV['SMTP_USER'],
+        password: ENV['SMTP_PASSWORD'],
+        domain: ENV['SMTP_DOMAIN']
+      )
     end
   end
 end

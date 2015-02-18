@@ -5,7 +5,13 @@ module Duse
   module_function
 
   def config
-    Config
+    @config ||= Config.new(
+      sentry_dsn: ENV['SENTRY_DSN'],
+      secret_key: ENV['SECRET_KEY'],
+      ssl: ENV['SSL'],
+      host: ENV['HOST'],
+      email: ENV['EMAIL']
+    )
   end
 
   def logger=(logger)

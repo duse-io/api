@@ -275,6 +275,28 @@ describe Duse::API do
     expect_count(user: 4, secret: 0, secret_part: 0, share: 0)
   end
 
+  it 'should error when there is more than one share per user' do
+    server_user = Duse::Models::Server.get
+    key = generate_key
+    user = create_default_user(public_key: key.public_key)
+    secret_json = {
+      title: 'my secret',
+      parts: [
+        [
+          share(server_user.id, '1-19810ad8', key, server_user.public_key),
+          share(user.id, '2-2867e0bd', key, user.public_key),
+          share(user.id, '3-374eb6a2', key, user.public_key)
+        ]
+      ]
+    }.to_json
+
+    header 'Authorization', user.create_new_token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(422)
+    expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
+  end
+
   it 'should error when at least one of the provided users do not exist' do
     server_user = Duse::Models::Server.get
     key1 = generate_key

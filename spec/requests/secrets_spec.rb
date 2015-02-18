@@ -297,6 +297,36 @@ describe Duse::API do
     expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
   end
 
+  # see issue #23 for an explanation
+  it 'should list users only once when a secret has multiple parts' do
+    server_user = Duse::Models::Server.get
+    key = generate_key
+    user = create_default_user(public_key: key.public_key)
+    secret_json = {
+      title: 'my secret',
+      parts: [
+        [
+          share(server_user.id, 'part0share0', key, server_user.public_key),
+          share(user.id, 'part0share1', key, user.public_key),
+        ],
+        [
+          share(server_user.id, 'part1share0', key, server_user.public_key),
+          share(user.id, 'part1share1', key, user.public_key),
+        ]
+      ]
+    }.to_json
+
+    header 'Authorization', user.create_new_token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(201)
+
+    secret_id = JSON.parse(last_response.body)['id']
+    expect(Duse::Models::Secret.find(secret_id).users.length).to eq 2
+
+    expect_count(user: 2, secret: 1, secret_part: 2, share: 4)
+  end
+
   it 'should error when at least one of the provided users do not exist' do
     server_user = Duse::Models::Server.get
     key1 = generate_key

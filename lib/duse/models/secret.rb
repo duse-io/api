@@ -3,7 +3,7 @@ module Duse
     class Secret < ActiveRecord::Base
       has_many :secret_parts, dependent: :destroy
       has_many :shares, through: :secret_parts
-      has_many :users,  through: :shares
+      has_many :users, -> { uniq.order :id }, through: :shares
       belongs_to :last_edited_by, class_name: 'User', foreign_key: :last_edited_by_id
 
       def secret_parts_for(user)

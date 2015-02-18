@@ -44,12 +44,12 @@ module Duse
 
           patch '/:id' do
             authenticate!
-            user = User.new.update current_user, params[:id], UserJSON.new(request_body)
+            user = User.new.update current_user, params[:id], request_body
             json(view(user).render)
           end
 
           post do
-            user = User.new.create UserJSON.new(request_body)
+            user = User.new.create request_body
             status 201
             json(view(user, type: :full).render)
           end

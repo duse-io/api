@@ -4,7 +4,7 @@ require 'api/json/user'
 require 'api/emails/forgot_password_email'
 
 class User
-  class Password
+  class PasswordReset
     def request_reset(email)
       user = Duse::Models::User.find_by_email email
       fail Duse::NotFound if user.nil?
@@ -12,16 +12,13 @@ class User
       ForgotPasswordEmail.new(user).send
     end
 
-    def update(current_user, request_body)
+    def reset(request_body)
       json = JSON.parse(request_body)
-      user = current_user
-      if user.nil?
-        hash = Encryption.hmac(Duse.config.secret_key, json['token'])
-        token = Duse::Models::ForgotPasswordToken.find_by_token_hash hash
-        fail Duse::NotFound if token.nil?
-        user = token.user
-        token.destroy
-      end
+      hash = Encryption.hmac(Duse.config.secret_key, json['token'])
+      token = Duse::Models::ForgotPasswordToken.find_by_token_hash hash
+      fail Duse::NotFound if token.nil?
+      user = token.user
+      token.destroy
 
       password = UserJSON.new(request_body).sanitize(strict: false)[:password]
       user.update(password: password)

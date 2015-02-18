@@ -391,10 +391,11 @@ describe Duse::API do
     token = user.create_new_token
 
     header 'Authorization', token
-    patch "/v1/users/#{user.id}", {username: 'works'}.to_json, 'CONTENT_TYPE' => 'application/json'
+    patch "/v1/users/#{user.id}", { username: 'works', current_password: 'Passw0rd!' }.to_json, 'CONTENT_TYPE' => 'application/json'
 
     user = Duse::Models::User.find(user.id)
     expect(user.username).to eq 'works'
+    expect(last_response.status).to eq 200
   end
 
   it 'should not error when unnecessary properties are provided' do

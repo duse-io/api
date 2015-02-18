@@ -13,9 +13,8 @@ class User
       ConfirmationEmail.new(user).send
     end
 
-    def confirm(token)
-      hash = Encryption.hmac(Duse.config.secret_key, token)
-      token = Duse::Models::ConfirmationToken.find_by_token_hash(hash)
+    def confirm(raw_token)
+      token = Duse::Models::ConfirmationToken.find_by_raw_token raw_token
       fail Duse::NotFound if token.nil?
       fail Duse::AlreadyConfirmed if token.user.confirmed?
       token.user.confirm!

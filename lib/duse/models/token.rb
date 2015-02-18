@@ -38,6 +38,11 @@ module Duse
           token = create(token_hash: hash, user: user)
           raw_token
         end
+
+        def find_by_raw_token(raw_token)
+          token_hash = Encryption.hmac(Duse.config.secret_key, raw_token)
+          find_by_token_hash(token_hash)
+        end
       end
     end
 

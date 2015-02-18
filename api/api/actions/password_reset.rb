@@ -13,9 +13,8 @@ class User
     end
 
     def reset(request_body)
-      json = JSON.parse(request_body)
-      hash = Encryption.hmac(Duse.config.secret_key, json['token'])
-      token = Duse::Models::ForgotPasswordToken.find_by_token_hash hash
+      raw_token = JSON.parse(request_body)['token']
+      token = Duse::Models::ForgotPasswordToken.find_by_raw_token raw_token
       fail Duse::NotFound if token.nil?
       user = token.user
       token.destroy

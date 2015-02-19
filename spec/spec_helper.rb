@@ -32,6 +32,10 @@ ENV['RACK_ENV'] = 'test'
 ENV['EMAIL'] = 'noreply@example.org'
 ENV['HOST'] = 'example.org'
 ENV['SSL'] = 'false'
+ENV['SENTRY_DSN'] = 'http://public:secret@example.com/project-id'
+
+require 'raven/base'
+Raven.configuration.logger = Logger.new(StringIO.new)
 
 require_relative '../config/environment'
 require 'api'

@@ -16,7 +16,7 @@ gem 'bcrypt'
 gem 'puma'
 gem 'dotenv'
 gem 'rack-cors', require: 'rack/cors'
-gem 'sentry-raven'
+gem 'sentry-raven', require: false
 
 group :test do
   gem 'rspec'

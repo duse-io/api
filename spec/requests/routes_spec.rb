@@ -47,5 +47,15 @@ describe Duse::API do
     expect(response.is_a?(Hash)).to be true
     expect(response.keys.length).to eq 2
   end
+
+  it 'should return the correct cors headers' do
+    header 'Origin', 'http://example.org'
+    options '/v1'
+
+    expect(last_response.headers).to include(
+      'Access-Control-Allow-Origin'  => 'http://example.org',
+      'Access-Control-Allow-Methods' => 'GET, POST, PATCH, PUT, DELETE'
+    )
+  end
 end
 

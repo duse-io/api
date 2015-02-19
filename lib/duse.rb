@@ -1,5 +1,4 @@
 require 'duse/config'
-require 'stringio'
 
 module Duse
   module_function
@@ -12,14 +11,6 @@ module Duse
       host: ENV['HOST'],
       email: ENV['EMAIL']
     )
-  end
-
-  def logger=(logger)
-    @logger = logger
-  end
-
-  def logger
-    @logger
   end
 end
 

@@ -134,6 +134,9 @@ describe Duse::API do
     secret_id = JSON.parse(last_response.body)['id']
     get "/v1/secrets/#{secret_id}", {}, 'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq(403)
+    expect(last_response.body).to eq({
+      message: 'You are not authorized to access a resource'
+    }.to_json)
 
     expect_count(user: 4, secret: 1, secret_part: 1, share: 3)
   end
@@ -162,6 +165,9 @@ describe Duse::API do
     header 'Authorization', user.create_new_token
     get '/v1/secrets/1', 'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq(404)
+    expect(last_response.body).to eq({
+      message: 'Not found'
+    }.to_json)
   end
 
   it 'should not try to do semantic validate when json validation fails' do

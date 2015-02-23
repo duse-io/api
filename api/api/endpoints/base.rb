@@ -24,7 +24,11 @@ module Duse
       end
 
       error Duse::NotFound do
-        halt 404, { message: 'Not found' }.to_json
+        halt 404
+      end
+
+      not_found do
+        { message: 'Not found' }.to_json
       end
 
       error Duse::ValidationFailed do

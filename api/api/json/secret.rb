@@ -13,6 +13,7 @@ class SecretJSON < DefaultJSON
           allow_empty: false,
           items: {
             name: 'Shares',
+            allow_empty: false,
             type: Array,
             items: {
               name: 'Share',

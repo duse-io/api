@@ -74,7 +74,8 @@ class JSONValidator
 
     allow_empty = schema.fetch(:allow_empty, true)
     if !allow_empty && array.empty?
-      errors.add "#{key.capitalize} must not be empty"
+      name = schema.fetch(:name, key)
+      errors.add "#{name.capitalize} must not be empty"
     end
 
     array.each do |item|

@@ -181,6 +181,17 @@ describe Duse::API do
     expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
   end
 
+  it 'should return errors if there are no parts given' do
+    user = create_default_user
+    secret_json = { title: 'test', parts: [] }.to_json
+
+    header 'Authorization', user.create_new_token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(422)
+    expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
+  end
+
   it 'should error on malformed json' do
     user = create_default_user
 

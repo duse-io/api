@@ -29,10 +29,10 @@ class JSONValidator
       return Set.new ["#{name} must not be blank"]
     end
 
-    validate_type value, schema
+    validate_type value, schema, key
   end
 
-  def validate_type(value, schema)
+  def validate_type(value, schema, key = nil)
     errors = Set.new
     unless value.is_a? schema[:type]
       message = build_message(schema)
@@ -40,7 +40,7 @@ class JSONValidator
     end
 
     if needs_further_validation?(schema[:type]) && value.is_a?(schema[:type])
-      errors.merge(validate_further(value, schema))
+      errors.merge(validate_further(value, schema, key))
     end
 
     errors
@@ -60,20 +60,25 @@ class JSONValidator
     type == Hash || type == Array
   end
 
-  def validate_further(value, schema)
+  def validate_further(value, schema, key = nil)
     if schema[:type] == Hash
       return validate_properties(value, schema[:properties])
     end
     if schema[:type] == Array
-      return validate_items(value, schema[:items])
+      return validate_items(value, schema, key)
     end
   end
 
-  def validate_items(array, schema)
+  def validate_items(array, schema, key = nil)
     errors = Set.new
 
+    allow_empty = schema.fetch(:allow_empty, true)
+    if !allow_empty && array.empty?
+      errors.add "#{key.capitalize} must not be empty"
+    end
+
     array.each do |item|
-      errors.merge(validate_value(item, schema))
+      errors.merge(validate_value(item, schema[:items]))
     end
 
     errors

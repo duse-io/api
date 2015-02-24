@@ -10,6 +10,7 @@ class SecretJSON < DefaultJSON
         title: { type: String },
         parts: {
           type: Array,
+          allow_empty: false,
           items: {
             name: 'Shares',
             type: Array,

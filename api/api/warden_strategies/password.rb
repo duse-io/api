@@ -6,7 +6,7 @@ module Duse
 
     def authenticate!
       user = Duse::Models::User.find_by_username username
-      if !user.nil? && user.confirmed? && user.try(:authenticate, password)
+      if !user.nil? && user.try(:authenticate, password)
         return success! user
       end
       fail! 'Username or password incorrect.'

@@ -19,6 +19,11 @@ module Duse
         halt 400, { message: 'Invalid json' }.to_json
       end
 
+      error Duse::UserNotConfirmed do
+        env['warden'].custom_failure!
+        halt 401, { message: 'User not confirmed' }.to_json
+      end
+
       error Duse::InvalidAuthorization do
         halt 403, { message: 'You are not authorized to access a resource' }.to_json
       end

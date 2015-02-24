@@ -97,4 +97,20 @@ describe Duse::Models::Token do
     expect(last_response.status).to eq 200
     expect(user.tokens.first.last_used_at).to eq Time.mktime(2015,1,1,0,0,0)
   end
+
+  it 'should return unauthenticated with an error message for an unconfirmed user' do
+    user = create_default_user
+    user.confirmed_at = nil
+    user.save
+
+    post '/v1/users/token', {
+      username: 'test',
+      password: 'Passw0rd!'
+    }.to_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 401
+    expect(last_response.body).to eq({
+      message: 'User not confirmed'
+    }.to_json)
+  end
 end

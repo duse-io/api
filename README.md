@@ -15,14 +15,15 @@ The RESTful api for duse.
 Requirements
 ------------
 
-You will need docker and fig to start the application. On Ubuntu 14.04 you can
+You will need docker and docker-compose to start the application. On Ubuntu 14.04 you can
 easily install docker with:
 
 	sudo apt-get install docker.io
 
-And fig with
+And docker-compose with
 
-	curl -L https://github.com/docker/fig/releases/download/1.0.1/fig-`uname -s`-`uname -m` > /usr/local/bin/fig; chmod +x /usr/local/bin/fig
+	curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+	chmod +x /usr/local/bin/docker-compose
 
 Setup
 -----
@@ -30,22 +31,22 @@ Setup
 Once you have cloned the repository you can download the dependencies and build
 the docker image with
 
-	sudo fig build
+	sudo docker-compose build
 
 Then start the database container
 
-	sudo fig up -d db
+	sudo docker-compose up -d db
 
 Now you can setup the database
 
-	sudo fig run web rake create
-	sudo fig run web rake migrate
+	sudo docker-compose run web rake create
+	sudo docker-compose run web rake migrate
 
 And initialize the environment
 
-	sudo fig run web rake env
+	sudo docker-compose run web rake env
 
-Done! Start the api with the `sudo fig up` command.
+Done! Start the api with the `sudo docker-compose up` command.
 
 API Documentation
 -----------------

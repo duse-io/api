@@ -4,11 +4,11 @@ describe JSONExtractor do
       title: 'test',
       to_be_removed: 'test'
     }
-    schema = {
+    schema = JSONSchema.new({
       type: Hash,
       name: 'Test hash',
       properties: { title: { type: String, name: 'Test string' } }
-    }
+    })
 
     expect(JSONExtractor.new(schema).extract(hash)).to eq(title: 'test')
   end
@@ -18,7 +18,7 @@ describe JSONExtractor do
       title: 'test',
       to_be_removed: 'test'
     }]
-    schema = {
+    schema = JSONSchema.new({
       type: Array,
       name: 'Test array',
       items: {
@@ -26,27 +26,27 @@ describe JSONExtractor do
         name: 'Test hash',
         properties: { title: { type: String, name: 'Test string' } }
       }
-    }
+    })
 
     expect(JSONExtractor.new(schema).extract(hash)).to eq([{ title: 'test' }])
   end
 
   it 'should not set non existing keys to nil' do
-    schema = {
+    schema = JSONSchema.new({
       type: Hash,
       name: 'Test hash',
       properties: {
         title: { type: String, name: 'Test string' },
         descr: { type: String, name: 'Test string' },
       }
-    }
+    })
 
     hash = { title: 'test', something: 'remove this' }
     expect(JSONExtractor.new(schema).extract(hash)).to eq({ title: 'test' })
   end
 
   it 'should not set an array to empty array it does not exist' do
-    schema = {
+    schema = JSONSchema.new({
       type: Hash,
       name: 'Test hash',
       properties: {
@@ -57,18 +57,18 @@ describe JSONExtractor do
           items: { type: String, name: 'Test inner string' }
         },
       }
-    }
+    })
 
     hash = { title: 'test' }
     expect(JSONExtractor.new(schema).extract(hash)).to eq({ title: 'test' })
   end
 
   it 'should keep correct values' do
-    schema = {
+    schema = JSONSchema.new({
       type: Hash,
       name: 'Test hash',
       properties: { title: { type: String, name: 'Test string' } }
-    }
+    })
 
     expect(JSONExtractor.new(schema).extract({title: 'test'})).to eq({title: 'test'})
   end

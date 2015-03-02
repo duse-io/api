@@ -1,13 +1,13 @@
 describe JSONValidator do
   it 'should work with simple hashes' do
-    schema = {
+    schema = JSONSchema.new({
       type: Hash,
       name: 'Test hash',
       properties: {
         title:    { type: String,  name: 'Title' },
         required: { type: Integer, name: 'Required' }
       }
-    }
+    })
     hash = { title: 1, required: 'Test' }
     expect(JSONValidator.new(schema).validate(hash)).to eq Set.new([
       'Title must be a string',
@@ -16,7 +16,7 @@ describe JSONValidator do
   end
 
   it 'should work with nested hashes' do
-    schema = {
+    schema = JSONSchema.new({
       type: Hash,
       name: 'Test hash',
       properties: {
@@ -28,7 +28,7 @@ describe JSONValidator do
           }
         }
       }
-    }
+    })
     validator = JSONValidator.new(schema)
     hash = { test_hash: [1] }
     expect(validator.validate(hash)).to eq Set.new([
@@ -39,7 +39,7 @@ describe JSONValidator do
   end
 
   it 'should work with nested arrays' do
-    schema = {
+    schema = JSONSchema.new({
       type: Array,
       name: 'Test array',
       items: {
@@ -50,7 +50,7 @@ describe JSONValidator do
           name: 'Test item'
         }
       }
-    }
+    })
     array = [{ test: 1 }]
     validator = JSONValidator.new(schema)
     expect(validator.validate(array)).to eq Set.new([
@@ -60,7 +60,7 @@ describe JSONValidator do
   end
 
   it 'should check for presence by default' do
-    schema = {
+    schema = JSONSchema.new({
       name: 'Test hash',
       type: Hash,
       properties: {
@@ -70,7 +70,7 @@ describe JSONValidator do
           message: 'Test property must be a string'
         }
       }
-    }
+    })
 
     expect(JSONValidator.new(schema).validate({})).to eq Set.new([
       'Test property must not be blank'
@@ -78,11 +78,11 @@ describe JSONValidator do
   end
 
   it 'should not be in strict mode when setting it to false' do
-    expect(JSONValidator.new({}, strict: false).strict?).to be false
+    expect(JSONValidator.new(JSONSchema.new({}), strict: false).strict?).to be false
   end
 
   it 'should ignore not required flags when not in strict mode' do
-    schema = {
+    schema = JSONSchema.new({
       name: 'Test hash',
       type: Hash,
       properties: {
@@ -92,7 +92,7 @@ describe JSONValidator do
           message: 'Test property must be a string'
         }
       }
-    }
+    })
 
     expect(JSONValidator.new(schema, strict: false) .validate({})).to eq Set.new
   end

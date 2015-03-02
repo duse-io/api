@@ -11,14 +11,14 @@ class JSONExtractor
 
   def extract_value(value, schema)
     return nil if value.nil?
-    return extract_hash(value, schema)  if schema[:type] == Hash
-    return extract_array(value, schema) if schema[:type] == Array
+    return extract_hash(value, schema)  if schema.hash?
+    return extract_array(value, schema) if schema.array?
     value # if not hash or array this is the recursion anchor
   end
 
   def extract_hash(hash, schema)
     result = {}
-    schema[:properties].each do |key, sub_schema|
+    schema.properties.each do |key, sub_schema|
       result[key] = extract_value(hash[key], sub_schema) if !hash[key].nil?
     end
     result
@@ -27,7 +27,7 @@ class JSONExtractor
   def extract_array(array, schema)
     result = []
     array.each do |value|
-      result << extract_value(value, schema[:items])
+      result << extract_value(value, schema.items)
     end
     result
   end

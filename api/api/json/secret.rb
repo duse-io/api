@@ -1,9 +1,10 @@
 require 'duse/json/json_models'
+require 'duse/json/json_schema'
 require 'api/validations/secret_validator'
 
 class SecretJSON < DefaultJSON
   def initialize(json)
-    super(json, SecretValidator, {
+    super(json, SecretValidator, JSONSchema.new({
       type: Hash,
       message: 'Secret must be an object',
       properties: {
@@ -27,7 +28,7 @@ class SecretJSON < DefaultJSON
           }
         }
       }
-    })
+    }))
   end
 end
 

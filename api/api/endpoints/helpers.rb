@@ -14,6 +14,10 @@ module Duse
         request.body.rewind
         result
       end
+
+      def request_json
+        JSON.parse request_body, symbolize_names: true
+      end
     end
   end
 end

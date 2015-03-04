@@ -7,7 +7,7 @@ class DefaultJSON
   def initialize(json, validator, schema)
     @validator = validator
     @schema = schema
-    @json = JSON.parse(json, symbolize_names: true)
+    @json = json
   end
 
   def validate!(options = {})

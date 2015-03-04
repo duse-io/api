@@ -3,8 +3,8 @@ require 'api/emails/confirmation_email'
 require 'api/authorization/user'
 
 class User
-  def create(request_body)
-    sanitized_json = UserJSON.new(request_body).sanitize
+  def create(params)
+    sanitized_json = UserJSON.new(params).sanitize
     user = Duse::Models::User.new sanitized_json
     fail Duse::ValidationFailed, { message: user.errors.full_messages }.to_json unless user.valid?
     user.save
@@ -18,12 +18,12 @@ class User
     raise Duse::NotFound
   end
 
-  def update(current_user, id, request_body)
+  def update(current_user, id, params)
     user = get id
     Duse::UserAuthorization.authorize! current_user, :update, user
-    current_password = JSON.parse(request_body)['current_password']
+    current_password = params[:current_password]
     fail Duse::ValidationFailed, { message: 'Wrong current password' }.to_json unless user.try(:authenticate, current_password)
-    sanitized_json = UserJSON.new(request_body).sanitize(strict: false)
+    sanitized_json = UserJSON.new(params).sanitize(strict: false)
     unless user.update(sanitized_json)
       fail Duse::ValidationFailed, { message: user.errors.full_messages }.to_json
     end

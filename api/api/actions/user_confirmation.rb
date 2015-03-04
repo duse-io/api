@@ -5,16 +5,16 @@ require 'api/emails/confirmation_email'
 
 class User
   class Confirmation
-    def resend(email)
-      user = Duse::Models::User.find_by_email email
+    def resend(params)
+      user = Duse::Models::User.find_by_email params[:email]
       fail Duse::NotFound if user.nil?
       fail Duse::AlreadyConfirmed if user.confirmed?
       Duse::Models::ConfirmationToken.delete_all(user: user)
       ConfirmationEmail.new(user).send
     end
 
-    def confirm(raw_token)
-      token = Duse::Models::ConfirmationToken.find_by_raw_token raw_token
+    def confirm(params)
+      token = Duse::Models::ConfirmationToken.find_by_raw_token params[:token]
       fail Duse::NotFound if token.nil?
       fail Duse::AlreadyConfirmed if token.user.confirmed?
       token.user.confirm!

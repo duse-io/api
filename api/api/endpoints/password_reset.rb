@@ -7,13 +7,12 @@ module Duse
       namespace '/v1' do
         namespace '/users' do
           post '/forgot_password' do
-            email = JSON.parse(request_body)['email']
-            User::PasswordReset.new.request_reset email
+            User::PasswordReset.new.request_reset request_json
             status 201
           end
 
           patch '/password' do
-            User::PasswordReset.new.reset(request_body)
+            User::PasswordReset.new.reset request_json
             status 204
           end
         end

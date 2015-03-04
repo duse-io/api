@@ -12,14 +12,12 @@ module Duse
       namespace '/v1' do
         namespace '/users' do
           post '/confirm' do
-            email = JSON.parse(request_body)['email']
-            User::Confirmation.new.resend email
+            User::Confirmation.new.resend request_json
             status 201
           end
 
           patch '/confirm' do
-            confirmation_token = JSON.parse(request_body)['token']
-            User::Confirmation.new.confirm confirmation_token
+            User::Confirmation.new.confirm request_json
             status 204
           end
         end

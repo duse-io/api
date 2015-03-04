@@ -35,12 +35,12 @@ module Duse
           end
 
           patch '/:id' do
-            secret = actions.update(params[:id], SecretJSON.new(request_body))
+            secret = actions.update(params[:id], SecretJSON.new(request_json))
             json(view(secret).render)
           end
 
           post do
-            secret = actions.create(SecretJSON.new(request_body))
+            secret = actions.create(SecretJSON.new(request_json))
             status 201
             json(view(secret).render)
           end

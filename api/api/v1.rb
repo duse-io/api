@@ -8,8 +8,6 @@ require 'api/endpoints/users'
 module Duse
   module API
     class V1
-      attr_accessor :app
-
       def initialize
         @app = Rack::Cascade.new([
           Endpoints::Routes,
@@ -22,7 +20,7 @@ module Duse
       end
 
       def call(env)
-        app.call(env)
+        @app.call(env)
       end
     end
   end

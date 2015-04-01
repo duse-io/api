@@ -6,8 +6,6 @@ require 'api/v1'
 module Duse
   module API
     class App
-      attr_accessor :app
-
       def initialize
         @app = Rack::Builder.app do
           use Cors
@@ -18,7 +16,7 @@ module Duse
       end
 
       def call(env)
-        app.call(env)
+        @app.call(env)
       end
     end
   end

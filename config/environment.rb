@@ -1,8 +1,6 @@
 require 'rubygems'
 require 'bundler'
 require 'bundler/setup'
-require 'dotenv'
-Dotenv.load
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'api'))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))

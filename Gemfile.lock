@@ -32,7 +32,6 @@ GEM
     docile (1.1.5)
     domain_name (0.5.23)
       unf (>= 0.0.5, < 1.0.0)
-    dotenv (2.0.1)
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
     foreman (0.78.0)
@@ -129,10 +128,9 @@ DEPENDENCIES
   activerecord
   activesupport
   bcrypt
-  bundler (~> 1.6)
+  bundler
   coveralls
   database_cleaner
-  dotenv
   foreman
   mail
   pg

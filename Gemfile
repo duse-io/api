@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.2.1'
 
-gem 'bundler', '~> 1.6'
+gem 'bundler'
 gem 'rake'
 gem 'sinatra'
 gem 'sinatra-contrib', require: false
@@ -14,7 +14,6 @@ gem 'pg'
 gem 'warden'
 gem 'bcrypt'
 gem 'puma'
-gem 'dotenv'
 gem 'rack-cors', require: 'rack/cors'
 gem 'sentry-raven', require: false
 

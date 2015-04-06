@@ -461,7 +461,8 @@ describe Duse::API do
   it 'validates the length of the cipher text against the key size' do
     secret_json = default_secret
     secret_json = JSON.parse(secret_json)
-    secret_json['parts'].first.first['content'] = Encryption.encode(Random.new.bytes(118)) # maximum is 117 for a 128 bytes or 1024 bit key
+    # since its a 128 bytes or 1024 bits key any length but 128 bytes will fail
+    secret_json['parts'].first.first['content'] = Encryption.encode(Random.new.bytes(129))
     secret_json = secret_json.to_json
     token = Duse::Models::User.find_by_username('flower-pot').create_new_token
 

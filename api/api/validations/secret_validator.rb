@@ -42,10 +42,17 @@ class SecretValidator
         unless user_exists? share[:user_id]
           errors << 'One or more of the provided users do not exist'
         end
+        if user_exists?(share[:user_id]) && !length_matches_key?(share[:content], Duse::Models::User.find(share[:user_id]).public_key)
+          errors << 'Public key and share content lengths do not match'
+        end
         unless @user.verify_authenticity share[:signature], share[:content]
           errors << 'Authenticity could not be verified. Wrong signature.'
         end
       end
+    end
+
+    def length_matches_key?(share_content, public_key)
+      public_key.n.num_bytes == Encryption.decode(share_content).bytes.length
     end
 
     def user_exists?(user_id)

@@ -457,5 +457,22 @@ describe Duse::API do
       'Title must not be blank'
     ]
   end
+
+  it 'validates the length of the cipher text against the key size' do
+    secret_json = default_secret
+    secret_json = JSON.parse(secret_json)
+    secret_json['parts'].first.first['content'] = Encryption.encode(Random.new.bytes(118)) # maximum is 117 for a 128 bytes or 1024 bit key
+    secret_json = secret_json.to_json
+    token = Duse::Models::User.find_by_username('flower-pot').create_new_token
+
+    header 'Authorization', token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 422
+    expect(JSON.parse(last_response.body)['message']).to eq [
+      'Public key and share content lengths do not match',
+      'Authenticity could not be verified. Wrong signature.'
+    ]
+  end
 end
 

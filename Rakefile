@@ -18,17 +18,17 @@ end
 namespace :config do
   task :check do
     require_relative 'config/environment'
-    require 'duse'
+    require 'duse/api'
 
-    unless Duse.config.valid?
-      puts Duse.config.errors.full_messages
+    unless Duse::API.config.valid?
+      puts Duse::API.config.errors.full_messages
     end
 
-    unless Duse.config.smtp.valid?
-      puts Duse.config.smtp.errors.full_messages
+    unless Duse::API.config.smtp.valid?
+      puts Duse::API.config.smtp.errors.full_messages
     end
 
-    if Duse.config.valid? && Duse.config.smtp.valid?
+    if Duse::API.config.valid? && Duse::API.config.smtp.valid?
       puts 'All configs valid'
     end
   end

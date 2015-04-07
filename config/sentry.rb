@@ -1,9 +1,9 @@
-require 'duse'
+require 'duse/api'
 require 'raven'
 
-if Duse.config.use_sentry?
+if Duse::API.config.use_sentry?
   Raven.configure do |config|
-    config.dsn = Duse.config.sentry_dsn
+    config.dsn = Duse::API.config.sentry_dsn
   end
 end
 

@@ -1,19 +1,21 @@
 require 'uri'
 
 module Duse
-  module Links
-    module_function
+  module API
+    module Links
+      module_function
 
-    def base_url
-      Duse::API.config.protocol + '://' + Duse::API.config.host
-    end
+      def base_url
+        Duse::API.config.protocol + '://' + Duse::API.config.host
+      end
 
-    def build_url(target)
-      URI::join(base_url, target)
-    end
+      def build_url(target)
+        URI::join(base_url, target)
+      end
 
-    def confirmation_link(confirmation_token)
-      build_url("/v1/users/confirm?token=#{confirmation_token}")
+      def confirmation_link(confirmation_token)
+        build_url("/v1/users/confirm?token=#{confirmation_token}")
+      end
     end
   end
 end

@@ -16,22 +16,22 @@ class Secret
 
   def get(id)
     secret = Duse::Models::Secret.find id
-    Duse::SecretAuthorization.authorize! @current_user, :read, secret
+    Duse::API::SecretAuthorization.authorize! @current_user, :read, secret
     secret
   rescue ActiveRecord::RecordNotFound
-    raise Duse::NotFound
+    raise Duse::API::NotFound
   end
 
   def delete(id)
     secret = get id
-    Duse::SecretAuthorization.authorize! @current_user, :delete, secret
+    Duse::API::SecretAuthorization.authorize! @current_user, :delete, secret
     secret.destroy
   end
 
   def update(id, params)
     params = params.sanitize strict: false, current_user: @current_user
     secret = get id
-    Duse::SecretAuthorization.authorize! @current_user, :update, secret
+    Duse::API::SecretAuthorization.authorize! @current_user, :update, secret
     secret.last_edited_by = @current_user
     secret.title = params[:title] if params.key? :title
     entities = [secret]
@@ -41,12 +41,12 @@ class Secret
       entities += create_parts_from_hash(params[:parts], secret)
     end
 
-    errors = EntityErrors.new(ignored_errors).collect_from(entities)
+    errors = Duse::API::EntityErrors.new(ignored_errors).collect_from(entities)
     entities.each(&:save)
 
     secret
   rescue ActiveRecord::RecordNotSaved
-    raise Duse::ValidationFailed, {message: errors}.to_json
+    raise Duse::API::ValidationFailed, {message: errors}.to_json
   end
 
   def create(params)
@@ -59,12 +59,12 @@ class Secret
 
     entities += create_parts_from_hash(params[:parts], secret)
 
-    errors = EntityErrors.new(ignored_errors).collect_from(entities)
+    errors = Duse::API::EntityErrors.new(ignored_errors).collect_from(entities)
     entities.each(&:save)
 
     secret
   rescue ActiveRecord::RecordNotSaved
-    raise Duse::ValidationFailed, {message: errors}.to_json
+    raise Duse::API::ValidationFailed, {message: errors}.to_json
   end
 
   private

@@ -1,11 +1,11 @@
 require 'stringio'
 
-describe Duse::Endpoints::Base do
+describe Duse::API::Endpoints::Base do
   include Rack::Test::Methods
 
   def app
     Duse::API::App.new
-    app = Class.new(Duse::Endpoints::Base)
+    app = Class.new(Duse::API::Endpoints::Base)
     app.get '/error' do 
       fail StandardError, 'This error should be catched'
     end

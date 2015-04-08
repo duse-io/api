@@ -18,7 +18,7 @@ class DefaultJSON
       errors.merge semantic_errors(options)
     end
 
-    fail Duse::ValidationFailed, { message: errors }.to_json unless errors.empty?
+    fail Duse::API::ValidationFailed, { message: errors }.to_json unless errors.empty?
   end
 
   def semantic_errors(options)

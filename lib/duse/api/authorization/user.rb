@@ -1,13 +1,15 @@
 require 'duse/api/authorization'
 
 module Duse
-  class UserAuthorization < Authorization
-    allow :delete do |current_user, user|
-      current_user.id == user.id
-    end
+  module API
+    class UserAuthorization < Authorization
+      allow :delete do |current_user, user|
+        current_user.id == user.id
+      end
 
-    allow :update do |current_user, user|
-      current_user.id == user.id
+      allow :update do |current_user, user|
+        current_user.id == user.id
+      end
     end
   end
 end

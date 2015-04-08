@@ -1,4 +1,4 @@
-describe Duse::Authorization do
+describe Duse::API::Authorization do
   before :each do
     DatabaseCleaner.start
   end
@@ -28,7 +28,7 @@ describe Duse::Authorization do
       user: user
     )
 
-    Duse::SecretAuthorization.authorize!(user, :read, secret)
+    Duse::API::SecretAuthorization.authorize!(user, :read, secret)
   end
 
   it 'should not allow access for a user the secrets does not belong to' do
@@ -54,12 +54,12 @@ describe Duse::Authorization do
     other_user = create_default_user(username: 'other_user')
 
     expect do
-      Duse::SecretAuthorization.authorize!(other_user, :read, secret)
-    end.to raise_error(Duse::InvalidAuthorization)
+      Duse::API::SecretAuthorization.authorize!(other_user, :read, secret)
+    end.to raise_error(Duse::API::InvalidAuthorization)
   end
 
   it 'should allow by default when no block is given' do
-    class TestAuthorization < Duse::Authorization
+    class TestAuthorization < Duse::API::Authorization
       allow :create
     end
 

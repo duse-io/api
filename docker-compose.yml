@@ -1,7 +1,7 @@
 db:
   image: postgres:9.4
   volumes:
-    - ~/.docker-volumes/duse-api/db/:/var/lib/postgresql/data/
+    - /var/lib/postgresql/data/
   ports:
     - "5432"
 web:

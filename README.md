@@ -90,3 +90,43 @@ follow. This can easily be achieved using the heroku button.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
+Make sure to set the `SMTP_*` environment variables according to mandrill after
+the setup has run through and then restart the application.
+
+  * `SMTP_HOST` smtp.mandrillapp.com
+  * `SMTP_PORT` 587
+  * `SMTP_USER` your+mandrill+user
+  * `SMTP_PASSWORD` your+mandrill+api+key
+  * `SMTP_DOMAIN` yourapp.herokuapp.com 
+
+For further settings refer to configuration.
+
+Configuration
+-------------
+
+Duse is completely configured using environment variables. Here is a list of
+all environment variables and what they are for. (Variables that are not
+labelled optional are mandatory)
+
+  * `HOST` the host to use when building links
+  * `RACK_ENV` either "production" or "development"
+  * `SECRET_KEY` secret to sign api keys with
+  * `SENTRY_DSN` (optional) sentry dsn (only set this if you want
+    [sentry](https://getsentry.com/) logging)
+  * `SSL` set to "true" if you want to use SSL (strongly recommended in
+    production!)
+  * `EMAIl` the email address you want emails to be sent from
+  * `SMTP_HOST` (optional) the hostname of the smtp server to use
+  * `SMTP_PORT` (optional) the port of the smtp server to use
+  * `SMTP_USER` (optional) the smtp user name to authenticate to the smtp server
+  * `SMTP_PASSWORD` (optional) the smtp user name to authenticate to the smtp server
+  * `SMTP_DOMAIN` (optional) the domain to send emails by (should match the domain name
+    used in the email)
+
+> Hint: once you set `SMTP_HOST` it is assumed, that you want to use smtp.
+> Otherwise `sendmail` will be used.
+
+You can check if your configurations are valid with
+
+	rake config:check
+

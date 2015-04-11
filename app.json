@@ -6,10 +6,14 @@
     "SECRET_KEY": {
       "description": "A secret key to check an api tokens integrity with.",
       "generator": "secret"
+    },
+    "EMAIL": {
+      "description": "The full email address you want emails to be sent from"
     }
   },
   "addons": [
-    "heroku-postgresql:hobby-dev"
+    "heroku-postgresql:hobby-dev",
+    "mandrill:starter"
   ],
   "scripts": {
     "postdeploy": "bundle exec rake db:migrate"

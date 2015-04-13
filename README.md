@@ -29,6 +29,9 @@ with this api.
   * Sign each of the encrypted shares with the creating users private key
   * post all generated data to the api
 
+> We understand this is very high level. More in depth documentation will
+> follow!
+
 However, there are several difficulties that have to be dealt with
 
   * allowing arbitrary length of secrets

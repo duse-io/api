@@ -9,12 +9,6 @@ rescue LoadError
   puts 'rspec tasks could not be loaded'
 end
 
-task :routes do
-  Duse::API.routes.each do |api|
-    puts "#{api.route_method.ljust(8)} #{api.route_path}"
-  end
-end
-
 namespace :config do
   task :check do
     require_relative 'config/environment'

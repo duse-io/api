@@ -6,7 +6,7 @@ class ForgotPasswordEmail < UserEmail
     super(
       user,
       'Reset your password',
-      "Use the following command to set a new password: duse account password --token #{create_forgot_password_token(user)}"
+      "Use the following command to set a new password: duse account password change --token #{create_forgot_password_token(user)}"
     )
   end
 

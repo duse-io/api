@@ -19,6 +19,7 @@ class SecretValidator
     def validate(secret)
       secret_parts = secret.parts
       unless secret_parts.nil?
+        secret.errors[:base] << 'Secret too large' if secret_parts.length > 278
         user_ids = extract_user_ids(secret_parts.first)
         secret.errors[:base] << 'Each user must only have one share'    unless user_ids_unique?(user_ids)
         secret.errors[:base] << 'Shares for the server must be present' unless user_ids.include? @server.id

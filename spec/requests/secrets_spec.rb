@@ -475,5 +475,21 @@ describe Duse::API do
       'Authenticity could not be verified. Wrong signature.'
     ]
   end
+
+  it 'validates that there are <= 278 parts' do
+    secret_json = default_secret
+    secret_json = JSON.parse(secret_json)
+    secret_json['parts'] = secret_json['parts']*279
+    secret_json = secret_json.to_json
+    token = Duse::Models::User.find_by_username('flower-pot').create_new_token
+
+    header 'Authorization', token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 422
+    expect(JSON.parse(last_response.body)['message']).to eq [
+      'Secret too large'
+    ]
+  end
 end
 

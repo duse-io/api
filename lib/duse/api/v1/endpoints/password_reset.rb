@@ -1,5 +1,5 @@
-require 'duse/api/endpoints/base'
-require 'duse/api/actions/password_reset'
+require 'duse/api/v1/endpoints/base'
+require 'duse/api/v1/actions/password_reset'
 
 module Duse
   module API

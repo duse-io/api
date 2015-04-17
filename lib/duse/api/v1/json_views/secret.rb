@@ -1,5 +1,5 @@
 require 'duse/api/json_view'
-require 'duse/api/json_views/user'
+require 'duse/api/v1/json_views/user'
 
 module Duse
   module JSONViews

@@ -1,9 +1,9 @@
-require 'duse/api/endpoints/routes'
-require 'duse/api/endpoints/secrets'
-require 'duse/api/endpoints/user_token'
-require 'duse/api/endpoints/user_confirmation'
-require 'duse/api/endpoints/password_reset'
-require 'duse/api/endpoints/users'
+require 'duse/api/v1/endpoints/routes'
+require 'duse/api/v1/endpoints/secrets'
+require 'duse/api/v1/endpoints/user_token'
+require 'duse/api/v1/endpoints/user_confirmation'
+require 'duse/api/v1/endpoints/password_reset'
+require 'duse/api/v1/endpoints/users'
 
 module Duse
   module API

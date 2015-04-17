@@ -1,7 +1,7 @@
-require 'duse/api/endpoints/base'
-require 'duse/api/json_views/user'
-require 'duse/api/actions/user'
-require 'duse/api/json/user'
+require 'duse/api/v1/endpoints/base'
+require 'duse/api/v1/json_views/user'
+require 'duse/api/v1/actions/user'
+require 'duse/api/v1/json/user'
 require 'duse/api/models/user'
 
 module Duse

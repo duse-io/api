@@ -5,7 +5,7 @@ require 'sinatra/activerecord'
 
 require 'duse/api/errors'
 require 'duse/api/authorization'
-require 'duse/api/endpoints/helpers'
+require 'duse/api/v1/endpoints/helpers'
 require 'duse/api'
 
 module Duse

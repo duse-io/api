@@ -1,6 +1,6 @@
-require 'duse/api/middlewares/v1_switch'
-require 'duse/api/middlewares/authentication'
-require 'duse/api/middlewares/cors'
+require 'duse/api/v1_switch'
+require 'duse/api/authentication'
+require 'duse/api/cors'
 require 'duse/api/v1'
 require 'duse/api/config'
 

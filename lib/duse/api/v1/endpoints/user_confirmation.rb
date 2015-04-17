@@ -1,5 +1,5 @@
-require 'duse/api/endpoints/base'
-require 'duse/api/actions/user_confirmation'
+require 'duse/api/v1/endpoints/base'
+require 'duse/api/v1/actions/user_confirmation'
 
 module Duse
   module API

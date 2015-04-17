@@ -1,4 +1,4 @@
-require 'duse/api/endpoints/base'
+require 'duse/api/v1/endpoints/base'
 
 module Duse
   module API

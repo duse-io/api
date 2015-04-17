@@ -1,7 +1,7 @@
-require 'duse/api/endpoints/base'
-require 'duse/api/actions/secret'
-require 'duse/api/json_views/secret'
-require 'duse/api/json/secret'
+require 'duse/api/v1/endpoints/base'
+require 'duse/api/v1/actions/secret'
+require 'duse/api/v1/json_views/secret'
+require 'duse/api/v1/json/secret'
 
 module Duse
   module API

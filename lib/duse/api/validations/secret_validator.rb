@@ -38,6 +38,9 @@ class SecretValidator
       unless consistent_users?(allowed_user_ids, share_user_ids)
         errors << 'Users referenced in shares do not match in all parts'
       end
+      if secret_part.length > 10
+        errors << 'Number of participants must be ten or less'
+      end
 
       secret_part.each do |share|
         unless user_exists? share[:user_id]

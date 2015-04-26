@@ -458,6 +458,27 @@ describe Duse::API do
     ]
   end
 
+  it 'ensures there are max 10 participants' do
+    user_key = generate_key
+    user = create_default_user(username: 'user', public_key: user_key.public_key)
+    users = [user, Duse::Models::Server.get] + (1..9).to_a.map { |i| create_default_user(username: "user#{i}") }
+    secret_json = {
+      title: 'my secret',
+      parts: [
+        users.map { |u| share(u.id, 'share', user_key, u.public_key) }
+      ]
+    }.to_json
+    token = user.create_new_token
+
+    header 'Authorization', token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 422
+    expect(JSON.parse(last_response.body)['message']).to eq [
+      'Number of participants must be ten or less',
+    ]
+  end
+
   it 'validates the length of the cipher text against the key size' do
     secret_json = default_secret
     secret_json = JSON.parse(secret_json)

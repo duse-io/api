@@ -458,6 +458,25 @@ describe Duse::API do
     ]
   end
 
+  it 'ensures the secret limit' do
+    secret_json = default_secret
+    user = Duse::Models::User.find_by_username('flower-pot')
+    token = user.create_new_token
+
+    10.times do
+      header 'Authorization', token
+      post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+      expect(last_response.status).to eq 201
+    end
+
+    header 'Authorization', token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+    expect(last_response.status).to eq 422
+    expect(JSON.parse(last_response.body)['message']).to eq [
+      'Your limit of secrets has been reached'
+    ]
+  end
+
   it 'ensures there are max 10 participants' do
     user_key = generate_key
     user = create_default_user(username: 'user', public_key: user_key.public_key)

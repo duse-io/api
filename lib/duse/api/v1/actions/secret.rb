@@ -50,6 +50,7 @@ class Secret
   end
 
   def create(params)
+    fail Duse::API::ValidationFailed, {message: ['Your limit of secrets has been reached']}.to_json if @current_user.secrets.length >= 10
     params = params.sanitize current_user: @current_user
     secret = Duse::Models::Secret.new(
       title: params[:title],

@@ -20,4 +20,5 @@ web:
   environment:
     - EMAIL=noreply@duse.io
     - SECRET_KEY=somesupersecretkey
+    - RACK_ENV=production
 

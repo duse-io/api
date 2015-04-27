@@ -16,5 +16,6 @@ RUN bundle install
 COPY . /usr/src/app
 
 EXPOSE 5000
+ENV RACK_ENV=production
 CMD ["sudo rackup -p 5000 --host 0.0.0.0"]
 

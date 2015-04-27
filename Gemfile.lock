@@ -21,6 +21,8 @@ GEM
     backports (3.6.4)
     bcrypt (3.1.10)
     builder (3.2.2)
+    climate_control (0.0.3)
+      activesupport (>= 3.0)
     coveralls (0.8.1)
       json (~> 1.8)
       rest-client (>= 1.6.8, < 2)
@@ -129,6 +131,7 @@ DEPENDENCIES
   activesupport
   bcrypt
   bundler
+  climate_control
   coveralls
   database_cleaner
   foreman

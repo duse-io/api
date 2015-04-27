@@ -20,6 +20,7 @@ gem 'sentry-raven', require: false
 group :test do
   gem 'rspec'
   gem 'rack-test'
+  gem 'climate_control'
   gem 'database_cleaner'
   gem 'simplecov', require: false
   gem 'coveralls', require: false

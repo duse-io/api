@@ -40,6 +40,7 @@ Raven.configuration.logger = Logger.new(StringIO.new)
 require_relative '../config/environment'
 require 'duse/api'
 require 'database_cleaner'
+require 'climate_control'
 require 'rack/test'
 require 'json'
 require 'openssl'

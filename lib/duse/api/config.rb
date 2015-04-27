@@ -40,7 +40,7 @@ module Duse
           port: ENV['SMTP_PORT'],
           user: ENV['SMTP_USER'],
           password: ENV['SMTP_PASSWORD'],
-          domain: ENV['SMTP_DOMAIN']
+          domain: ENV['EMAIL'].split('@').last
         )
       end
     end

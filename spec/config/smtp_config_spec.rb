@@ -15,6 +15,12 @@ describe Duse::API::Config::SMTP do
     ]
   end
 
+  it 'takes the domain from the email' do
+    ClimateControl.modify EMAIL: 'noreply@duse.io' do
+      expect(Duse::API::Config.new.smtp.domain).to eq 'duse.io'
+    end
+  end
+
   it 'should be enabled if smtp host is set' do
     config = Duse::API::Config::SMTP.new host: 'smtp.example.org'
     expect(config.enabled?).to be true

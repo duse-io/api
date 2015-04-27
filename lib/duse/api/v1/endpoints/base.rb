@@ -12,6 +12,8 @@ module Duse
   module API
     module Endpoints
       class Base < Sinatra::Base
+        set :database, ENV['DATABASE_URL']
+        set :database_extras, { pool: 5, timeout: 3000, encoding: 'unicode' }
         enable :dump_errors
         disable :raise_errors
         disable :show_exceptions # disable middleware displaying errors as html

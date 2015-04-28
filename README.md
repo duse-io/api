@@ -23,21 +23,12 @@ The following are the high level steps a client has to do to share a secret
 with this api.
 
   * Decide on what to share (password, ssh-key, etc.)
-  * Decide who to share with
+  * Decide who to share with and retrieve their profiles (containing their
+    public key)
   * Apply Shamir's Secret Sharing to the secret
   * Encrypt each share with corresponding users public key
   * Sign each of the encrypted shares with the creating users private key
   * post all generated data to the api
-
-> We understand this is very high level. More in depth documentation will
-> follow!
-
-However, there are several difficulties that have to be dealt with
-
-  * allowing arbitrary length of secrets
-  * allow any utf-8 character
-  * maintaining security
-  * validation
 
 A supported client implementation is
 [duse.rb](https://github.com/duse-io/duse.rb). It is a ruby library which

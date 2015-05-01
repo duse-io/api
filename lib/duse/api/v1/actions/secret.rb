@@ -33,10 +33,11 @@ class Secret
     Duse::API::SecretAuthorization.authorize! @current_user, :update, secret
     secret.last_edited_by = @current_user
     secret.title = params[:title] if params.key? :title
+    secret.cipher_text = params[:cipher_text] if params.key? :cipher_text
     entities = [secret]
 
     if params.key?(:shares) && !params[:shares].nil?
-      secret.shares.destroy
+      secret.shares.destroy_all
       entities += create_shares(params[:shares], secret)
     end
 

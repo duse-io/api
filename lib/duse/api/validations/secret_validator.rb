@@ -12,9 +12,17 @@ class SecretValidator
   end
 
   class CipherTextValidator
+    BASE64_REGEX = /^([A-Za-z0-9+\/]{4})*([A-Za-z0-9+\/]{4}|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{2}==)$/
+
     def validate(secret)
       if !secret.cipher_text.nil? && secret.cipher_text.empty?
         secret.errors[:base] << 'Cipher text must not be blank'
+      end
+      if !secret.cipher_text.nil? && !secret.cipher_text.empty? && secret.cipher_text !~ BASE64_REGEX
+        secret.errors[:base] << 'Cipher is expected to be base64 encoded'
+      end
+      if !secret.cipher_text.nil? && !secret.cipher_text.empty? && secret.cipher_text.length > 5000
+        secret.errors[:base] << 'Secret too long'
       end
     end
   end

@@ -16,7 +16,7 @@ describe SecretJSON do
 
     json = SecretJSON.new({
       title: 'My secret',
-      cipher_text: 'some cipher text',
+      cipher_text: 'someciphertext==',
       shares: [
         share(server.id, 'share1', key, server.public_key),
         share(user1.id,  'share2', key, user1.public_key),

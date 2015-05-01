@@ -17,7 +17,7 @@ describe Duse::API do
 
     {
       title: options[:title] || 'my secret',
-      cipher_text: options[:cipher_text] || 'some cipher text',
+      cipher_text: options[:cipher_text] || 'someciphertext==',
       shares: [
         share(Duse::Models::Server.get.id, 'share1', user1_key, Duse::Models::Server.public_key),
         share(user1.id, 'share2', user1_key, user1.public_key),
@@ -53,7 +53,7 @@ describe Duse::API do
     )
     secret_json = {
       title: 'my secret',
-      cipher_text: 'some cipher text',
+      cipher_text: 'someciphertext==',
       shares: [
         share(Duse::Models::Server.get.id, 'share1', user1_key, Duse::Models::Server.public_key),
         share(user1.id, 'share2', user1_key, user1.public_key),
@@ -91,7 +91,7 @@ describe Duse::API do
     expect(response).to eq({
       'id' => secret_id,
       'title' => 'my secret',
-      'cipher_text' => 'some cipher text',
+      'cipher_text' => 'someciphertext==',
       'shares' => %w(share1 share2),
       'users' => users,
       'url' => "http://example.org/v1/secrets/#{secret_id}",
@@ -190,7 +190,7 @@ describe Duse::API do
 
   it 'should return errors if there are no shares given' do
     user = create_default_user
-    secret_json = { title: 'test', cipher_text: 'some cipher text', shares: [] }.to_json
+    secret_json = { title: 'test', cipher_text: 'someciphertext==', shares: [] }.to_json
 
     header 'Authorization', user.create_new_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
@@ -366,7 +366,7 @@ describe Duse::API do
     )
     secret_json = {
       title: 'my secret',
-      cipher_text: 'some cipher text',
+      cipher_text: 'someciphertext==',
       shares: [
         share(Duse::Models::Server.get.id, 'share1', user1_key, Duse::Models::Server.public_key),
         share(user1.id, 'share2', user1_key, user1.public_key),
@@ -448,7 +448,7 @@ describe Duse::API do
     users = [user, Duse::Models::Server.get] + (1..9).to_a.map { |i| create_default_user(username: "user#{i}") }
     secret_json = {
       title: 'my secret',
-      cipher_text: 'some cipher text',
+      cipher_text: 'someciphertext==',
       shares: users.map { |u| share(u.id, 'share', user_key, u.public_key) }
     }.to_json
     token = user.create_new_token
@@ -480,6 +480,43 @@ describe Duse::API do
     ]
   end
 
-  it 'validates the cipher text length'
+  it 'validates the cipher to be set non empty' do
+    secret_json = default_secret(cipher_text: '')
+    token = Duse::Models::User.find_by_username('flower-pot').create_new_token
+
+    header 'Authorization', token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 422
+    expect(JSON.parse(last_response.body)['message']).to eq [
+      'Cipher text must not be blank'
+    ]
+  end
+
+  it 'validates the cipher text length not to exceed 5000' do
+    secret_json = default_secret(cipher_text: 'a' * 5004)
+    token = Duse::Models::User.find_by_username('flower-pot').create_new_token
+
+    header 'Authorization', token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 422
+    expect(JSON.parse(last_response.body)['message']).to eq [
+      'Secret too long'
+    ]
+  end
+
+  it 'validates the cipher text to be base64 encoded' do
+    secret_json = default_secret(cipher_text: 'a')
+    token = Duse::Models::User.find_by_username('flower-pot').create_new_token
+
+    header 'Authorization', token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 422
+    expect(JSON.parse(last_response.body)['message']).to eq [
+      'Cipher is expected to be base64 encoded'
+    ]
+  end
 end
 

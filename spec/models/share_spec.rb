@@ -12,13 +12,12 @@ describe Duse::Models::Share do
     server = Duse::Models::Server.find_or_create
     user_key = generate_key
     user = create_default_user(public_key: user_key.public_key)
-    secret = Duse::Models::Secret.create title: 'secret', last_edited_by: user
-    secret_part = Duse::Models::SecretPart.create index: 0, secret: secret
+    secret = Duse::Models::Secret.create title: 'secret', cipher_text: 'some cipher text', last_edited_by: user
     content, signature = server.encrypt user_key, 'share1'
     share = Duse::Models::Share.new(
       content: content,
       signature: signature,
-      secret_part: secret_part,
+      secret: secret,
       user: server
     )
     expect(share.valid?).to be true

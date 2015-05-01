@@ -13,8 +13,7 @@ module Duse
       has_many :tokens
       has_many :confirmation_tokens
       has_many :shares
-      has_many :secret_parts, through: :shares
-      has_many :secrets, -> { uniq.order :id }, through: :secret_parts
+      has_many :secrets, -> { uniq.order :id }, through: :shares
 
       validates_uniqueness_of :username
       validates_uniqueness_of :email
@@ -49,7 +48,6 @@ module Duse
     end
 
     class Server < User
-
       def private_key
         OpenSSL::PKey::RSA.new read_attribute(:private_key)
       end
@@ -67,7 +65,7 @@ module Duse
         alias_method :ensure_user_exists, :find_or_create
 
         def create_server_user
-          key      = OpenSSL::PKey::RSA.generate(1024)
+          key      = OpenSSL::PKey::RSA.generate(2048)
           password = SecureRandom.base64(32)
           Server.create(
             username: 'server',

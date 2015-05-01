@@ -9,21 +9,17 @@ class SecretJSON < DefaultJSON
       message: 'Secret must be an object',
       properties: {
         title: { type: String },
-        parts: {
+        cipher_text: { type: String },
+        shares: {
           type: Array,
           allow_empty: false,
           items: {
-            name: 'Shares',
-            allow_empty: false,
-            type: Array,
-            items: {
-              name: 'Share',
-              type: Hash,
-              properties: {
-                user_id:   { name: 'User id', type: Integer },
-                content:   { type: String },
-                signature: { type: String }
-              }
+            name: 'Share',
+            type: Hash,
+            properties: {
+              user_id:   { name: 'User id', type: Integer },
+              content:   { type: String },
+              signature: { type: String }
             }
           }
         }

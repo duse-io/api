@@ -17,12 +17,11 @@ describe Duse::API do
 
     {
       title: options[:title] || 'my secret',
-      parts: [
-        [
-          share(Duse::Models::Server.get.id, 'share1', user1_key, Duse::Models::Server.public_key),
-          share(user1.id, 'share2', user1_key, user1.public_key),
-          share(user2.id, 'share3', user1_key, user2.public_key)
-        ]
+      cipher_text: options[:cipher_text] || 'some cipher text',
+      shares: [
+        share(Duse::Models::Server.get.id, 'share1', user1_key, Duse::Models::Server.public_key),
+        share(user1.id, 'share2', user1_key, user1.public_key),
+        share(user2.id, 'share3', user1_key, user2.public_key)
       ]
     }.to_json
   end
@@ -30,7 +29,6 @@ describe Duse::API do
   def expect_count(entities)
     expect(Duse::Models::User.all.count).to eq(entities[:user])
     expect(Duse::Models::Secret.all.count).to eq(entities[:secret])
-    expect(Duse::Models::SecretPart.all.count).to eq(entities[:secret_part])
     expect(Duse::Models::Share.all.count).to eq(entities[:share])
   end
 
@@ -55,12 +53,11 @@ describe Duse::API do
     )
     secret_json = {
       title: 'my secret',
-      parts: [
-        [
-          share(Duse::Models::Server.get.id, 'share1', user1_key, Duse::Models::Server.public_key),
-          share(user1.id, 'share2', user1_key, user1.public_key),
-          share(user2.id, 'share3', user1_key, user2.public_key)
-        ]
+      cipher_text: 'some cipher text',
+      shares: [
+        share(Duse::Models::Server.get.id, 'share1', user1_key, Duse::Models::Server.public_key),
+        share(user1.id, 'share2', user1_key, user1.public_key),
+        share(user2.id, 'share3', user1_key, user2.public_key)
       ]
     }.to_json
 
@@ -74,7 +71,7 @@ describe Duse::API do
       title: 'my secret',
       url: "http://example.org/v1/secrets/#{secret_id}"
     }.to_json)
-    expect_count(user: 3, secret: 1, secret_part: 1, share: 3)
+    expect_count(user: 3, secret: 1, share: 3)
 
     header 'Authorization', token
     get "/v1/secrets/#{secret_id}"
@@ -88,15 +85,14 @@ describe Duse::API do
       }
     end
     response = JSON.parse last_response.body
-    response['parts'].map! do |part|
-      part.map do |share|
-        Encryption.decrypt user1_key, share
-      end
+    response['shares'].map! do |share|
+      Encryption.decrypt user1_key, share
     end
     expect(response).to eq({
       'id' => secret_id,
       'title' => 'my secret',
-      'parts' => [%w(share1 share2)],
+      'cipher_text' => 'some cipher text',
+      'shares' => %w(share1 share2),
       'users' => users,
       'url' => "http://example.org/v1/secrets/#{secret_id}",
     })
@@ -121,7 +117,7 @@ describe Duse::API do
         }
       ].to_json
     )
-    expect_count(user: 3, secret: 1, secret_part: 1, share: 3)
+    expect_count(user: 3, secret: 1, share: 3)
   end
 
   it 'should error if an unauthorized user tries to access a secret' do
@@ -138,7 +134,7 @@ describe Duse::API do
       message: 'You are not authorized to access a resource'
     }.to_json)
 
-    expect_count(user: 4, secret: 1, secret_part: 1, share: 3)
+    expect_count(user: 4, secret: 1, share: 3)
   end
 
   it 'should be able to delete a secret' do
@@ -156,7 +152,7 @@ describe Duse::API do
     expect(last_response.status).to eq(204)
     expect(last_response.body).to eq('')
 
-    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 3, secret: 0, share: 0)
   end
 
   it 'should return 404 for a non existant secret' do
@@ -178,7 +174,7 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 2, secret: 0, share: 0)
   end
 
   it 'should return errors if there are no parts given' do
@@ -189,12 +185,12 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 2, secret: 0, share: 0)
   end
 
   it 'should return errors if there are no shares given' do
     user = create_default_user
-    secret_json = { title: 'test', parts: [[]] }.to_json
+    secret_json = { title: 'test', cipher_text: 'some cipher text', shares: [] }.to_json
 
     header 'Authorization', user.create_new_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
@@ -203,7 +199,7 @@ describe Duse::API do
     expect(last_response.body).to eq({
       message: ['Shares must not be empty']
     }.to_json)
-    expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 2, secret: 0, share: 0)
   end
 
   it 'should error on malformed json' do
@@ -213,7 +209,7 @@ describe Duse::API do
     post '/v1/secrets', '{ ', 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(400)
-    expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 2, secret: 0, share: 0)
   end
 
   it 'should error when title is empty' do
@@ -227,7 +223,7 @@ describe Duse::API do
     expect(last_response.body).to eq(
       { 'message' => ['Title must not be blank'] }.to_json
     )
-    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 3, secret: 0, share: 0)
   end
 
   it 'should error if the provided users don\'t exist' do
@@ -252,7 +248,7 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 2, secret: 0, share: 0)
   end
 
   it 'should error if there is no part for the server' do
@@ -272,7 +268,7 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 3, secret: 0, share: 0)
   end
 
   it 'should error when not all parts have shares for the same users' do
@@ -303,7 +299,7 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 4, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 4, secret: 0, share: 0)
   end
 
   it 'should error when there is more than one share per user' do
@@ -325,38 +321,7 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
-  end
-
-  # see issue #23 for an explanation
-  it 'should list users only once when a secret has multiple parts' do
-    server_user = Duse::Models::Server.get
-    key = generate_key
-    user = create_default_user(public_key: key.public_key)
-    secret_json = {
-      title: 'my secret',
-      parts: [
-        [
-          share(server_user.id, 'part0share0', key, server_user.public_key),
-          share(user.id, 'part0share1', key, user.public_key),
-        ],
-        [
-          share(server_user.id, 'part1share0', key, server_user.public_key),
-          share(user.id, 'part1share1', key, user.public_key),
-        ]
-      ]
-    }.to_json
-
-    header 'Authorization', user.create_new_token
-    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
-
-    expect(last_response.status).to eq(201)
-
-    secret_id = JSON.parse(last_response.body)['id']
-    expect(Duse::Models::Secret.find(secret_id).users.length).to eq 2
-    expect(user.secrets.length).to eq 1
-
-    expect_count(user: 2, secret: 1, secret_part: 2, share: 4)
+    expect_count(user: 2, secret: 0, share: 0)
   end
 
   it 'should error when at least one of the provided users do not exist' do
@@ -378,7 +343,7 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 2, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 2, secret: 0, share: 0)
   end
 
   it 'should error with 401 if the user does not provide an auth header' do
@@ -386,7 +351,7 @@ describe Duse::API do
          default_secret.to_json,
          'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq(401)
-    expect_count(user: 3, secret: 0, secret_part: 0, share: 0)
+    expect_count(user: 3, secret: 0, share: 0)
   end
 
   it 'should be able to update the title of a secret' do
@@ -401,17 +366,17 @@ describe Duse::API do
     )
     secret_json = {
       title: 'my secret',
-      parts: [
-        [
-          share(Duse::Models::Server.get.id, 'share1', user1_key, Duse::Models::Server.public_key),
-          share(user1.id, 'share2', user1_key, user1.public_key),
-          share(user2.id, 'share3', user1_key, user2.public_key)
-        ]
+      cipher_text: 'some cipher text',
+      shares: [
+        share(Duse::Models::Server.get.id, 'share1', user1_key, Duse::Models::Server.public_key),
+        share(user1.id, 'share2', user1_key, user1.public_key),
+        share(user2.id, 'share3', user1_key, user2.public_key)
       ]
     }.to_json
 
     header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+    expect(last_response.status).to eq 201
 
     new_secret_json = {
       title: 'new title',
@@ -483,9 +448,8 @@ describe Duse::API do
     users = [user, Duse::Models::Server.get] + (1..9).to_a.map { |i| create_default_user(username: "user#{i}") }
     secret_json = {
       title: 'my secret',
-      parts: [
-        users.map { |u| share(u.id, 'share', user_key, u.public_key) }
-      ]
+      cipher_text: 'some cipher text',
+      shares: users.map { |u| share(u.id, 'share', user_key, u.public_key) }
     }.to_json
     token = user.create_new_token
 
@@ -501,8 +465,8 @@ describe Duse::API do
   it 'validates the length of the cipher text against the key size' do
     secret_json = default_secret
     secret_json = JSON.parse(secret_json)
-    # since its a 128 bytes or 1024 bits key any length but 128 bytes will fail
-    secret_json['parts'].first.first['content'] = Encryption.encode(Random.new.bytes(129))
+    # since its a 256 bytes or 2048 bits key any length but 256 bytes will fail
+    secret_json['shares'].first['content'] = Encryption.encode(Random.new.bytes(129))
     secret_json = secret_json.to_json
     token = Duse::Models::User.find_by_username('flower-pot').create_new_token
 
@@ -516,20 +480,6 @@ describe Duse::API do
     ]
   end
 
-  it 'validates that there are <= 278 parts' do
-    secret_json = default_secret
-    secret_json = JSON.parse(secret_json)
-    secret_json['parts'] = secret_json['parts']*279
-    secret_json = secret_json.to_json
-    token = Duse::Models::User.find_by_username('flower-pot').create_new_token
-
-    header 'Authorization', token
-    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
-
-    expect(last_response.status).to eq 422
-    expect(JSON.parse(last_response.body)['message']).to eq [
-      'Secret too large'
-    ]
-  end
+  it 'validates the cipher text length'
 end
 

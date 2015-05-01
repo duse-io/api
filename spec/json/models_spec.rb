@@ -16,12 +16,11 @@ describe SecretJSON do
 
     json = SecretJSON.new({
       title: 'My secret',
-      parts: [
-        [
-          share(server.id, 'share1', key, server.public_key),
-          share(user1.id,  'share2', key, user1.public_key),
-          share(user2.id,  'share3', key, user2.public_key)
-        ]
+      cipher_text: 'some cipher text',
+      shares: [
+        share(server.id, 'share1', key, server.public_key),
+        share(user1.id,  'share2', key, user1.public_key),
+        share(user2.id,  'share3', key, user2.public_key)
       ]
     })
 

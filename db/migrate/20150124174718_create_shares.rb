@@ -4,7 +4,7 @@ class CreateShares < ActiveRecord::Migration
       t.text :content
       t.text :signature
       t.integer :user_id
-      t.integer :secret_part_id
+      t.integer :secret_id
     end
   end
 end

@@ -16,13 +16,9 @@ ActiveRecord::Schema.define(version: 20150124174719) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "secret_parts", force: :cascade do |t|
-    t.integer "index"
-    t.integer "secret_id"
-  end
-
   create_table "secrets", force: :cascade do |t|
     t.string "title"
+    t.text   "cipher_text"
     t.string "last_edited_by_id"
   end
 
@@ -30,7 +26,7 @@ ActiveRecord::Schema.define(version: 20150124174719) do
     t.text    "content"
     t.text    "signature"
     t.integer "user_id"
-    t.integer "secret_part_id"
+    t.integer "secret_id"
   end
 
   create_table "tokens", force: :cascade do |t|

@@ -20,12 +20,7 @@ describe Duse::API do
       email: 'flower-pot@example.org',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
-      public_key: "-----BEGIN PUBLIC KEY-----\n" \
-      "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDR1pYkhBVekZZvcgRaMR6iZTJt\n" \
-      "fr6ALzIg1MHkkWonMXIJ5qvN+3Xeucf8Wk6c8I01T2PviQtnw/h+NjkBcvTKi/3y\n" \
-      "2eMatpsu1QK5iaarWx25RcfFCkcElBZ8FibMfC2/DH+11kKIjlQN3iZaC3qd2Mpq\n" \
-      "a042HsjIOuVQqTb/mQIDAQAB\n" \
-      "-----END PUBLIC KEY-----\n"
+      public_key: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmMm3Ovh7gU0rLHK4NiHh\nWaYRrV9PH6XtHqV0GoiHH7awrjVkT1aZiS+nlBxckfuvuQjRXakVCZh18UdQadVQ\n7FLTWMZNoZ/uh41g4Iv17Wh1I3Fgqihdm83cSWvJ81qQCVGBaKeVitSa49zT/Mmo\noBvYFwulaqJjhqFc3862Rl3WowzGVqGf+OiYhFrBbnIqXijDmVKsbqkG5AILGo1n\nng06HIAvMqUcGMebgoju9SuKaR+C46KT0K5sPpNw/tNcDEZqZAd25QjAroGnpRHS\nI9hTEuPopPSyRqz/EVQfbhi0LbkdDW9S5ECw7GfFPFpRp2239fjl/9ybL6TkeZL7\nAwIDAQAB\n-----END PUBLIC KEY-----\n"
     }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -36,12 +31,7 @@ describe Duse::API do
         id: user.id,
         username: 'flower-pot',
         email: 'flower-pot@example.org',
-        public_key: "-----BEGIN PUBLIC KEY-----\n" \
-        "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDR1pYkhBVekZZvcgRaMR6iZTJt\n" \
-        "fr6ALzIg1MHkkWonMXIJ5qvN+3Xeucf8Wk6c8I01T2PviQtnw/h+NjkBcvTKi/3y\n" \
-        "2eMatpsu1QK5iaarWx25RcfFCkcElBZ8FibMfC2/DH+11kKIjlQN3iZaC3qd2Mpq\n" \
-        "a042HsjIOuVQqTb/mQIDAQAB\n" \
-        "-----END PUBLIC KEY-----\n",
+        public_key: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmMm3Ovh7gU0rLHK4NiHh\nWaYRrV9PH6XtHqV0GoiHH7awrjVkT1aZiS+nlBxckfuvuQjRXakVCZh18UdQadVQ\n7FLTWMZNoZ/uh41g4Iv17Wh1I3Fgqihdm83cSWvJ81qQCVGBaKeVitSa49zT/Mmo\noBvYFwulaqJjhqFc3862Rl3WowzGVqGf+OiYhFrBbnIqXijDmVKsbqkG5AILGo1n\nng06HIAvMqUcGMebgoju9SuKaR+C46KT0K5sPpNw/tNcDEZqZAd25QjAroGnpRHS\nI9hTEuPopPSyRqz/EVQfbhi0LbkdDW9S5ECw7GfFPFpRp2239fjl/9ybL6TkeZL7\nAwIDAQAB\n-----END PUBLIC KEY-----\n",
         url: "http://example.org/v1/users/#{user.id}"
       }.to_json
     )
@@ -247,7 +237,7 @@ describe Duse::API do
 
     expect(last_response.status).to eq(422)
     expect(last_response.body).to eq({
-      'message' => ['Public key is not a valid RSA Public Key.']
+      'message' => ['Public key is not a valid RSA Public Key']
     }.to_json)
     expect(Duse::Models::User.all.count).to eq(0)
   end
@@ -402,6 +392,23 @@ describe Duse::API do
     post "/v1/users", {test: 'test'}.to_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq 422
+  end
+
+  it 'validates that a users public key is 2048 bit size or larger' do
+    user_json = {
+      username: 'flower-pot',
+      email: 'flower-pot@example.org',
+      password: 'Passw0rd!',
+      password_confirmation: 'Passw0rd!',
+      public_key: generate_public_key(1024)
+    }.to_json
+    post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(422)
+    expect(last_response.body).to eq({
+      'message' => ['Public key size must be 2048 bit or larger']
+    }.to_json)
+    expect(Duse::Models::User.all.count).to eq(0)
   end
 end
 

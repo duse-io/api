@@ -518,5 +518,14 @@ describe Duse::API do
       'Cipher is expected to be base64 encoded'
     ]
   end
+
+  it 'does not error on empty body' do
+    token = create_default_user.create_new_token
+
+    header 'Authorization', token
+    post '/v1/secrets', '', 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq 422
+  end
 end
 

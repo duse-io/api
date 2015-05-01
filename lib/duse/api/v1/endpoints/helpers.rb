@@ -17,7 +17,9 @@ module Duse
         end
 
         def request_json
-          JSON.parse request_body, symbolize_names: true
+          content = request_body
+          content ||= '{}'
+          JSON.parse content, symbolize_names: true
         end
       end
     end

@@ -8,7 +8,7 @@ describe UserValidator do
         password_confirmation: 'password',
         public_key: key.public_key.to_s
       }
-      expect(UserValidator.new.validate(user).to_a).to eq(['Password too weak.'])
+      expect(UserValidator.new.validate(user).to_a).to eq(['Password too weak'])
     end
 
     it 'should view "_" as a special character' do
@@ -44,7 +44,7 @@ describe UserValidator do
         public_key: 'not a valid key'
       }
       expect(UserValidator.new.validate(user).to_a).to eq([
-        'Public key is not a valid RSA Public Key.'
+        'Public key is not a valid RSA Public Key'
       ])
     end
 

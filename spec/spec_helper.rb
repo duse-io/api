@@ -52,11 +52,11 @@ end
 DatabaseCleaner.strategy = :truncation
 DatabaseCleaner.clean # start with a clean database
 
-def generate_public_key(size = 1024)
+def generate_public_key(size = 2048)
   generate_key(size).public_key.to_s
 end
 
-def generate_key(size = 1024)
+def generate_key(size = 2048)
   OpenSSL::PKey::RSA.generate(size)
 end
 

@@ -1,5 +1,4 @@
 require 'duse/api/models/secret'
-require 'duse/api/models/secret_part'
 require 'duse/api/models/share'
 require 'duse/api/authorization/secret'
 require 'duse/api/entity_errors'
@@ -34,11 +33,12 @@ class Secret
     Duse::API::SecretAuthorization.authorize! @current_user, :update, secret
     secret.last_edited_by = @current_user
     secret.title = params[:title] if params.key? :title
+    secret.cipher_text = params[:cipher_text] if params.key? :cipher_text
     entities = [secret]
 
-    if params.key?(:parts) && !params[:parts].nil?
-      secret.secret_parts.destroy
-      entities += create_parts_from_hash(params[:parts], secret)
+    if params.key?(:shares) && !params[:shares].nil?
+      secret.shares.destroy_all
+      entities += create_shares(params[:shares], secret)
     end
 
     errors = Duse::API::EntityErrors.new(ignored_errors).collect_from(entities)
@@ -54,11 +54,12 @@ class Secret
     params = params.sanitize current_user: @current_user
     secret = Duse::Models::Secret.new(
       title: params[:title],
+      cipher_text: params[:cipher_text],
       last_edited_by: @current_user
     )
     entities = [secret]
 
-    entities += create_parts_from_hash(params[:parts], secret)
+    entities += create_shares(params[:shares], secret)
 
     errors = Duse::API::EntityErrors.new(ignored_errors).collect_from(entities)
     entities.each(&:save)
@@ -72,34 +73,21 @@ class Secret
 
   def ignored_errors
     [
-      'Secret must not be blank',
-      'Secret part must not be blank'
+      'Secret must not be blank'
     ]
   end
 
-  def create_parts_from_hash(parts, secret)
-    entities = []
+  def create_shares(raw_shares, secret)
+    raw_shares.map do |share|
+      user = Duse::Models::User.find share[:user_id]
 
-    parts.each_with_index do |part, index|
-      secret_part = Duse::Models::SecretPart.new(index: index, secret: secret)
-
-      part.each do |share|
-        user_id = share[:user_id]
-        user = Duse::Models::Server.get if 'server' == user_id
-        user = @current_user if 'me' == user_id
-        user ||= Duse::Models::User.find(user_id)
-        entities << Duse::Models::Share.new(
-          user: user,
-          secret_part: secret_part,
-          content: share[:content],
-          signature: share[:signature]
-        )
-      end
-
-      entities << secret_part
+      Duse::Models::Share.new(
+        user: user,
+        secret: secret,
+        content: share[:content],
+        signature: share[:signature]
+      )
     end
-
-    entities
   end
 end
 

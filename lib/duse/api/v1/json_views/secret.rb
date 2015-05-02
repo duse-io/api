@@ -6,8 +6,9 @@ module Duse
     class Secret < JSONView
       property :id
       property :title
-      property :parts, type: :full do |secret, options|
-        secret.secret_parts_for options[:user]
+      property :cipher_text, type: :full
+      property :shares, type: :full do |secret, options|
+        secret.shares_for options[:user]
       end
       property :users, as: Duse::JSONViews::User, type: :full
       property :url do |secret, options|

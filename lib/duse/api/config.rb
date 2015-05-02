@@ -35,12 +35,18 @@ module Duse
       end
 
       def smtp
+        host   = ENV['SMTP_HOST'] || 'smtp.mandrillapp.com'
+        port   = ENV['SMTP_PORT'] || '587'
+        user   = ENV['SMTP_USER'] || ENV['MANDRILL_USERNAME']
+        pass   = ENV['SMTP_PASSWORD'] || ENV['MANDRILL_APIKEY']
+        domain = ENV['EMAIL'].nil? ? nil : ENV['EMAIL'].split('@').last
+
         @smtp ||= SMTP.new(
-          host: ENV['SMTP_HOST'],
-          port: ENV['SMTP_PORT'],
-          user: ENV['SMTP_USER'],
-          password: ENV['SMTP_PASSWORD'],
-          domain: ENV['EMAIL'].nil? ? nil : ENV['EMAIL'].split('@').last
+          host: host,
+          port: port,
+          user: user,
+          password: pass,
+          domain: email
         )
       end
     end

@@ -9,6 +9,14 @@
     },
     "EMAIL": {
       "description": "The full email address you want emails to be sent from"
+    },
+    "HOST": {
+      "description": "The host is used to build URLs, it is either a custom domain you want to use or the \"<appname>.herokuapp.com\"",
+      "value": "<appname>.herokuapp.com"
+    },
+    "SSL": {
+      "description": "Leave blank if you don't want to use SSL (SSL is recommended in production)",
+      "value": "true"
     }
   },
   "addons": [

@@ -25,7 +25,11 @@ with this api.
   * Decide on what to share (password, ssh-key, etc.)
   * Decide who to share with and retrieve their profiles (containing their
     public key)
-  * Apply Shamir's Secret Sharing to the secret
+  * Encrypt the plaintext with AES256 with a random key and initialization
+    vector
+  * Apply Shamir's Secret Sharing to the key and initialization vector - One
+    share for each user plus an additional share which is accessible by
+    everyone belonging to the "server" user.
   * Encrypt each share with corresponding users public key
   * Sign each of the encrypted shares with the creating users private key
   * post all generated data to the api

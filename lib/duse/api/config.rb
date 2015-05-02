@@ -46,7 +46,7 @@ module Duse
           port: port,
           user: user,
           password: pass,
-          domain: email
+          domain: domain
         )
       end
     end

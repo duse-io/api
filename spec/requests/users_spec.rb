@@ -55,6 +55,7 @@ describe Duse::API do
 
     words = mail.html_part.to_s.split
     confirmation_token = words.last
+    confirmation_token = confirmation_token[0..-2]
     patch "/v1/users/confirm", { token: confirmation_token }.to_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq 204

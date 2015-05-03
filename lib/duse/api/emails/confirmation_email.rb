@@ -6,7 +6,7 @@ class ConfirmationEmail < UserEmail
     super(
       user,
       'Confirm your signup',
-      "Use the following command to confirm your account: duse account confirm --token #{create_confirmation_token(user)}"
+      "Use the following command to confirm your account: \"duse account confirm #{create_confirmation_token(user)}\""
     )
   end
 

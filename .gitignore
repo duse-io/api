@@ -17,3 +17,5 @@ coverage
 
 /vendor/bundle/
 /vendor/ruby/
+
+.idea

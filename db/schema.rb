@@ -17,9 +17,9 @@ ActiveRecord::Schema.define(version: 20150124174719) do
   enable_extension "plpgsql"
 
   create_table "secrets", force: :cascade do |t|
-    t.string "title"
-    t.text   "cipher_text"
-    t.string "last_edited_by_id"
+    t.string  "title"
+    t.text    "cipher_text"
+    t.integer "last_edited_by_id"
   end
 
   create_table "shares", force: :cascade do |t|
@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 20150124174719) do
     t.text    "signature"
     t.integer "user_id"
     t.integer "secret_id"
+    t.integer "last_edited_by_id"
   end
 
   create_table "tokens", force: :cascade do |t|

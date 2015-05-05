@@ -354,7 +354,7 @@ describe Duse::API do
     expect_count(user: 3, secret: 0, share: 0)
   end
 
-  it 'should be able to update the title of a secret' do
+  it 'should be able to update the title of a secret and remember the modifier' do
     user1_key = generate_key
     user1 = create_default_user(
       username: 'flower-pot', public_key: user1_key.public_key
@@ -378,16 +378,7 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq 201
 
-    new_secret_json = {
-      title: 'new title',
-      parts: [
-        [
-          share(Duse::Models::Server.get.id, 'new_share1', user1_key, Duse::Models::Server.public_key),
-          share(user1.id, 'new_share2', user1_key, user1.public_key),
-          share(user2.id, 'new_share3', user1_key, user2.public_key)
-        ]
-      ]
-    }.to_json
+    new_secret_json = { title: 'new title' }.to_json
     secret = JSON.parse(last_response.body)
     header 'Authorization', token
     patch "/v1/secrets/#{secret['id']}",
@@ -399,6 +390,51 @@ describe Duse::API do
     get "/v1/secrets/#{secret['id']}", 'CONTENT_TYPE' => 'application/json'
 
     expect(JSON.parse(last_response.body)['title']).to eq 'new title'
+    expect(Duse::Models::Secret.find(secret['id']).last_edited_by).to eq user1
+  end
+
+  it 'remembers the user who last modified the shares' do
+    user1_key = generate_key
+    user1 = create_default_user(
+      username: 'flower-pot', public_key: user1_key.public_key
+    )
+    user2_key = generate_key
+    user2 = create_default_user(
+      username: 'adracus', public_key: user2_key.public_key
+    )
+    secret_json = {
+      title: 'my secret',
+      cipher_text: 'someciphertext==',
+      shares: [
+        share(Duse::Models::Server.get.id, 'share1', user1_key, Duse::Models::Server.public_key),
+        share(user1.id, 'share2', user1_key, user1.public_key),
+        share(user2.id, 'share3', user1_key, user2.public_key)
+      ]
+    }.to_json
+
+    header 'Authorization', user1.create_new_token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+    expect(last_response.status).to eq 201
+
+    new_secret_json = {
+      shares: [
+        share(Duse::Models::Server.get.id, 'new_share1', user2_key, Duse::Models::Server.public_key),
+        share(user1.id, 'new_share2', user2_key, user1.public_key),
+        share(user2.id, 'new_share3', user2_key, user2.public_key)
+      ]
+    }.to_json
+    secret = JSON.parse(last_response.body)
+    header 'Authorization', user2.create_new_token
+    patch "/v1/secrets/#{secret['id']}",
+          new_secret_json,
+          'CONTENT_TYPE' => 'application/json'
+    expect(last_response.status).to eq 200
+
+    header 'Authorization', user1.create_new_token
+    get "/v1/secrets/#{secret['id']}", 'CONTENT_TYPE' => 'application/json'
+
+    expect(Duse::Models::Secret.find(secret['id']).shares.first.last_edited_by).to eq user2
+    expect(Duse::Models::Secret.find(secret['id']).last_edited_by).to eq user1
   end
 
   it 'it should validate when updating just like when creating' do

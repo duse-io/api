@@ -31,7 +31,9 @@ class Secret
     params = params.sanitize strict: false, current_user: @current_user
     secret = get id
     Duse::API::SecretAuthorization.authorize! @current_user, :update, secret
-    secret.last_edited_by = @current_user
+    if params.key?(:title) || params.key?(:cipher_text)
+      secret.last_edited_by = @current_user
+    end
     secret.title = params[:title] if params.key? :title
     secret.cipher_text = params[:cipher_text] if params.key? :cipher_text
     entities = [secret]
@@ -85,7 +87,8 @@ class Secret
         user: user,
         secret: secret,
         content: share[:content],
-        signature: share[:signature]
+        signature: share[:signature],
+        last_edited_by: @current_user
       )
     end
   end

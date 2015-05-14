@@ -9,10 +9,10 @@ describe SecretJSON do
   end
 
   it 'should validate secrets correctly' do
-    key = generate_key
+    key = KeyHelper.generate_key
     server = Duse::Models::Server.get
-    user1  = create_default_user username: 'test1', public_key: key.public_key.to_s
-    user2  = create_default_user username: 'test2'
+    user1  = create :user, public_key: key.public_key.to_s
+    user2  = create :user
 
     json = SecretJSON.new({
       title: 'My secret',

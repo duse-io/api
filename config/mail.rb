@@ -1,4 +1,3 @@
-require 'duse/api'
 require 'mail'
 
 Mail.defaults do

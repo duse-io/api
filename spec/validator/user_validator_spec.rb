@@ -1,7 +1,7 @@
 describe UserValidator do
   context :password do
     it 'should prevent weak passwords' do
-      key = generate_key
+      key = KeyHelper.generate_key
       user = {
         username: 'test',
         password: 'password',
@@ -12,7 +12,7 @@ describe UserValidator do
     end
 
     it 'should view "_" as a special character' do
-      key = generate_key
+      key = KeyHelper.generate_key
       password = 'Passw0rd_'
       user = {
         username: 'test',
@@ -24,7 +24,7 @@ describe UserValidator do
     end
 
     it 'should check that passwords are at least 8 characters long' do
-      key = generate_key
+      key = KeyHelper.generate_key
       user = {
         username: 'test',
         password: 'Psw0rd!',
@@ -49,7 +49,7 @@ describe UserValidator do
     end
 
     it 'should not accept illegal characters in username' do
-      key = generate_key
+      key = KeyHelper.generate_key
       user = {
         username: 'test?',
         password: 'Passw0rd!',
@@ -62,7 +62,7 @@ describe UserValidator do
     end
 
     it 'should check the username is at least 4 characters long' do
-      key = generate_key
+      key = KeyHelper.generate_key
       user = {
         username: 'tes',
         password: 'Passw0rd!',
@@ -75,7 +75,7 @@ describe UserValidator do
     end
 
     it 'should check the username is no more than 30 characters long' do
-      key = generate_key
+      key = KeyHelper.generate_key
       user = {
         username: 'a' * 31,
         password: 'Passw0rd!',

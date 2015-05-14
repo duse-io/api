@@ -34,6 +34,8 @@ GEM
     docile (1.1.5)
     domain_name (0.5.24)
       unf (>= 0.0.5, < 1.0.0)
+    factory_girl (4.5.0)
+      activesupport (>= 3.0.0)
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
     foreman (0.78.0)
@@ -134,6 +136,7 @@ DEPENDENCIES
   climate_control
   coveralls
   database_cleaner
+  factory_girl
   foreman
   mail
   pg

@@ -75,8 +75,6 @@ describe JSONExtractor do
 
   it 'should serialize active relations correctly' do
     test_class = Class.new(JSONView)
-    test_class.property :test_string
-    test_class.property :test_integer
 
     subject = Duse::Models::Secret.all
 

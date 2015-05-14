@@ -1,4 +1,3 @@
-require 'duse/api'
 require 'raven'
 
 if Duse::API.config.use_sentry?

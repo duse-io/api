@@ -9,8 +9,8 @@ describe Duse::API::Authorization do
 
   it 'should allow access for a user the secrets belongs to' do
     server = Duse::Models::Server.find_or_create
-    user_key = generate_key
-    user = create_default_user(public_key: user_key.public_key)
+    user_key = KeyHelper.generate_key
+    user = create(:user, public_key: user_key.public_key)
     secret = Duse::Models::Secret.create title: 'secret', cipher_text: 'someciphertext==', last_edited_by: user
     content1, signature1 = server.encrypt user_key, 'share1'
     content2, signature2 = user.encrypt user_key, 'share2'
@@ -32,8 +32,8 @@ describe Duse::API::Authorization do
 
   it 'should not allow access for a user the secrets does not belong to' do
     server = Duse::Models::Server.find_or_create
-    user_key = generate_key
-    user = create_default_user(public_key: user_key.public_key)
+    user_key = KeyHelper.generate_key
+    user = create(:user, public_key: user_key.public_key)
     secret = Duse::Models::Secret.create title: 'secret', cipher_text: 'someciphertext==', last_edited_by: user
     content1, signature1 = server.encrypt user_key, 'share1'
     content2, signature2 = user.encrypt user_key, 'share2'
@@ -49,7 +49,7 @@ describe Duse::API::Authorization do
       secret: secret,
       user: user
     )
-    other_user = create_default_user(username: 'other_user')
+    other_user = create(:user)
 
     expect do
       Duse::API::SecretAuthorization.authorize!(other_user, :read, secret)
@@ -61,7 +61,7 @@ describe Duse::API::Authorization do
       allow :create
     end
 
-    user = create_default_user
+    user = create(:user)
 
     TestAuthorization.authorize! user, :create, {}
   end

@@ -19,6 +19,7 @@ gem 'sentry-raven', require: false
 
 group :test do
   gem 'rspec'
+  gem 'factory_girl'
   gem 'rack-test'
   gem 'climate_control'
   gem 'database_cleaner'

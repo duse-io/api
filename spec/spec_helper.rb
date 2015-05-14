@@ -37,47 +37,25 @@ ENV['SENTRY_DSN'] = 'http://public:secret@example.com/project-id'
 require 'raven/base'
 Raven.configuration.logger = Logger.new(StringIO.new)
 
-require_relative '../config/environment'
-require 'duse/api'
+require File.expand_path("../../config/environment", __FILE__)
 require 'database_cleaner'
 require 'climate_control'
 require 'rack/test'
 require 'json'
 require 'openssl'
+require 'factory_girl'
 
-Mail.defaults do
-  delivery_method :test
-end
+Dir[File.join(File.expand_path('../', __FILE__), 'support/*.rb')].each { |f| require f }
 
-DatabaseCleaner.strategy = :truncation
-DatabaseCleaner.clean # start with a clean database
-
-def generate_public_key(size = 2048)
-  generate_key(size).public_key.to_s
-end
-
-def generate_key(size = 2048)
-  OpenSSL::PKey::RSA.generate(size)
-end
+DatabaseCleaner.clean_with :truncation
+DatabaseCleaner.strategy = :transaction
+DatabaseCleaner.clean
 
 def share(user_id, raw_share, private_key, public_key)
   encrypted_share, signature = Encryption.encrypt(
     private_key, public_key, raw_share
   )
   { user_id: user_id, content: encrypted_share, signature: signature }
-end
-
-def create_default_user(options = {})
-  username = options[:username] || 'test'
-  user = Duse::Models::User.create(
-    username: username,
-    email: options[:email] || "#{username}@example.org",
-    password: options[:password] || 'Passw0rd!',
-    password_confirmation: options[:password_confirmation] || 'Passw0rd!',
-    public_key: options[:public_key] || generate_public_key
-  )
-  user.confirm!
-  user
 end
 
 RSpec.configure do |config|

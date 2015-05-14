@@ -44,7 +44,7 @@ describe Duse::API do
       email: 'test@example.org',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
-      public_key: generate_public_key
+      public_key: KeyHelper.generate_public_key
     }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -65,20 +65,18 @@ describe Duse::API do
   end
 
   it 'should create a new confirmation process' do
-    user = create_default_user
-    user.update(confirmed_at: nil)
+    user = create(:user, confirmed_at: nil)
     post '/v1/users/confirm', { email: user.email }.to_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq 201
     mail = Mail::TestMailer.deliveries.first
-    expect(mail.to).to eq ['test@example.org']
+    expect(mail.to).to eq [user.email]
     expect(mail.from).to eq ['noreply@example.org']
     expect(mail.subject).to eq 'Confirm your signup'
   end
 
   it 'should create a new confirmation process' do
-    user = create_default_user
-    user.confirm!
+    user = create(:user)
     post '/v1/users/confirm', { email: user.email }.to_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq 400
@@ -93,7 +91,7 @@ describe Duse::API do
       email: 'test@example.org',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
-      public_key: generate_public_key
+      public_key: KeyHelper.generate_public_key
     }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -105,12 +103,12 @@ describe Duse::API do
   end
 
   it 'should send an email with the reset token when requesting password reset' do
-    user = create_default_user
+    user = create(:user)
     post '/v1/users/forgot_password', { email: user.email }.to_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq 201
     mail = Mail::TestMailer.deliveries.first
-    expect(mail.to).to eq ['test@example.org']
+    expect(mail.to).to eq [user.email]
     expect(mail.from).to eq ['noreply@example.org']
     expect(mail.subject).to eq 'Reset your password'
     words = mail.html_part.to_s.split
@@ -118,7 +116,7 @@ describe Duse::API do
 
     patch '/v1/users/password', { token: reset_token, password: 'Passw000rd!' }.to_json, 'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq 204
-    expect(Duse::Models::User.find_by_username('test').try(:authenticate, 'Passw000rd!')).to be_truthy
+    expect(Duse::Models::User.find_by_username(user.username).try(:authenticate, 'Passw000rd!')).to be_truthy
   end
 
   it 'should error when a username is not given' do
@@ -126,7 +124,7 @@ describe Duse::API do
       email: 'flower-pot@example.org',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
-      public_key: generate_public_key
+      public_key: KeyHelper.generate_public_key
     }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -144,7 +142,7 @@ describe Duse::API do
       email: 'test2@example.org',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
-      public_key: generate_public_key
+      public_key: KeyHelper.generate_public_key
     }.to_json
 
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
@@ -161,7 +159,7 @@ describe Duse::API do
       username: 'test',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
-      public_key: generate_public_key
+      public_key: KeyHelper.generate_public_key
     }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -179,7 +177,7 @@ describe Duse::API do
       email: 'test@example.org',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
-      public_key: generate_public_key
+      public_key: KeyHelper.generate_public_key
     }.to_json
 
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
@@ -197,7 +195,7 @@ describe Duse::API do
       email: 'test@not-a-host-name-we-accept',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
-      public_key: generate_public_key
+      public_key: KeyHelper.generate_public_key
     }.to_json
 
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
@@ -215,7 +213,7 @@ describe Duse::API do
       email: 'test@example.org',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
-      public_key: generate_public_key
+      public_key: KeyHelper.generate_public_key
     }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -275,8 +273,8 @@ describe Duse::API do
   end
 
   it 'should be able to retrieve single users' do
-    user1 = create_default_user
-    user2 = create_default_user(username: 'test2')
+    user1 = create(:user)
+    user2 = create(:user)
 
     header 'Authorization', user1.create_new_token
     get "/v1/users/#{user2.id}"
@@ -284,15 +282,15 @@ describe Duse::API do
     expect(last_response.status).to eq(200)
     expect(last_response.body).to eq({
       id: user2.id,
-      username: 'test2',
-      email: 'test2@example.org',
+      username: user2.username,
+      email: user2.email,
       public_key: user2.public_key.to_s,
       url: "http://example.org/v1/users/#{user2.id}"
     }.to_json)
   end
 
   it 'should respond to listing users correctly' do
-    user = create_default_user
+    user = create(:user)
     token = user.create_new_token
 
     header 'Authorization', token
@@ -302,16 +300,15 @@ describe Duse::API do
     expect(last_response.body).to eq(
       [{
         id: user.id,
-        username: 'test',
-        email: 'test@example.org',
+        username: user.username,
+        email: user.email,
         url: "http://example.org/v1/users/#{user.id}"
       }].to_json
     )
   end
 
   it 'should return the correct user when request own profile' do
-    public_key = generate_public_key
-    user = create_default_user(public_key: public_key)
+    user = create(:user)
     token = user.create_new_token
 
     header 'Authorization', token
@@ -320,15 +317,15 @@ describe Duse::API do
     expect(last_response.status).to eq(200)
     expect(last_response.body).to eq({
       id: user.id,
-      username: 'test',
-      email: 'test@example.org',
-      public_key: public_key,
+      username: user.username,
+      email: user.email,
+      public_key: user.public_key.to_s,
       url: "http://example.org/v1/users/#{user.id}"
     }.to_json)
   end
 
   it 'should return the correct user when requesting the server user' do
-    user = create_default_user
+    user = create(:user)
     token = user.create_new_token
     server_user = Duse::Models::Server.get
 
@@ -346,7 +343,7 @@ describe Duse::API do
   end
 
   it 'should be able to delete ones own user' do
-    user = create_default_user
+    user = create(:user)
     token = user.create_new_token
 
     header 'Authorization', token
@@ -356,7 +353,7 @@ describe Duse::API do
   end
 
   it 'should error with not found when trying to delete not existant user' do
-    user = create_default_user
+    user = create(:user)
     token = user.create_new_token
 
     header 'Authorization', token
@@ -367,8 +364,8 @@ describe Duse::API do
   end
 
   it 'should error with forbidden when deleting a user without permission to' do
-    user1 = create_default_user
-    user2 = create_default_user(username: 'user2')
+    user1 = create(:user)
+    user2 = create(:user)
     token = user1.create_new_token
 
     header 'Authorization', token
@@ -378,13 +375,13 @@ describe Duse::API do
   end
 
   it 'should be able to update a user' do
-    user = create_default_user
+    user = create(:user)
     token = user.create_new_token
 
     header 'Authorization', token
     patch "/v1/users/#{user.id}", { username: 'works', current_password: 'Passw0rd!' }.to_json, 'CONTENT_TYPE' => 'application/json'
 
-    user = Duse::Models::User.find(user.id)
+    user.reload
     expect(user.username).to eq 'works'
     expect(last_response.status).to eq 200
   end
@@ -401,7 +398,7 @@ describe Duse::API do
       email: 'flower-pot@example.org',
       password: 'Passw0rd!',
       password_confirmation: 'Passw0rd!',
-      public_key: generate_public_key(1024)
+      public_key: KeyHelper.generate_public_key(1024)
     }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 

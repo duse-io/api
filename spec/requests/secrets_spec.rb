@@ -6,14 +6,10 @@ describe Duse::API do
   end
 
   def default_secret(options = {})
-    user1_key = generate_key
-    user1 = create_default_user(
-      username: 'flower-pot', public_key: user1_key.public_key
-    )
-    user2_key = generate_key
-    user2 = create_default_user(
-      username: 'adracus', public_key: user2_key.public_key
-    )
+    user1_key = KeyHelper.generate_key
+    user1 = create(:user, username: 'flower-pot', public_key: user1_key.public_key)
+    user2_key =KeyHelper.generate_key
+    user2 = create(:user, username: 'adracus', public_key: user2_key.public_key)
 
     {
       title: options[:title] || 'my secret',
@@ -42,15 +38,11 @@ describe Duse::API do
   end
 
   it 'persists a new secret correctly' do
-    user1_key = generate_key
-    user1 = create_default_user(
-      username: 'flower-pot', public_key: user1_key.public_key
-    )
+    user1_key =KeyHelper.generate_key
+    user1 = create(:user, username: 'flower-pot', public_key: user1_key.public_key)
     token = user1.create_new_token
-    user2_key = generate_key
-    user2 = create_default_user(
-      username: 'adracus', public_key: user2_key.public_key
-    )
+    user2_key =KeyHelper.generate_key
+    user2 = create(:user, username: 'adracus', public_key: user2_key.public_key)
     secret_json = {
       title: 'my secret',
       cipher_text: 'someciphertext==',
@@ -126,7 +118,7 @@ describe Duse::API do
     header 'Authorization', user.create_new_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
-    header 'Authorization', create_default_user.create_new_token
+    header 'Authorization', create(:user).create_new_token
     secret_id = JSON.parse(last_response.body)['id']
     get "/v1/secrets/#{secret_id}", {}, 'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq(403)
@@ -156,7 +148,7 @@ describe Duse::API do
   end
 
   it 'should return 404 for a non existant secret' do
-    user = create_default_user
+    user = create(:user)
 
     header 'Authorization', user.create_new_token
     get '/v1/secrets/1', 'CONTENT_TYPE' => 'application/json'
@@ -167,7 +159,7 @@ describe Duse::API do
   end
 
   it 'should not try to do semantic validate when json validation fails' do
-    user = create_default_user
+    user = create(:user)
     secret_json = { title: 'test', parts: 'test' }.to_json
 
     header 'Authorization', user.create_new_token
@@ -178,7 +170,7 @@ describe Duse::API do
   end
 
   it 'should return errors if there are no parts given' do
-    user = create_default_user
+    user = create(:user)
     secret_json = { title: 'test', parts: [] }.to_json
 
     header 'Authorization', user.create_new_token
@@ -189,7 +181,7 @@ describe Duse::API do
   end
 
   it 'should return errors if there are no shares given' do
-    user = create_default_user
+    user = create(:user)
     secret_json = { title: 'test', cipher_text: 'someciphertext==', shares: [] }.to_json
 
     header 'Authorization', user.create_new_token
@@ -203,7 +195,7 @@ describe Duse::API do
   end
 
   it 'should error on malformed json' do
-    user = create_default_user
+    user = create(:user)
 
     header 'Authorization', user.create_new_token
     post '/v1/secrets', '{ ', 'CONTENT_TYPE' => 'application/json'
@@ -228,8 +220,8 @@ describe Duse::API do
 
   it 'should error if the provided users don\'t exist' do
     server = Duse::Models::Server.get
-    key = generate_key
-    user = create_default_user(username: 'user123', public_key: key.public_key)
+    key =KeyHelper.generate_key
+    user = create(:user, username: 'user123', public_key: key.public_key)
     # we're not creating user #3, which triggers this behaviour
     secret_json = {
       title: 'my secret',
@@ -252,10 +244,10 @@ describe Duse::API do
   end
 
   it 'should error if there is no part for the server' do
-    key1 = generate_key
-    user1 = create_default_user(username: 'user1', public_key: key1.public_key)
-    key2 = generate_key
-    user2 = create_default_user(username: 'user2', public_key: key2.public_key)
+    key1 =KeyHelper.generate_key
+    user1 = create(:user, username: 'user1', public_key: key1.public_key)
+    key2 =KeyHelper.generate_key
+    user2 = create(:user, username: 'user2', public_key: key2.public_key)
     secret_json = {
       title: 'my secret',
       parts: [[
@@ -273,12 +265,12 @@ describe Duse::API do
 
   it 'should error when not all parts have shares for the same users' do
     server_user = Duse::Models::Server.get
-    key1 = generate_key
-    user1 = create_default_user(username: 'user1', public_key: key1.public_key)
-    key2 = generate_key
-    user2 = create_default_user(username: 'user2', public_key: key2.public_key)
-    key3 = generate_key
-    user3 = create_default_user(username: 'user3', public_key: key3.public_key)
+    key1 =KeyHelper.generate_key
+    user1 = create(:user, username: 'user1', public_key: key1.public_key)
+    key2 =KeyHelper.generate_key
+    user2 = create(:user, username: 'user2', public_key: key2.public_key)
+    key3 =KeyHelper.generate_key
+    user3 = create(:user, username: 'user3', public_key: key3.public_key)
     secret_json = {
       title: 'my secret',
       parts: [
@@ -304,8 +296,8 @@ describe Duse::API do
 
   it 'should error when there is more than one share per user' do
     server_user = Duse::Models::Server.get
-    key = generate_key
-    user = create_default_user(public_key: key.public_key)
+    key =KeyHelper.generate_key
+    user = create(:user, public_key: key.public_key)
     secret_json = {
       title: 'my secret',
       parts: [
@@ -326,8 +318,8 @@ describe Duse::API do
 
   it 'should error when at least one of the provided users do not exist' do
     server_user = Duse::Models::Server.get
-    key1 = generate_key
-    user1 = create_default_user(username: 'user1', public_key: key1.public_key)
+    key1 =KeyHelper.generate_key
+    user1 = create(:user, username: 'user1', public_key: key1.public_key)
     secret_json = {
       title: 'my secret',
       parts: [
@@ -355,15 +347,11 @@ describe Duse::API do
   end
 
   it 'should be able to update the title of a secret and remember the modifier' do
-    user1_key = generate_key
-    user1 = create_default_user(
-      username: 'flower-pot', public_key: user1_key.public_key
-    )
+    user1_key =KeyHelper.generate_key
+    user1 = create(:user, username: 'flower-pot', public_key: user1_key.public_key)
     token = user1.create_new_token
-    user2_key = generate_key
-    user2 = create_default_user(
-      username: 'adracus', public_key: user2_key.public_key
-    )
+    user2_key =KeyHelper.generate_key
+    user2 = create(:user, username: 'adracus', public_key: user2_key.public_key)
     secret_json = {
       title: 'my secret',
       cipher_text: 'someciphertext==',
@@ -394,14 +382,10 @@ describe Duse::API do
   end
 
   it 'remembers the user who last modified the shares' do
-    user1_key = generate_key
-    user1 = create_default_user(
-      username: 'flower-pot', public_key: user1_key.public_key
-    )
-    user2_key = generate_key
-    user2 = create_default_user(
-      username: 'adracus', public_key: user2_key.public_key
-    )
+    user1_key =KeyHelper.generate_key
+    user1 = create(:user, username: 'flower-pot', public_key: user1_key.public_key)
+    user2_key =KeyHelper.generate_key
+    user2 = create(:user, username: 'adracus', public_key: user2_key.public_key)
     secret_json = {
       title: 'my secret',
       cipher_text: 'someciphertext==',
@@ -479,9 +463,9 @@ describe Duse::API do
   end
 
   it 'ensures there are max 10 participants' do
-    user_key = generate_key
-    user = create_default_user(username: 'user', public_key: user_key.public_key)
-    users = [user, Duse::Models::Server.get] + (1..9).to_a.map { |i| create_default_user(username: "user#{i}") }
+    user_key = KeyHelper.generate_key
+    user = create(:user, username: 'user', public_key: user_key.public_key)
+    users = [user, Duse::Models::Server.get] + (1..9).to_a.map { |i| create(:user) }
     secret_json = {
       title: 'my secret',
       cipher_text: 'someciphertext==',
@@ -556,7 +540,7 @@ describe Duse::API do
   end
 
   it 'does not error on empty body' do
-    token = create_default_user.create_new_token
+    token = create(:user).create_new_token
 
     header 'Authorization', token
     post '/v1/secrets', '', 'CONTENT_TYPE' => 'application/json'

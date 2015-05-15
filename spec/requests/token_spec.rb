@@ -5,15 +5,6 @@ describe Duse::Models::Token do
     Duse::API::App.new
   end
 
-  before :each do
-    DatabaseCleaner.start
-    Duse::Models::Server.ensure_user_exists
-  end
-
-  after :each do
-    DatabaseCleaner.clean
-  end
-
   it 'should return the users api token correctly' do
     user = create(:user, username: 'test', password: 'Passw0rd!')
 
@@ -64,7 +55,7 @@ describe Duse::Models::Token do
   end
 
   it 'should correctly authenticate with a correct token' do
-    user = create(:user, username: 'test', password: 'Passw0rd!')
+    user = create(:user)
 
     header 'Authorization', user.create_new_token
     get '/v1/users/me', 'CONTENT_TYPE' => 'application/json'

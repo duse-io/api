@@ -6,15 +6,6 @@ describe Duse::API do
     Duse::API::App.new
   end
 
-  before :each do
-    DatabaseCleaner.start
-    Duse::Models::Server.ensure_user_exists
-  end
-
-  after :each do
-    DatabaseCleaner.clean
-  end
-
   it 'persists a new secret correctly' do
     secret_json = default_secret.to_json
     token = @user1.create_new_token
@@ -34,7 +25,7 @@ describe Duse::API do
     header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
-    secret_id = Duse::Models::Secret.first.id
+    secret_id = Duse::Models::Secret.last.id
     expect(last_response.body).to eq({
       id: secret_id,
       title: 'my secret',
@@ -47,11 +38,11 @@ describe Duse::API do
     token = @user1.create_new_token
     header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
-    secret_id = Duse::Models::Secret.first.id
+    secret_id = Duse::Models::Secret.last.id
 
     header 'Authorization', token
     get "/v1/secrets/#{secret_id}"
-    users = Duse::Models::User.all.map do |user|
+    users = Duse::Models::Secret.last.users.all.map do |user|
       {
         'id' => user.id,
         'username' => user.username,
@@ -191,19 +182,19 @@ describe Duse::API do
   it 'should error if the provided users don\'t exist' do
     server = Duse::Models::Server.get
     key = KeyHelper.generate_key
-    user = create(:user, username: 'user123', public_key: key.public_key)
+    user = create(:user, public_key: key.public_key)
     # we're not creating user #3, which triggers this behaviour
     secret_json = {
       title: 'my secret',
-      parts: [[
-        share(Duse::Models::Server.get.id, '1-19810ad8', key, server.public_key),
-        share(user.id, '2-2867e0bd', key, user.public_key),
+      shares: [
+        share(Duse::Models::Server.get.id, 'share1', key, server.public_key),
+        share(user.id, 'share2', key, user.public_key),
         {
           user_id: 3,
-          content: '3-374eb6a2',
-          signature: Encryption.sign(key, '3-374eb6a2')
+          content: 'share3',
+          signature: Encryption.sign(key, 'share3')
         }
-      ]]
+      ]
     }.to_json
 
     header 'Authorization', user.create_new_token
@@ -212,46 +203,16 @@ describe Duse::API do
     expect(last_response.status).to eq(422)
   end
 
-  it 'should error if there is no part for the server' do
-    key1 = KeyHelper.generate_key
-    user1 = create(:user, username: 'user1', public_key: key1.public_key)
-    key2 = KeyHelper.generate_key
-    user2 = create(:user, username: 'user2', public_key: key2.public_key)
+  it 'should error if there is no share for the server' do
+    key = KeyHelper.generate_key
+    user1 = create(:user, public_key: key.public_key)
+    user2 = create(:user)
     secret_json = {
       title: 'my secret',
-      parts: [[
-        share(user1.id, '2-2867e0bd', key1, user1.public_key),
-        share(user2.id, '3-374eb6a2', key1, user1.public_key)
-      ]]
-    }.to_json
-
-    header 'Authorization', user1.create_new_token
-    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
-
-    expect(last_response.status).to eq(422)
-  end
-
-  it 'should error when not all parts have shares for the same users' do
-    server_user = Duse::Models::Server.get
-    key1 = KeyHelper.generate_key
-    user1 = create(:user, username: 'user1', public_key: key1.public_key)
-    key2 = KeyHelper.generate_key
-    user2 = create(:user, username: 'user2', public_key: key2.public_key)
-    key3 = KeyHelper.generate_key
-    user3 = create(:user, username: 'user3', public_key: key3.public_key)
-    secret_json = {
-      title: 'my secret',
-      parts: [
-        [
-          share(server_user.id, '1-19810ad8', key1, server_user.public_key),
-          share(user1.id, '2-2867e0bd', key1, user1.public_key),
-          share(user2.id, '3-374eb6a2', key1, user2.public_key)
-        ],
-        [
-          share(server_user.id, '1-940cc79',  key1, server_user.public_key),
-          share(user2.id, '2-2867e0bd', key1, user2.public_key),
-          share(user3.id, '3-374eb6a2', key1, user3.public_key)
-        ]
+      cipher_text: 'someciphertext==',
+      shares: [
+        share(user1.id, 'share1', key, user1.public_key),
+        share(user2.id, 'share2', key, user2.public_key)
       ]
     }.to_json
 
@@ -269,9 +230,9 @@ describe Duse::API do
       title: 'my secret',
       parts: [
         [
-          share(server_user.id, '1-19810ad8', key, server_user.public_key),
-          share(user.id, '2-2867e0bd', key, user.public_key),
-          share(user.id, '3-374eb6a2', key, user.public_key)
+          share(server_user.id, 'share1', key, server_user.public_key),
+          share(user.id, 'share2', key, user.public_key),
+          share(user.id, 'share3', key, user.public_key)
         ]
       ]
     }.to_json
@@ -284,20 +245,20 @@ describe Duse::API do
 
   it 'should error when at least one of the provided users do not exist' do
     server_user = Duse::Models::Server.get
-    key1 = KeyHelper.generate_key
-    user1 = create(:user, username: 'user1', public_key: key1.public_key)
+    key = KeyHelper.generate_key
+    user = create(:user, public_key: key.public_key)
     secret_json = {
       title: 'my secret',
       parts: [
         [
-          share(Duse::Models::Server.get.id, 'share1', key1, server_user.public_key),
-          share(user1.id, 'share2', key1, user1.public_key),
-          share(3, 'share3', key1, user1.public_key)
+          share(Duse::Models::Server.get.id, 'share1', key, server_user.public_key),
+          share(user.id, 'share2', key, user.public_key),
+          share(3, 'share3', key, user.public_key)
         ]
       ]
     }.to_json
 
-    header 'Authorization', user1.create_new_token
+    header 'Authorization', user.create_new_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
@@ -311,18 +272,17 @@ describe Duse::API do
   end
 
   it 'should be able to update the title of a secret and remember the modifier' do
-    user1_key = KeyHelper.generate_key
-    user1 = create(:user, username: 'flower-pot', public_key: user1_key.public_key)
+    key = KeyHelper.generate_key
+    user1 = create(:user, public_key: key.public_key)
     token = user1.create_new_token
-    user2_key = KeyHelper.generate_key
-    user2 = create(:user, username: 'adracus', public_key: user2_key.public_key)
+    user2 = create(:user)
     secret_json = {
       title: 'my secret',
       cipher_text: 'someciphertext==',
       shares: [
-        share(Duse::Models::Server.get.id, 'share1', user1_key, Duse::Models::Server.public_key),
-        share(user1.id, 'share2', user1_key, user1.public_key),
-        share(user2.id, 'share3', user1_key, user2.public_key)
+        share(Duse::Models::Server.get.id, 'share1', key, Duse::Models::Server.public_key),
+        share(user1.id, 'share2', key, user1.public_key),
+        share(user2.id, 'share3', key, user2.public_key)
       ]
     }.to_json
 
@@ -347,9 +307,9 @@ describe Duse::API do
 
   it 'remembers the user who last modified the shares' do
     user1_key = KeyHelper.generate_key
-    user1 = create(:user, username: 'flower-pot', public_key: user1_key.public_key)
+    user1 = create(:user, public_key: user1_key.public_key)
     user2_key = KeyHelper.generate_key
-    user2 = create(:user, username: 'adracus', public_key: user2_key.public_key)
+    user2 = create(:user, public_key: user2_key.public_key)
     secret_json = {
       title: 'my secret',
       cipher_text: 'someciphertext==',
@@ -426,7 +386,7 @@ describe Duse::API do
 
   it 'ensures there are max 10 participants' do
     user_key = KeyHelper.generate_key
-    user = create(:user, username: 'user', public_key: user_key.public_key)
+    user = create(:user, public_key: user_key.public_key)
     users = [user, Duse::Models::Server.get] + (1..9).to_a.map { |i| create(:user) }
     secret_json = {
       title: 'my secret',

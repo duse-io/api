@@ -1,12 +1,4 @@
 describe Duse::API::Authorization do
-  before :each do
-    DatabaseCleaner.start
-  end
-
-  after :each do
-    DatabaseCleaner.clean
-  end
-
   it 'should allow access for a user the secrets belongs to' do
     server = Duse::Models::Server.find_or_create
     user_key = KeyHelper.generate_key

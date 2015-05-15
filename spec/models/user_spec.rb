@@ -1,17 +1,8 @@
 describe Duse::Models::User do
-
-  before :each do
-    DatabaseCleaner.start
-  end
-
-  after :each do
-    DatabaseCleaner.clean
-  end
-
   it 'should not be valid if a user with the same username already exists' do
-    Duse::Models::User.create(username: 'test', password: 'test')
-    user = Duse::Models::User.new(username: 'test', password: 'test')
-    
+    first_user = create(:user)
+    user = build(:user, username: first_user.username)
+
     expect(user.valid?).to be false
   end
 end

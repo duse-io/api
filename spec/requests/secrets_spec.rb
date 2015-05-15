@@ -1,24 +1,9 @@
 describe Duse::API do
   include Rack::Test::Methods
+  include JsonFactory
 
   def app
     Duse::API::App.new
-  end
-
-  def default_secret(options = {})
-    @key = KeyHelper.generate_key
-    @user1 = create(:user, public_key: @key.public_key)
-    @user2 = create(:user)
-
-    {
-      title: options[:title] || 'my secret',
-      cipher_text: options[:cipher_text] || 'someciphertext==',
-      shares: [
-        share(Duse::Models::Server.get.id, 'share1', @key, Duse::Models::Server.public_key),
-        share(@user1.id, 'share2', @key, @user1.public_key),
-        share(@user2.id, 'share3', @key, @user2.public_key)
-      ]
-    }.to_json
   end
 
   def expect_count(entities)
@@ -89,7 +74,7 @@ describe Duse::API do
   end
 
   it 'lists secrets correctly after they have been created' do
-    secret_json = default_secret
+    secret_json = default_secret.to_json
     token = @user1.create_new_token
     header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
@@ -110,7 +95,7 @@ describe Duse::API do
   end
 
   it 'should error if an unauthorized user tries to access a secret' do
-    secret_json = default_secret
+    secret_json = default_secret.to_json
     header 'Authorization', @user1.create_new_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
@@ -126,7 +111,7 @@ describe Duse::API do
   end
 
   it 'should be able to delete a secret' do
-    secret_json = default_secret
+    secret_json = default_secret.to_json
     token = @user1.create_new_token
 
     header 'Authorization', token
@@ -200,7 +185,7 @@ describe Duse::API do
   end
 
   it 'should error when title is empty' do
-    secret_json = default_secret(title: '')
+    secret_json = default_secret(title: '').to_json
 
     header 'Authorization', @user1.create_new_token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
@@ -416,7 +401,7 @@ describe Duse::API do
   end
 
   it 'it should validate when updating just like when creating' do
-    secret_json = default_secret
+    secret_json = default_secret.to_json
     token = @user1.create_new_token
 
     header 'Authorization', token
@@ -437,7 +422,7 @@ describe Duse::API do
   end
 
   it 'ensures the secret limit' do
-    secret_json = default_secret
+    secret_json = default_secret.to_json
     token = @user1.create_new_token
 
     10.times do
@@ -476,9 +461,8 @@ describe Duse::API do
 
   it 'validates the length of the cipher text against the key size' do
     secret_json = default_secret
-    secret_json = JSON.parse(secret_json)
     # since its a 256 bytes or 2048 bits key any length but 256 bytes will fail
-    secret_json['shares'].first['content'] = Encryption.encode(Random.new.bytes(129))
+    secret_json[:shares].first[:content] = Encryption.encode(Random.new.bytes(129))
     secret_json = secret_json.to_json
     token = @user1.create_new_token
 
@@ -493,7 +477,7 @@ describe Duse::API do
   end
 
   it 'validates the cipher to be set non empty' do
-    secret_json = default_secret(cipher_text: '')
+    secret_json = default_secret(cipher_text: '').to_json
     token = @user1.create_new_token
 
     header 'Authorization', token
@@ -506,7 +490,7 @@ describe Duse::API do
   end
 
   it 'validates the cipher text length not to exceed 5000' do
-    secret_json = default_secret(cipher_text: 'a' * 5004)
+    secret_json = default_secret(cipher_text: 'a' * 5004).to_json
     token = @user1.create_new_token
 
     header 'Authorization', token
@@ -519,7 +503,7 @@ describe Duse::API do
   end
 
   it 'validates the cipher text to be base64 encoded' do
-    secret_json = default_secret(cipher_text: 'a')
+    secret_json = default_secret(cipher_text: 'a').to_json
     token = @user1.create_new_token
 
     header 'Authorization', token

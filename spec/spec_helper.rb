@@ -51,13 +51,6 @@ DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.strategy = :transaction
 DatabaseCleaner.clean
 
-def share(user_id, raw_share, private_key, public_key)
-  encrypted_share, signature = Encryption.encrypt(
-    private_key, public_key, raw_share
-  )
-  { user_id: user_id, content: encrypted_share, signature: signature }
-end
-
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest

@@ -6,12 +6,6 @@ describe Duse::API do
     Duse::API::App.new
   end
 
-  def expect_count(entities)
-    expect(Duse::Models::User.all.count).to eq(entities[:user])
-    expect(Duse::Models::Secret.all.count).to eq(entities[:secret])
-    expect(Duse::Models::Share.all.count).to eq(entities[:share])
-  end
-
   before :each do
     DatabaseCleaner.start
     Duse::Models::Server.ensure_user_exists
@@ -22,31 +16,38 @@ describe Duse::API do
   end
 
   it 'persists a new secret correctly' do
-    key = KeyHelper.generate_key
-    user1 = create(:user, public_key: key.public_key)
-    token = user1.create_new_token
-    user2 = create(:user)
-    secret_json = {
-      title: 'my secret',
-      cipher_text: 'someciphertext==',
-      shares: [
-        share(Duse::Models::Server.get.id, 'share1', key, Duse::Models::Server.public_key),
-        share(user1.id, 'share2', key, user1.public_key),
-        share(user2.id, 'share3', key, user2.public_key)
-      ]
-    }.to_json
+    secret_json = default_secret.to_json
+    token = @user1.create_new_token
+
+    header 'Authorization', token
+    expect {
+      post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+    }.to change{ Duse::Models::Secret.count }.by(1)
+
+    expect(last_response.status).to eq(201)
+  end
+
+  it 'renders the secret correctly when creating' do
+    secret_json = default_secret.to_json
+    token = @user1.create_new_token
 
     header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
-    expect(last_response.status).to eq(201)
     secret_id = Duse::Models::Secret.first.id
     expect(last_response.body).to eq({
       id: secret_id,
       title: 'my secret',
       url: "http://example.org/v1/secrets/#{secret_id}"
     }.to_json)
-    expect_count(user: 3, secret: 1, share: 3)
+  end
+
+  it 'it renders the secret correctly when getting it' do
+    secret_json = default_secret.to_json
+    token = @user1.create_new_token
+    header 'Authorization', token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+    secret_id = Duse::Models::Secret.first.id
 
     header 'Authorization', token
     get "/v1/secrets/#{secret_id}"
@@ -61,7 +62,7 @@ describe Duse::API do
     end
     response = JSON.parse last_response.body
     response['shares'].map! do |share|
-      Encryption.decrypt key, share
+      Encryption.decrypt @key, share
     end
     expect(response).to eq({
       'id' => secret_id,
@@ -91,7 +92,6 @@ describe Duse::API do
         }
       ].to_json
     )
-    expect_count(user: 3, secret: 1, share: 3)
   end
 
   it 'should error if an unauthorized user tries to access a secret' do
@@ -106,8 +106,6 @@ describe Duse::API do
     expect(last_response.body).to eq({
       message: 'You are not authorized to access a resource'
     }.to_json)
-
-    expect_count(user: 4, secret: 1, share: 3)
   end
 
   it 'should be able to delete a secret' do
@@ -123,8 +121,6 @@ describe Duse::API do
     delete "/v1/secrets/#{secret_id}"
     expect(last_response.status).to eq(204)
     expect(last_response.body).to eq('')
-
-    expect_count(user: 3, secret: 0, share: 0)
   end
 
   it 'should return 404 for a non existant secret' do
@@ -146,7 +142,6 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 2, secret: 0, share: 0)
   end
 
   it 'should return errors if there are no parts given' do
@@ -157,7 +152,6 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 2, secret: 0, share: 0)
   end
 
   it 'should return errors if there are no shares given' do
@@ -171,7 +165,6 @@ describe Duse::API do
     expect(last_response.body).to eq({
       message: ['Shares must not be empty']
     }.to_json)
-    expect_count(user: 2, secret: 0, share: 0)
   end
 
   it 'should error on malformed json' do
@@ -181,7 +174,6 @@ describe Duse::API do
     post '/v1/secrets', '{ ', 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(400)
-    expect_count(user: 2, secret: 0, share: 0)
   end
 
   it 'should error when title is empty' do
@@ -194,7 +186,6 @@ describe Duse::API do
     expect(last_response.body).to eq(
       { 'message' => ['Title must not be blank'] }.to_json
     )
-    expect_count(user: 3, secret: 0, share: 0)
   end
 
   it 'should error if the provided users don\'t exist' do
@@ -219,7 +210,6 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 2, secret: 0, share: 0)
   end
 
   it 'should error if there is no part for the server' do
@@ -239,7 +229,6 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 3, secret: 0, share: 0)
   end
 
   it 'should error when not all parts have shares for the same users' do
@@ -270,7 +259,6 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 4, secret: 0, share: 0)
   end
 
   it 'should error when there is more than one share per user' do
@@ -292,7 +280,6 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 2, secret: 0, share: 0)
   end
 
   it 'should error when at least one of the provided users do not exist' do
@@ -303,9 +290,9 @@ describe Duse::API do
       title: 'my secret',
       parts: [
         [
-          share(Duse::Models::Server.get.id, '1-19810ad8', key1, server_user.public_key),
-          share(user1.id, '2-2867e0bd', key1, user1.public_key),
-          share(3, '3-374eb6a2', key1, user1.public_key)
+          share(Duse::Models::Server.get.id, 'share1', key1, server_user.public_key),
+          share(user1.id, 'share2', key1, user1.public_key),
+          share(3, 'share3', key1, user1.public_key)
         ]
       ]
     }.to_json
@@ -314,7 +301,6 @@ describe Duse::API do
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq(422)
-    expect_count(user: 2, secret: 0, share: 0)
   end
 
   it 'should error with 401 if the user does not provide an auth header' do
@@ -322,7 +308,6 @@ describe Duse::API do
          default_secret.to_json,
          'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq(401)
-    expect_count(user: 3, secret: 0, share: 0)
   end
 
   it 'should be able to update the title of a secret and remember the modifier' do

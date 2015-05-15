@@ -22,6 +22,8 @@ ActiveRecord::Schema.define(version: 20150124174719) do
     t.integer "last_edited_by_id"
   end
 
+  add_index "secrets", ["last_edited_by_id"], name: "index_secrets_on_last_edited_by_id", using: :btree
+
   create_table "shares", force: :cascade do |t|
     t.text    "content"
     t.text    "signature"

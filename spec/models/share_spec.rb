@@ -9,19 +9,8 @@ describe Duse::Models::Share do
   end
 
   it 'a correctly encrypted and signed share should not raise errors' do
-    server = Duse::Models::Server.find_or_create
-    user_key = KeyHelper.generate_key
-    user = create(:user, public_key: user_key.public_key)
-    secret = Duse::Models::Secret.create title: 'secret', cipher_text: 'someciphertext==', last_edited_by: user
-    content, signature = server.encrypt user_key, 'share1'
-    share = Duse::Models::Share.new(
-      content: content,
-      signature: signature,
-      secret: secret,
-      user: server
-    )
-    expect(share.valid?).to be true
-    share.save
+    secret = create(:secret)
+    expect(secret.valid?).to be true
   end
 end
 

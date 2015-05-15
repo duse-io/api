@@ -3,7 +3,7 @@ class CreateSecrets < ActiveRecord::Migration
     create_table :secrets do |t|
       t.string :title
       t.text :cipher_text
-      t.integer :last_edited_by_id
+      t.integer :last_edited_by_id, index: true
     end
   end
 end

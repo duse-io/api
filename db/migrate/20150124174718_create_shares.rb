@@ -3,9 +3,9 @@ class CreateShares < ActiveRecord::Migration
     create_table :shares do |t|
       t.text :content
       t.text :signature
-      t.integer :user_id
-      t.integer :secret_id
-      t.integer :last_edited_by_id
+      t.belongs_to :user
+      t.belongs_to :secret
+      t.integer :last_edited_by_id, index: true
     end
   end
 end

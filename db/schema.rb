@@ -32,6 +32,8 @@ ActiveRecord::Schema.define(version: 20150124174719) do
     t.integer "last_edited_by_id"
   end
 
+  add_index "shares", ["last_edited_by_id"], name: "index_shares_on_last_edited_by_id", using: :btree
+
   create_table "tokens", force: :cascade do |t|
     t.string   "token_hash"
     t.string   "type"

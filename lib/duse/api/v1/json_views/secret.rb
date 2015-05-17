@@ -1,5 +1,6 @@
 require 'duse/api/json_view'
 require 'duse/api/v1/json_views/user'
+require 'duse/api/v1/json_views/share'
 
 module Duse
   module JSONViews
@@ -7,7 +8,7 @@ module Duse
       property :id
       property :title
       property :cipher_text, type: :full
-      property :shares, type: :full do |secret, options|
+      property :shares, as: Duse::JSONViews::Share, type: :full do |secret, options|
         secret.shares_for options[:user]
       end
       property :users, as: Duse::JSONViews::User, type: :full

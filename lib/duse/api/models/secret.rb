@@ -1,5 +1,6 @@
 require 'duse/api/models/user'
 require 'duse/encryption'
+require 'ostruct'
 
 module Duse
   module Models
@@ -13,10 +14,10 @@ module Duse
         server_share = Encryption.decrypt(
           Server.private_key, server_share.content
         )
-        server_share, _ = Encryption.encrypt(
+        server_share, signature = Encryption.encrypt(
           Server.private_key, user.public_key, server_share
         )
-        shares.where(user: user).map(&:content).prepend server_share
+        shares.where(user: user).to_a.prepend OpenStruct.new(content: server_share, signature: signature, last_edited_by_id: Server.get.id)
       end
     end
   end

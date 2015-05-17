@@ -38,7 +38,7 @@ describe Duse::API do
     token = @user1.create_new_token
     header 'Authorization', token
     post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
-    secret_id = Duse::Models::Secret.last.id
+    secret_id = JSON.parse(last_response.body)['id']
 
     header 'Authorization', token
     get "/v1/secrets/#{secret_id}"
@@ -52,17 +52,22 @@ describe Duse::API do
       }
     end
     response = JSON.parse last_response.body
-    response['shares'].map! do |share|
-      Encryption.decrypt @key, share
-    end
+    shares = response.delete('shares') # separately validate shares and secret
+
     expect(response).to eq({
       'id' => secret_id,
       'title' => 'my secret',
       'cipher_text' => 'someciphertext==',
-      'shares' => %w(share1 share2),
       'users' => users,
       'url' => "http://example.org/v1/secrets/#{secret_id}",
     })
+
+    expect(shares[0]['last_edited_by_id']).to eq Duse::Models::Server.get.id
+    expect(Encryption.decrypt(@key, shares[0]['content'])).to eq 'share1'
+    expect(Encryption.verify(Duse::Models::Server.public_key, shares[0]['signature'], shares[0]['content'])).to be true
+    expect(shares[1]['last_edited_by_id']).to eq @user1.id
+    expect(Encryption.decrypt(@key, shares[1]['content'])).to eq 'share2'
+    expect(Encryption.verify(@key.public_key, shares[1]['signature'], shares[1]['content'])).to be true
   end
 
   it 'lists secrets correctly after they have been created' do

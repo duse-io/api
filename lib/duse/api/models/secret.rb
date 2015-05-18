@@ -6,6 +6,7 @@ module Duse
   module Models
     class Secret < ActiveRecord::Base
       has_many :shares, dependent: :destroy
+      accepts_nested_attributes_for :shares
       has_many :users, -> { uniq.order :id }, through: :shares
       belongs_to :last_edited_by, class_name: 'User', foreign_key: :last_edited_by_id
 

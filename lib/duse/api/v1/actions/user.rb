@@ -6,7 +6,7 @@ class User
   def create(params)
     sanitized_json = UserJSON.new(params).sanitize
     user = Duse::Models::User.new sanitized_json
-    fail Duse::API::ValidationFailed, { message: user.errors.full_messages }.to_json unless user.valid?
+    fail Duse::API::ValidationFailed, { message: user.errors.full_messages }.to_json if !user.valid?
     user.save
     ConfirmationEmail.new(user).send
     user
@@ -22,9 +22,9 @@ class User
     user = get id
     Duse::API::UserAuthorization.authorize! current_user, :update, user
     current_password = params[:current_password]
-    fail Duse::API::ValidationFailed, { message: 'Wrong current password' }.to_json unless user.try(:authenticate, current_password)
+    fail Duse::API::ValidationFailed, { message: 'Wrong current password' }.to_json if !user.try(:authenticate, current_password)
     sanitized_json = UserJSON.new(params).sanitize(strict: false)
-    unless user.update(sanitized_json)
+    if !user.update(sanitized_json)
       fail Duse::API::ValidationFailed, { message: user.errors.full_messages }.to_json
     end
     user

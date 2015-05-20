@@ -1,7 +1,6 @@
 require 'duse/api/models/secret'
 require 'duse/api/models/share'
 require 'duse/api/authorization/secret'
-require 'duse/api/entity_errors'
 require 'duse/api/errors'
 
 class Secret
@@ -39,14 +38,11 @@ class Secret
     if params.key?(:title) || params.key?(:cipher_text)
       secret.last_edited_by = @current_user
     end
-    secret.update(params)
-    secret.valid?
-    errors = secret.errors.full_messages
-    secret.save
 
+    if !secret.update(params)
+      fail Duse::API::ValidationFailed, {message: secret.errors.full_messages}.to_json
+    end
     secret
-  rescue ActiveRecord::RecordNotSaved
-    raise Duse::API::ValidationFailed, {message: errors}.to_json
   end
 
   def create(params)
@@ -60,13 +56,10 @@ class Secret
       shares_attributes: params[:shares]
     )
 
-    secret.valid?
-    errors = secret.errors.full_messages
-    secret.save
-
+    if !secret.save
+      raise Duse::API::ValidationFailed, {message: errors.errors.full_messages}.to_json
+    end
     secret
-  rescue ActiveRecord::RecordNotSaved
-    raise Duse::API::ValidationFailed, {message: errors}.to_json
   end
 end
 

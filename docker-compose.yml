@@ -20,6 +20,7 @@ web:
   links:
     - db
   environment:
+    - RACK_ENV=development
     - EMAIL=noreply@duse.io
     - SECRET_KEY=somesupersecretkey
     - DATABASE_URL=postgres://duse:supersave@db/duse

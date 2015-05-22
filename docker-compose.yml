@@ -19,9 +19,5 @@ web:
     - "5000:5000"
   links:
     - db
-  environment:
-    - RACK_ENV=development
-    - EMAIL=noreply@duse.io
-    - SECRET_KEY=somesupersecretkey
-    - DATABASE_URL=postgres://duse:supersave@db/duse
+  env_file: .env
 

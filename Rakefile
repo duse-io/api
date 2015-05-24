@@ -45,3 +45,18 @@ namespace :config do
   end
 end
 
+task :exchange_server_keypair => 'db:load_config' do
+  server_user = Duse::Models::Server.get
+  old_keypair = server_user.private_key
+  new_keypair = OpenSSL::PKey::RSA.generate(4096)
+  server_user.private_key = new_keypair.to_s
+  server_user.public_key = new_keypair.public_key.to_s
+  server_user.save
+  shares = Duse::Models::Share.where(user: server_user)
+  shares.each do |share|
+    plaintext = Encryption.decrypt old_keypair, share.content
+    share.content, share.signature = Encryption.encrypt new_keypair, new_keypair.public_key, plaintext
+    share.save
+  end
+end
+

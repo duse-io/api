@@ -23,8 +23,8 @@ unless ENV['CI']
 end
 
 if ENV['CI']
-  require 'coveralls'
-  Coveralls.wear!
+  require 'codeclimate-test-reporter'
+  CodeClimate::TestReporter.start
 end
 
 ENV['SECRET_KEY'] = 'le_super_secret_key'

@@ -24,7 +24,7 @@ group :test do
   gem 'climate_control'
   gem 'database_cleaner'
   gem 'simplecov', require: false
-  gem 'coveralls', require: false
+  gem 'codeclimate-test-reporter', require: false
 end
 
 group :development do

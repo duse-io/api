@@ -3,7 +3,7 @@ describe Duse::API::Authorization do
     server = Duse::Models::Server.find_or_create
     user_key = KeyHelper.generate_key
     user = create(:user, public_key: user_key.public_key)
-    secret = Duse::Models::Secret.create title: 'secret', cipher_text: 'someciphertext==', last_edited_by: user
+    secret = Duse::Models::Secret.create title: 'secret', cipher_text: 'someciphertext==', last_edited_by: user, users: [server, user]
     content1, signature1 = server.encrypt user_key, 'share1'
     content2, signature2 = user.encrypt user_key, 'share2'
     Duse::Models::Share.create(
@@ -26,7 +26,7 @@ describe Duse::API::Authorization do
     server = Duse::Models::Server.find_or_create
     user_key = KeyHelper.generate_key
     user = create(:user, public_key: user_key.public_key)
-    secret = Duse::Models::Secret.create title: 'secret', cipher_text: 'someciphertext==', last_edited_by: user
+    secret = Duse::Models::Secret.create title: 'secret', cipher_text: 'someciphertext==', last_edited_by: user, users: [server, user]
     content1, signature1 = server.encrypt user_key, 'share1'
     content2, signature2 = user.encrypt user_key, 'share2'
     Duse::Models::Share.create(

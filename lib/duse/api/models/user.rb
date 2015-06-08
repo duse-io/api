@@ -2,6 +2,7 @@ require 'openssl'
 require 'securerandom'
 
 require 'duse/api/models/token'
+require 'duse/api/models/user_secret'
 
 module Duse
   module Models
@@ -12,8 +13,8 @@ module Duse
 
       has_many :tokens
       has_many :confirmation_tokens
-      has_many :shares
-      has_many :secrets, -> { uniq.order :id }, through: :shares
+      has_many :user_secrets
+      has_many :secrets, -> { uniq.order :id }, through: :user_secrets
 
       validates_uniqueness_of :username
       validates_uniqueness_of :email

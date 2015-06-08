@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150124174719) do
+ActiveRecord::Schema.define(version: 20150608205217) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,6 +42,16 @@ ActiveRecord::Schema.define(version: 20150124174719) do
   end
 
   add_index "tokens", ["token_hash"], name: "index_tokens_on_token_hash", unique: true, using: :btree
+
+  create_table "user_secrets", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "secret_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "user_secrets", ["secret_id"], name: "index_user_secrets_on_secret_id", using: :btree
+  add_index "user_secrets", ["user_id"], name: "index_user_secrets_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "username",        default: "", null: false

@@ -1,6 +1,6 @@
 module Duse
   module API
-    module Endpoints
+    module V1
       module Helpers
         def current_user
           env['warden'].user

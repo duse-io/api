@@ -8,7 +8,7 @@ require 'duse/api'
 
 module Duse
   module API
-    module Endpoints
+    module V1
       class Base < Sinatra::Base
         set :database, ENV['DATABASE_URL']
         set :database_extras, { pool: 5, timeout: 3000, encoding: 'unicode' }

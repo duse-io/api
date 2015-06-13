@@ -52,7 +52,7 @@ module Duse
 
         %w(get post patch put delete).each do |http_method|
           define_method http_method do |status_code, json_schema, json_view, relative_route, klass|
-            add_endpoint HTTPEndpoint.new(
+            e = HTTPEndpoint.new(
               self, 
               http_method, 
               json_schema, 
@@ -60,6 +60,8 @@ module Duse
               relative_route, 
               klass
             )
+            add_endpoint e
+            e.add_to_sinatra(self)
           end
         end
 

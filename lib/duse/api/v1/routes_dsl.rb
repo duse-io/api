@@ -34,6 +34,12 @@ module Duse
           def absolute_route
             Pathname.new(File.join(@parent.route, relative_route)).cleanpath.to_s
           end
+
+          def add_to_sinatra(sinatra_class)
+            sinatra_class.send(http_method) do
+              @klass.new(current_user, json).call
+            end
+          end
         end
 
         def namespace(name, &block)
@@ -45,10 +51,15 @@ module Duse
         end
 
         %w(get post patch put delete).each do |http_method|
-          define_method http_method do |hash|
-            hash.each do |relative_route, klass|
-              add_endpoint HTTPEndpoint.new(self, http_method, relative_route, klass)
-            end
+          define_method http_method do |status_code, json_schema, json_view, relative_route, klass|
+            add_endpoint HTTPEndpoint.new(
+              self, 
+              http_method, 
+              json_schema, 
+              json_view, 
+              relative_route, 
+              klass
+            )
           end
         end
 

@@ -1,11 +1,9 @@
 require 'sinatra/base'
-require 'sinatra/namespace'
-require 'sinatra/json'
 require 'sinatra/activerecord'
 
 require 'duse/api/errors'
 require 'duse/api/authorization'
-require 'duse/api/v1/endpoints/helpers'
+require 'duse/api/v1/helpers'
 require 'duse/api'
 
 module Duse
@@ -19,8 +17,6 @@ module Duse
         disable :show_exceptions # disable middleware displaying errors as html
 
         helpers Helpers
-        helpers Sinatra::JSON
-        register Sinatra::Namespace
         register Sinatra::ActiveRecordExtension
 
         error JSON::ParserError do

@@ -22,13 +22,17 @@ module Duse
         end
 
         class HTTPEndpoint
-          attr_reader :http_method, :relative_route, :klass
+          attr_reader :http_method, :status_code, :json_schema, :json_view, :relative_route, :klass, :options
 
-          def initialize(parent, http_method, relative_route, klass)
+          def initialize(parent, http_method, status_code, json_schema, json_view, relative_route, klass, options = {})
             @parent = parent
             @http_method = http_method.upcase
+            @status_code = status_code
+            @json_schema = json_schema
+            @json_view = json_view
             @relative_route = relative_route
             @klass = klass
+            @options = { auth: :api_token }.merge(options)
           end
 
           def absolute_route
@@ -37,7 +41,16 @@ module Duse
 
           def add_to_sinatra(sinatra_class)
             sinatra_class.send(http_method) do
-              @klass.new(current_user, json).call
+              authenticate! options[:auth]
+              status status_code
+              json = nil
+              json = json_schema.new(request_json) if json_schema.nil?
+              result = @klass.new(current_user, params, json).call
+              if json_view.nil?
+                nil
+              else
+                json_view.new(result, current_user: current_user).render 
+              end
             end
           end
         end
@@ -54,10 +67,11 @@ module Duse
           define_method http_method do |status_code, json_schema, json_view, relative_route, klass|
             e = HTTPEndpoint.new(
               self, 
-              http_method, 
-              json_schema, 
-              json_view, 
-              relative_route, 
+              http_method,
+              status_code,
+              json_schema,
+              json_view,
+              relative_route,
               klass
             )
             add_endpoint e

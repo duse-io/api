@@ -1,7 +1,7 @@
 require 'duse/api/v1_switch'
 require 'duse/api/authentication'
 require 'duse/api/cors'
-require 'duse/api/v1'
+require 'duse/api/v1/routes'
 require 'duse/api/config'
 
 module Duse
@@ -12,7 +12,7 @@ module Duse
           use Cors
           use Authentication
           use V1Switch
-          run V1.new
+          run V1::Routes.new
         end
       end
 

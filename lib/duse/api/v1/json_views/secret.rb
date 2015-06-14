@@ -10,10 +10,10 @@ module Duse
           property :id
           property :title
           property :cipher_text, type: :full
-          property :shares, as: Duse::JSONViews::Share, type: :full do |secret, options|
+          property :shares, as: Share, type: :full do |secret, options|
             secret.shares_for options[:user]
           end
-          property :users, as: Duse::JSONViews::User, type: :full
+          property :users, as: User, type: :full
           property :url do |secret, options|
             "http://#{options[:host]}/v1/secrets/#{secret.id}"
           end

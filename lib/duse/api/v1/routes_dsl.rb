@@ -40,7 +40,7 @@ module Duse
           end
 
           def add_to_sinatra(sinatra_class)
-            sinatra_class.send(http_method) do
+            sinatra_class.send(http_method.downcase, absolute_route) do
               authenticate! options[:auth]
               status status_code
               json = nil
@@ -64,7 +64,7 @@ module Duse
         end
 
         %w(get post patch put delete).each do |http_method|
-          define_method http_method do |status_code, json_schema, json_view, relative_route, klass|
+          define_method http_method do |status_code, json_schema, json_view, relative_route, klass, options = {}|
             e = HTTPEndpoint.new(
               self, 
               http_method,
@@ -72,10 +72,10 @@ module Duse
               json_schema,
               json_view,
               relative_route,
-              klass
+              klass,
+              { auth: :api_token }.merge(options)
             )
             add_endpoint e
-            e.add_to_sinatra(self)
           end
         end
 
@@ -90,11 +90,19 @@ module Duse
 
         def add_endpoint(http_endpoint)
           endpoints << http_endpoint
-          
+          http_endpoint.add_to_sinatra(sinatra_class)
         end
 
         def endpoints
           @endpoints ||= []
+        end
+
+        def sinatra_class
+          @sinatra_class ||= Class.new(Base)
+        end
+
+        def call(env)
+          @sinatra_class.call(env)
         end
       end
     end

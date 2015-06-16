@@ -3,6 +3,11 @@ require 'duse/api/v1/routes_dsl'
 require 'duse/api/v1/json_views/user'
 require 'duse/api/v1/json_views/token'
 require 'duse/api/v1/json_views/secret'
+require 'duse/api/v1/json_schemas/user'
+require 'duse/api/v1/json_schemas/email'
+require 'duse/api/v1/json_schemas/token'
+require 'duse/api/v1/json_schemas/password'
+require 'duse/api/v1/json_schemas/secret'
 require 'duse/api/v1/mediators/user/list'
 require 'duse/api/v1/mediators/user/create'
 require 'duse/api/v1/mediators/user/get_server'
@@ -29,26 +34,26 @@ module Duse
 
         namespace :v1 do
           namespace :users do
-            get    200, nil,                   JSONViews::User,  '/',                User::List
-            post   201, JSONSchemas::User,     JSONViews::User,  '/',                User::Create
-            get    200, nil,                   JSONViews::User,  '/server',          User::GetServer
-            get    200, nil,                   JSONViews::User,  '/me',              User::GetMyself
-            get    200, nil,                   JSONViews::User,  '/:id',             User::Get
-            update 200, JSONSchemas::User,     JSONViews::User,  '/:id',             User::Update
-            delete 204, nil,                   nil,              '/:id',             User::Delete
-            post   204, JSONSchemas::Email,    nil,              '/confirm',         User::ResendConfirmation
-            patch  204, JSONSchemas::Token,    nil,              '/confirm',         User::Confirm
-            post   204, JSONSchemas::Email,    nil,              '/forgot_password', User::RequestPasswordReset
-            patch  204, JSONSchemas::Password, nil,              '/password',        User::ResetPassword
-            post   201, nil,                   JSONViews::Token, '/token',           User::CreateAuthToken, auth: :password
+            get    200, nil,                   JSONViews::User,  '/',                Mediators::User::List
+            post   201, JSONSchemas::User,     JSONViews::User,  '/',                Mediators::User::Create
+            get    200, nil,                   JSONViews::User,  '/server',          Mediators::User::GetServer
+            get    200, nil,                   JSONViews::User,  '/me',              Mediators::User::GetMyself
+            get    200, nil,                   JSONViews::User,  '/:id',             Mediators::User::Get
+            update 200, JSONSchemas::User,     JSONViews::User,  '/:id',             Mediators::User::Update
+            delete 204, nil,                   nil,              '/:id',             Mediators::User::Delete
+            post   204, JSONSchemas::Email,    nil,              '/confirm',         Mediators::User::ResendConfirmation
+            patch  204, JSONSchemas::Token,    nil,              '/confirm',         Mediators::User::Confirm
+            post   204, JSONSchemas::Email,    nil,              '/forgot_password', Mediators::User::RequestPasswordReset
+            patch  204, JSONSchemas::Password, nil,              '/password',        Mediators::User::ResetPassword
+            post   201, nil,                   JSONViews::Token, '/token',           Mediators::User::CreateAuthToken, auth: :password
           end
 
           namespace :secrets do
-            get    200, nil,                 JSONViews::Secret, '/',    Secret::List
-            post   201, JSONSchemas::Secret, JSONViews::Secret, '/',    Secret::Create
-            get    200, nil,                 JSONViews::Secret, '/:id', Secret::Get
-            update 200, JSONSchemas::Secret, JSONViews::Secret, '/:id', Secret::Update
-            delete 204, nil,                 nil,               '/:id', Secret::Delete
+            get    200, nil,                 JSONViews::Secret, '/',    Mediators::Secret::List
+            post   201, JSONSchemas::Secret, JSONViews::Secret, '/',    Mediators::Secret::Create
+            get    200, nil,                 JSONViews::Secret, '/:id', Mediators::Secret::Get
+            update 200, JSONSchemas::Secret, JSONViews::Secret, '/:id', Mediators::Secret::Update
+            delete 204, nil,                 nil,               '/:id', Mediators::Secret::Delete
           end
         end
       end

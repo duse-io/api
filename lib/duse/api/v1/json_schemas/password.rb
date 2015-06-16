@@ -5,7 +5,7 @@ module Duse
   module API
     module V1
       module JSONSchemas
-        class Token < DefaultJSON
+        class Password < DefaultJSON
           def initialize(json)
             super(json, nil, JSONSchema.new({
               type: Hash,

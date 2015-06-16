@@ -42,20 +42,15 @@ module Duse
           def add_to_sinatra(sinatra_class)
             sinatra_class.instance_exec(http_method, klass, absolute_route, status_code, json_schema, json_view, opts) do |http_method, klass, absolute_route, status_code, json_schema, json_view, opts|
               send(http_method.downcase, absolute_route) do
-                begin
-                  authenticate! opts[:auth]
-                  status status_code
-                  json = nil
-                  json = json_schema.new(request_json) if json_schema.nil?
-                  result = klass.new(current_user, params, json).call
-                  if json_view.nil?
-                    nil
-                  else
-                    json_view.new(result, current_user: current_user).render 
-                  end
-                rescue => e
-                  puts e
-                  puts e.backtrace
+                authenticate! opts[:auth]
+                status status_code
+                json = nil
+                json = json_schema.new(request_json) if !json_schema.nil?
+                result = klass.new(current_user, params, json).call
+                if json_view.nil?
+                  nil
+                else
+                  json_view.new(result, current_user: current_user).render 
                 end
               end
             end

@@ -6,6 +6,15 @@ describe Duse::API do
     Duse::API::App.new
   end
 
+  it 'responds with 201 when creating' do
+    secret_json = default_secret.to_json
+
+    header 'Authorization', @user1.create_new_token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.status).to eq(201)
+  end
+
   it 'persists a new secret correctly' do
     secret_json = default_secret.to_json
     token = @user1.create_new_token
@@ -14,8 +23,6 @@ describe Duse::API do
     expect {
       post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
     }.to change{ Duse::Models::Secret.count }.by(1)
-
-    expect(last_response.status).to eq(201)
   end
 
   it 'renders the secret correctly when creating' do

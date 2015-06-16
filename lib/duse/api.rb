@@ -12,7 +12,7 @@ module Duse
           use Cors
           use Authentication
           use V1Switch
-          run V1::Routes.new
+          run V1::Routes
         end
       end
 

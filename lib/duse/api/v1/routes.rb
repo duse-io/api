@@ -50,9 +50,9 @@ module Duse
 
           namespace :secrets do
             get    200, nil,                 JSONViews::Secret, '/',    Mediators::Secret::List
-            post   201, JSONSchemas::Secret, JSONViews::Secret, '/',    Mediators::Secret::Create, type: :full
-            get    200, nil,                 JSONViews::Secret, '/:id', Mediators::Secret::Get,    type: :full
-            update 200, JSONSchemas::Secret, JSONViews::Secret, '/:id', Mediators::Secret::Update, type: :full
+            post   201, JSONSchemas::Secret, JSONViews::Secret, '/',    Mediators::Secret::Create
+            get    200, nil,                 JSONViews::Secret, '/:id', Mediators::Secret::Get, type: :full
+            update 200, JSONSchemas::Secret, JSONViews::Secret, '/:id', Mediators::Secret::Update
             delete 204, nil,                 nil,               '/:id', Mediators::Secret::Delete
           end
         end

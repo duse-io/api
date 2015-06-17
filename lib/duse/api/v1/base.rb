@@ -32,7 +32,7 @@ module Duse
           halt 403, { message: 'You are not authorized to access a resource' }.to_json
         end
 
-        error NotFound do
+        error Duse::API::NotFound do
           halt 404
         end
 

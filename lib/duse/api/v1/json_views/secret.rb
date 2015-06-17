@@ -11,7 +11,7 @@ module Duse
           property :title
           property :cipher_text, type: :full
           property :shares, as: Share, type: :full do |secret, options|
-            secret.shares_for options[:user]
+            secret.shares_for options[:current_user]
           end
           property :users, as: User, type: :full
           property :url do |secret, options|

@@ -35,11 +35,11 @@ module Duse
         namespace :v1 do
           namespace :users do
             get    200, nil,                   JSONViews::User,  '/',                Mediators::User::List
-            post   201, JSONSchemas::User,     JSONViews::User,  '/',                Mediators::User::Create
-            get    200, nil,                   JSONViews::User,  '/server',          Mediators::User::GetServer
-            get    200, nil,                   JSONViews::User,  '/me',              Mediators::User::GetMyself
-            get    200, nil,                   JSONViews::User,  '/:id',             Mediators::User::Get
-            update 200, JSONSchemas::User,     JSONViews::User,  '/:id',             Mediators::User::Update
+            post   201, JSONSchemas::User,     JSONViews::User,  '/',                Mediators::User::Create,    type: :full
+            get    200, nil,                   JSONViews::User,  '/server',          Mediators::User::GetServer, type: :full
+            get    200, nil,                   JSONViews::User,  '/me',              Mediators::User::GetMyself, type: :full
+            get    200, nil,                   JSONViews::User,  '/:id',             Mediators::User::Get,       type: :full
+            update 200, JSONSchemas::User,     JSONViews::User,  '/:id',             Mediators::User::Update,    type: :full
             delete 204, nil,                   nil,              '/:id',             Mediators::User::Delete
             post   204, JSONSchemas::Email,    nil,              '/confirm',         Mediators::User::ResendConfirmation
             patch  204, JSONSchemas::Token,    nil,              '/confirm',         Mediators::User::Confirm
@@ -50,9 +50,9 @@ module Duse
 
           namespace :secrets do
             get    200, nil,                 JSONViews::Secret, '/',    Mediators::Secret::List
-            post   201, JSONSchemas::Secret, JSONViews::Secret, '/',    Mediators::Secret::Create
-            get    200, nil,                 JSONViews::Secret, '/:id', Mediators::Secret::Get
-            update 200, JSONSchemas::Secret, JSONViews::Secret, '/:id', Mediators::Secret::Update
+            post   201, JSONSchemas::Secret, JSONViews::Secret, '/',    Mediators::Secret::Create, type: :full
+            get    200, nil,                 JSONViews::Secret, '/:id', Mediators::Secret::Get,    type: :full
+            update 200, JSONSchemas::Secret, JSONViews::Secret, '/:id', Mediators::Secret::Update, type: :full
             delete 204, nil,                 nil,               '/:id', Mediators::Secret::Delete
           end
         end

@@ -1,3 +1,6 @@
+require 'duse/api/models/secret'
+require 'duse/api/authorization/secret'
+
 module Duse
   module API
     module V1

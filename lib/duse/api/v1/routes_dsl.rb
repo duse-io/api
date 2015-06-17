@@ -50,7 +50,7 @@ module Duse
                 if json_view.nil?
                   nil
                 else
-                  json_view.new(result, current_user: current_user).render 
+                  json_view.new(result, { current_user: current_user, host: request.host }.merge(opts)).render.to_json
                 end
               end
             end

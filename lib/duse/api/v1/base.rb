@@ -46,8 +46,6 @@ module Duse
 
         error do
           Raven.capture_exception env['sinatra.error']
-          puts env['sinatra.error']
-          puts env['sinatra.error'].backtrace
           halt 500, JSON.generate(message: 'Whoops, an error occured in duse')
         end
       end

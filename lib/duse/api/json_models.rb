@@ -1,8 +1,12 @@
 require 'duse/api/json_validator'
 require 'duse/api/json_extractor'
+require 'forwardable'
 
 class DefaultJSON
+  extend Forwardable
+
   attr_reader :validator, :schema
+  def_delegator :@json, :[]
 
   def initialize(json, validator, schema)
     @validator = validator
@@ -13,8 +17,8 @@ class DefaultJSON
   def validate!(options = {})
     errors = JSONValidator.new(schema, options).validate(@json)
 
-    # only do a semantic check if schema validation successful
-    if errors.empty?
+    # only do a semantic check if schema validation successful and validator is provided
+    if errors.empty? && !validator.nil?
       errors.merge semantic_errors(options)
     end
 

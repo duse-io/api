@@ -1,16 +1,14 @@
 require 'sinatra/base'
-require 'sinatra/namespace'
-require 'sinatra/json'
 require 'sinatra/activerecord'
 
 require 'duse/api/errors'
 require 'duse/api/authorization'
-require 'duse/api/v1/endpoints/helpers'
+require 'duse/api/v1/helpers'
 require 'duse/api'
 
 module Duse
   module API
-    module Endpoints
+    module V1
       class Base < Sinatra::Base
         set :database, ENV['DATABASE_URL']
         set :database_extras, { pool: 5, timeout: 3000, encoding: 'unicode' }
@@ -19,12 +17,10 @@ module Duse
         disable :show_exceptions # disable middleware displaying errors as html
 
         helpers Helpers
-        helpers Sinatra::JSON
-        register Sinatra::Namespace
         register Sinatra::ActiveRecordExtension
 
-        error JSON::ParserError do
-          halt 400, { message: 'Invalid json' }.to_json
+        error MalformedJSON, AlreadyConfirmed do
+          halt 400, { message: env['sinatra.error'].message }.to_json
         end
 
         error UserNotConfirmed do
@@ -36,7 +32,7 @@ module Duse
           halt 403, { message: 'You are not authorized to access a resource' }.to_json
         end
 
-        error NotFound do
+        error Duse::API::NotFound do
           halt 404
         end
 

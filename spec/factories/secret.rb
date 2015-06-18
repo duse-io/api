@@ -1,4 +1,6 @@
 require 'support/key_helper'
+require 'duse/api/models/secret'
+require 'duse/api/models/user'
 
 FactoryGirl.define do
   factory :secret, class: Duse::Models::Secret do

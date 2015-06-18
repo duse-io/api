@@ -1,3 +1,5 @@
+require 'duse/api/authorization/secret'
+
 describe Duse::API::Authorization do
   it 'should allow access for a user the secrets belongs to' do
     server = Duse::Models::Server.find_or_create

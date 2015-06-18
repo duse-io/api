@@ -5,7 +5,7 @@ module Duse
         module Secret
           class Update < Mediators::Base
             def call
-              json = json.sanitize strict: false, current_user: current_user
+              json = self.json.sanitize strict: false, current_user: current_user
               secret = Get.new(current_user, params, json).call
               Duse::API::SecretAuthorization.authorize! current_user, :update, secret
               if !json[:shares].nil?

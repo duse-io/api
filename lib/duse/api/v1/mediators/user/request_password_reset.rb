@@ -1,3 +1,5 @@
+require 'duse/api/emails/forgot_password_email'
+
 module Duse
   module API
     module V1

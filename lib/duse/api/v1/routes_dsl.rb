@@ -43,7 +43,7 @@ module Duse
             sinatra_class.instance_exec(http_method, klass, absolute_route, status_code, json_schema, json_view, opts) do |http_method, klass, absolute_route, status_code, json_schema, json_view, opts|
               send(http_method.downcase, absolute_route) do
                 begin
-                  authenticate! opts[:auth]
+                  authenticate!(opts[:auth]) if opts[:auth] != :none
                   status status_code
                   json = nil
                   json = json_schema.new(request_json) if !json_schema.nil?

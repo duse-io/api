@@ -1,3 +1,5 @@
+require 'duse/api/emails/confirmation_email'
+
 module Duse
   module API
     module V1

@@ -1,3 +1,5 @@
+require 'duse/api/authorization/user'
+
 module Duse
   module API
     module V1

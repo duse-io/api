@@ -19,8 +19,8 @@ module Duse
         helpers Helpers
         register Sinatra::ActiveRecordExtension
 
-        error JSON::ParserError do
-          halt 400, { message: 'Invalid json' }.to_json
+        error MalformedJSON, AlreadyConfirmed do
+          halt 400, { message: env['sinatra.error'].message }.to_json
         end
 
         error UserNotConfirmed do
@@ -46,6 +46,8 @@ module Duse
 
         error do
           Raven.capture_exception env['sinatra.error']
+          puts env['sinatra.error']
+          puts env['sinatra.error'].backtrace
           halt 500, JSON.generate(message: 'Whoops, an error occured in duse')
         end
       end

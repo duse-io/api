@@ -19,7 +19,11 @@ module Duse
         def request_json
           content = request_body
           content ||= '{}'
-          JSON.parse content, symbolize_names: true
+          begin
+            JSON.parse content, symbolize_names: true
+          rescue JSON::ParserError
+            raise MalformedJSON
+          end
         end
       end
     end

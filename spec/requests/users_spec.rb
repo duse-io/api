@@ -60,7 +60,7 @@ describe Duse::API do
     user = create(:user, confirmed_at: nil)
     post '/v1/users/confirm', { email: user.email }.to_json, 'CONTENT_TYPE' => 'application/json'
 
-    expect(last_response.status).to eq 201
+    expect(last_response.status).to eq 204
     mail = Mail::TestMailer.deliveries.first
     expect(mail.to).to eq [user.email]
     expect(mail.from).to eq ['noreply@example.org']
@@ -90,7 +90,7 @@ describe Duse::API do
     user = Duse::Models::User.find_by_username 'test'
     post '/v1/users/confirm', { email: user.email }.to_json, 'CONTENT_TYPE' => 'application/json'
 
-    expect(last_response.status).to eq 201
+    expect(last_response.status).to eq 204
     expect(user.confirmation_tokens.length).to eq 1
   end
 
@@ -98,7 +98,7 @@ describe Duse::API do
     user = create(:user)
     post '/v1/users/forgot_password', { email: user.email }.to_json, 'CONTENT_TYPE' => 'application/json'
 
-    expect(last_response.status).to eq 201
+    expect(last_response.status).to eq 204
     mail = Mail::TestMailer.deliveries.first
     expect(mail.to).to eq [user.email]
     expect(mail.from).to eq ['noreply@example.org']

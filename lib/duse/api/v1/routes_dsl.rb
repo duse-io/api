@@ -70,19 +70,23 @@ module Duse
         end
 
         %w(get post patch put delete).each do |http_method|
-          define_method http_method do |status_code, json_schema, json_view, relative_route, klass, options = {}|
-            e = HTTPEndpoint.new(
-              self, 
-              http_method,
-              status_code,
-              json_schema,
-              json_view,
-              relative_route,
-              klass,
-              { auth: :api_token }.merge(options)
-            )
-            add_endpoint e
+          define_method http_method do |*args|
+            add_route http_method, *args
           end
+        end
+
+        def add_route(http_method, status_code, json_schema, json_view, relative_route, klass, options = {})
+          e = HTTPEndpoint.new(
+            self,
+            http_method,
+            status_code,
+            json_schema,
+            json_view,
+            relative_route,
+            klass,
+            { auth: :api_token }.merge(options)
+          )
+          add_endpoint e
         end
 
         def update(*args)

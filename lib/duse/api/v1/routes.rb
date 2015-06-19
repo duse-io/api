@@ -31,7 +31,7 @@ require 'duse/api/v1/mediators/secret/delete'
 module Duse
   module API
     module V1
-      class Routes < Base
+      class Routes
         extend RoutesDSL
 
         namespace :v1 do

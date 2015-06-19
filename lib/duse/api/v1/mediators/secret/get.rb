@@ -8,8 +8,8 @@ module Duse
         module Secret
           class Get < Mediators::Base
             def call
-              secret = Duse::Models::Secret.find params[:id]
-              Duse::API::SecretAuthorization.authorize! current_user, :read, secret
+              secret = Models::Secret.find params[:id]
+              SecretAuthorization.authorize! current_user, :read, secret
               secret
             rescue ActiveRecord::RecordNotFound
               raise Sinatra::NotFound

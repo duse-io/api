@@ -7,7 +7,7 @@ module Duse
             def call
               json = self.json.sanitize strict: false, current_user: current_user
               secret = Get.new(current_user, params, json).call
-              Duse::API::SecretAuthorization.authorize! current_user, :update, secret
+              SecretAuthorization.authorize! current_user, :update, secret
               if !json[:shares].nil?
                 user_ids = []
                 json[:shares].each do |s| 
@@ -23,7 +23,7 @@ module Duse
               end
 
               if !secret.update(json)
-                fail Duse::API::ValidationFailed, {message: secret.errors.full_messages}.to_json
+                fail ValidationFailed, {message: secret.errors.full_messages}.to_json
               end
               secret
             end

@@ -6,7 +6,7 @@ module Duse
           class Delete < Mediators::Base
             def call
               secret = Get.new(current_user, params, json).call
-              Duse::API::SecretAuthorization.authorize! current_user, :delete, secret
+              SecretAuthorization.authorize! current_user, :delete, secret
               secret.destroy
             end
           end

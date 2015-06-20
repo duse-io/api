@@ -22,17 +22,33 @@ module Duse
         end
 
         class HTTPEndpoint
-          attr_reader :http_method, :status_code, :json_schema, :json_view, :relative_route, :klass, :opts
+          attr_reader :http_method, :status_code, :relative_route, :klass, :schema, :schema_opts, :view, :view_opts, :auth, :auth_opts
 
-          def initialize(parent, http_method, status_code, json_schema, json_view, relative_route, klass, opts = {})
+          def initialize(parent, http_method, status_code, relative_route, klass)
             @parent = parent
             @http_method = http_method.upcase
             @status_code = status_code
-            @json_schema = json_schema
-            @json_view = json_view
             @relative_route = relative_route
             @klass = klass
-            @opts = { auth: :api_token }.merge(opts)
+            @auth = false
+          end
+
+          def authenticate(opts = {})
+            @auth = true
+            @auth_opts = { with: :api_token }.merge(opts)
+            self
+          end
+
+          def validate_with(schema, opts = {})
+            @schema_opts = opts
+            @schema = schema
+            self
+          end
+
+          def render_with(view, opts = {})
+            @view_opts = opts
+            @view = view
+            self
           end
 
           def absolute_route
@@ -40,18 +56,18 @@ module Duse
           end
 
           def add_to_sinatra(sinatra_class)
-            sinatra_class.instance_exec(http_method, klass, absolute_route, status_code, json_schema, json_view, opts) do |http_method, klass, absolute_route, status_code, json_schema, json_view, opts|
+            sinatra_class.instance_exec(http_method, status_code, absolute_route, klass, schema, view, view_opts, auth, auth_opts) do |http_method, status_code, absolute_route, klass, schema, view, view_opts, auth, auth_opts|
               send(http_method.downcase, absolute_route) do
                 begin
-                  authenticate!(opts[:auth]) if opts[:auth] != :none
+                  authenticate!(auth_opts[:with]) if auth
                   status status_code
                   json = nil
-                  json = json_schema.new(request_json) if !json_schema.nil?
+                  json = schema.new(request_json) if !schema.nil?
                   result = klass.new(current_user, params, json).call
-                  if json_view.nil?
+                  if view.nil?
                     nil
                   else
-                    json_view.new(result, { current_user: current_user, host: request.host }.merge(opts)).render.to_json
+                    view.new(result, { current_user: current_user, host: request.host }.merge(view_opts)).render.to_json
                   end
                 rescue => e
                   raise e
@@ -71,22 +87,8 @@ module Duse
 
         %w(get post patch put delete).each do |http_method|
           define_method http_method do |*args|
-            add_route http_method, *args
+            HTTPEndpoint.new(self, http_method, *args)
           end
-        end
-
-        def add_route(http_method, status_code, json_schema, json_view, relative_route, klass, options = {})
-          e = HTTPEndpoint.new(
-            self,
-            http_method,
-            status_code,
-            json_schema,
-            json_view,
-            relative_route,
-            klass,
-            { auth: :api_token }.merge(options)
-          )
-          add_endpoint e
         end
 
         def update(*args)

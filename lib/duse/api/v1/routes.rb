@@ -35,32 +35,34 @@ module Duse
         extend RoutesDSL
 
         namespace :v1 do
-          get 200, nil, JSONViews::Route, '/', Mediators::Routes, auth: :none
+          add_endpoint get(200, '/', Mediators::Routes).render_with(JSONViews::Route)
 
           namespace :users do
             # first match, first hit -> register these routes first, so that
             # /v1/users/:id is not matched
-            post   204, JSONSchemas::Email,    nil,              '/confirm',         Mediators::User::ResendConfirmation,   auth: :none
-            patch  204, JSONSchemas::Token,    nil,              '/confirm',         Mediators::User::Confirm,              auth: :none
-            post   204, JSONSchemas::Email,    nil,              '/forgot_password', Mediators::User::RequestPasswordReset, auth: :none
-            patch  204, JSONSchemas::Password, nil,              '/password',        Mediators::User::ResetPassword,        auth: :none
-            post   201, nil,                   JSONViews::Token, '/token',           Mediators::User::CreateAuthToken,      auth: :password
+            add_endpoint post( 204, '/confirm',         Mediators::User::ResendConfirmation  ).validate_with(JSONSchemas::Email)
+            add_endpoint patch(204, '/confirm',         Mediators::User::Confirm             ).validate_with(JSONSchemas::Token)
+            add_endpoint post( 204, '/forgot_password', Mediators::User::RequestPasswordReset).validate_with(JSONSchemas::Email)
+            add_endpoint patch(204, '/password',        Mediators::User::ResetPassword       ).validate_with(JSONSchemas::Password)
+            add_endpoint post( 201, '/token',           Mediators::User::CreateAuthToken     ).render_with(JSONViews::Token).authenticate(with: :password)
 
-            get    200, nil,                   JSONViews::User,  '/',                Mediators::User::List
-            post   201, JSONSchemas::User,     JSONViews::User,  '/',                Mediators::User::Create,    type: :full, auth: :none
-            get    200, nil,                   JSONViews::User,  '/server',          Mediators::User::GetServer, type: :full
-            get    200, nil,                   JSONViews::User,  '/me',              Mediators::User::GetMyself, type: :full
-            get    200, nil,                   JSONViews::User,  '/:id',             Mediators::User::Get,       type: :full
-            update 200, JSONSchemas::User,     JSONViews::User,  '/:id',             Mediators::User::Update,    type: :full
-            delete 204, nil,                   nil,              '/:id',             Mediators::User::Delete
+            add_endpoint get(   200, '/',       Mediators::User::List     ).render_with(JSONViews::User).authenticate
+            add_endpoint post(  201, '/',       Mediators::User::Create   ).validate_with(JSONSchemas::User).render_with(JSONViews::User, type: :full)
+            add_endpoint get(   200, '/server', Mediators::User::GetServer).render_with(JSONViews::User, type: :full).authenticate
+            add_endpoint get(   200, '/me',     Mediators::User::GetMyself).render_with(JSONViews::User, type: :full).authenticate
+            add_endpoint get(   200, '/:id',    Mediators::User::Get      ).render_with(JSONViews::User, type: :full).authenticate
+            add_endpoint put(   200, '/:id',    Mediators::User::Update   ).validate_with(JSONSchemas::User).render_with(JSONViews::User, type: :full).authenticate
+            add_endpoint patch( 200, '/:id',    Mediators::User::Update   ).validate_with(JSONSchemas::User).render_with(JSONViews::User, type: :full).authenticate
+            add_endpoint delete(204, '/:id',    Mediators::User::Delete   ).authenticate
           end
 
           namespace :secrets do
-            get    200, nil,                 JSONViews::Secret, '/',    Mediators::Secret::List
-            post   201, JSONSchemas::Secret, JSONViews::Secret, '/',    Mediators::Secret::Create
-            get    200, nil,                 JSONViews::Secret, '/:id', Mediators::Secret::Get, type: :full
-            update 200, JSONSchemas::Secret, JSONViews::Secret, '/:id', Mediators::Secret::Update
-            delete 204, nil,                 nil,               '/:id', Mediators::Secret::Delete
+            add_endpoint get(   200, '/',    Mediators::Secret::List  ).render_with(JSONViews::Secret).authenticate
+            add_endpoint post(  201, '/',    Mediators::Secret::Create).validate_with(JSONSchemas::Secret).render_with(JSONViews::Secret).authenticate
+            add_endpoint get(   200, '/:id', Mediators::Secret::Get   ).render_with(JSONViews::Secret, type: :full).authenticate
+            add_endpoint put(   200, '/:id', Mediators::Secret::Update).validate_with(JSONSchemas::Secret).render_with(JSONViews::Secret).authenticate
+            add_endpoint patch( 200, '/:id', Mediators::Secret::Update).validate_with(JSONSchemas::Secret).render_with(JSONViews::Secret).authenticate
+            add_endpoint delete(204, '/:id', Mediators::Secret::Delete).authenticate
           end
         end
       end

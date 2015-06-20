@@ -1,11 +1,11 @@
-require 'duse/api/v1/mediators/base'
+require 'duse/api/v1/actions/base'
 
 module Duse
   module API
     module V1
-      module Mediators
+      module Actions
         module Secret
-          class List < Mediators::Base
+          class List < Actions::Base
             def call
               current_user.secrets
             end

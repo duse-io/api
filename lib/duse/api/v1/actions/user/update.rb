@@ -1,9 +1,9 @@
 module Duse
   module API
     module V1
-      module Mediators
+      module Actions
         module User
-          class Update < Mediators::Base
+          class Update < Actions::Base
             def call
               user = Get.new(current_user, params, json).call
               UserAuthorization.authorize! current_user, :update, user

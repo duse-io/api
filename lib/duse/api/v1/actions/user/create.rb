@@ -3,9 +3,9 @@ require 'duse/api/emails/confirmation_email'
 module Duse
   module API
     module V1
-      module Mediators
+      module Actions
         module User
-          class Create < Mediators::Base
+          class Create < Actions::Base
             def call
               sanitized_json = json.sanitize
               user = Models::User.new sanitized_json

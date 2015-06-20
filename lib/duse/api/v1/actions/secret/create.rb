@@ -1,9 +1,9 @@
 module Duse
   module API
     module V1
-      module Mediators
+      module Actions
         module Secret
-          class Create < Mediators::Base
+          class Create < Actions::Base
             def call
               fail ValidationFailed, {message: ['Your limit of secrets has been reached']}.to_json if @current_user.secrets.length >= 10
               sanitized_json = json.sanitize current_user: @current_user

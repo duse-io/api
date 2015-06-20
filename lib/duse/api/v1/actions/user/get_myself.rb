@@ -1,11 +1,11 @@
 module Duse
   module API
     module V1
-      module Mediators
+      module Actions
         module User
-          class GetServer < Mediators::Base
+          class GetMyself < Actions::Base
             def call
-              Models::Server.get
+              current_user
             end
           end
         end

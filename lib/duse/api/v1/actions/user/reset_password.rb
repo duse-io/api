@@ -1,9 +1,9 @@
 module Duse
   module API
     module V1
-      module Mediators
+      module Actions
         module User
-          class ResetPassword < Mediators::Base
+          class ResetPassword < Actions::Base
             def call
               token = Models::ForgotPasswordToken.find_by_raw_token json[:token]
               fail NotFound if token.nil?

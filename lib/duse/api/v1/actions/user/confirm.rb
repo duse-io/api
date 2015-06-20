@@ -1,9 +1,9 @@
 module Duse
   module API
     module V1
-      module Mediators
+      module Actions
         module User
-          class Confirm < Mediators::Base
+          class Confirm < Actions::Base
             def call
               token = Models::ConfirmationToken.find_by_raw_token json[:token]
               fail NotFound if token.nil?

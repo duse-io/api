@@ -1,9 +1,9 @@
 module Duse
   module API
     module V1
-      module Mediators
+      module Actions
         module Secret
-          class Delete < Mediators::Base
+          class Delete < Actions::Base
             def call
               secret = Get.new(current_user, params, json).call
               SecretAuthorization.authorize! current_user, :delete, secret

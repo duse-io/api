@@ -1,7 +1,7 @@
 module Duse
   module API
     module V1
-      module Mediators
+      module Actions
         class Base
           attr_reader :current_user, :params, :json
 

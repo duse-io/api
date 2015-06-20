@@ -1,9 +1,9 @@
 module Duse
   module API
     module V1
-      module Mediators
+      module Actions
         module Secret
-          class Update < Mediators::Base
+          class Update < Actions::Base
             def call
               json = self.json.sanitize strict: false, current_user: current_user
               secret = Get.new(current_user, params, json).call

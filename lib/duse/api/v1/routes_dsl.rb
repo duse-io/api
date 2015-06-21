@@ -26,7 +26,7 @@ module Duse
 
           def initialize(parent, http_method, relative_route, action)
             @parent = parent
-            @http_method = http_method.upcase
+            @http_method = http_method
             @relative_route = relative_route
             @action = action
             @auth = false
@@ -38,20 +38,16 @@ module Duse
 
           def add_to_sinatra(sinatra_class)
             sinatra_class.instance_exec(http_method, absolute_route, action) do |http_method, absolute_route, action|
-              send(http_method.downcase, absolute_route) do
-                begin
-                  authenticate!(action.auth_opts[:with]) if action.auth?
-                  status action.status_code
-                  json = nil
-                  json = action.schema.new(request_json) if !action.schema.nil?
-                  result = action.new(current_user, params, json).call
-                  if action.view.nil?
-                    nil
-                  else
-                    action.view.new(result, { current_user: current_user, host: request.host }.merge(action.view_opts)).render.to_json
-                  end
-                rescue => e
-                  raise e
+              send(http_method, absolute_route) do
+                authenticate!(action.auth_opts[:with]) if action.auth?
+                status action.status_code
+                json = nil
+                json = action.schema.new(request_json) if !action.schema.nil?
+                result = action.new(current_user, params, json).call
+                if action.view.nil?
+                  nil
+                else
+                  action.view.new(result, { current_user: current_user, host: request.host }.merge(action.view_opts)).render.to_json
                 end
               end
             end

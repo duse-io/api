@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/duse-io/api.svg)](https://travis-ci.org/duse-io/api)
+[![Build Status](https://travis-ci.org/duse-io/api.svg?branch=master)](https://travis-ci.org/duse-io/api)
 [![Test Coverage](https://codeclimate.com/github/duse-io/api/badges/coverage.svg)](https://codeclimate.com/github/duse-io/api/coverage)
 [![Code Climate](https://codeclimate.com/github/duse-io/api/badges/gpa.svg)](https://codeclimate.com/github/duse-io/api)
 [![Dependency Status](https://www.versioneye.com/user/projects/54de008ac1bbbda0130006d2/badge.svg?style=flat)](https://www.versioneye.com/user/projects/54de008ac1bbbda0130006d2)

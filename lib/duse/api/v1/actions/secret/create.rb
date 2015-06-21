@@ -3,8 +3,7 @@ module Duse
     module V1
       module Actions
         module Secret
-          class Create < Actions::Base
-            authenticate
+          class Create < Actions::Authenticated
             status 201
             validate_with JSONSchemas::Secret
             render JSONViews::Secret

@@ -13,24 +13,31 @@ module Duse
 
           class << self
             attr_reader :view, :view_opts, :schema, :status_code, :auth, :auth_opts
-            alias_method :auth?, :auth
+
+            def auth?
+              !!auth
+            end
 
             def render(view = nil, view_opts = {})
-              @view = view
-              @view_opts = view_opts
+              set :view, view
+              set :view_opts, view_opts
             end
 
             def validate_with(schema)
-              @schema = schema
+              set :schema, schema
             end
 
             def status(status_code)
-              @status_code = status_code
+              set :status_code, status_code
             end
 
             def authenticate(auth_opts = { with: :api_token })
-              @auth = true
-              @auth_opts = auth_opts
+              set :auth, true
+              set :auth_opts, auth_opts
+            end
+
+            def set(option, value)
+              define_singleton_method(option) { value }
             end
           end
         end

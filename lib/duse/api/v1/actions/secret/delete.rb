@@ -3,8 +3,7 @@ module Duse
     module V1
       module Actions
         module Secret
-          class Delete < Actions::Base
-            authenticate
+          class Delete < Actions::Authenticated
             status 204
 
             def call

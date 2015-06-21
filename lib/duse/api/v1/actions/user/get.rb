@@ -3,8 +3,7 @@ module Duse
     module V1
       module Actions
         module User
-          class Get < Actions::Base
-            authenticate
+          class Get < Actions::Authenticated
             status 200
             render JSONViews::User, type: :full
 

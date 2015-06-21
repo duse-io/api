@@ -6,8 +6,7 @@ module Duse
     module V1
       module Actions
         module Secret
-          class Get < Actions::Base
-            authenticate
+          class Get < Actions::Authenticated
             status 200
             render JSONViews::Secret, type: :full
 

@@ -1,13 +1,11 @@
+require 'duse/api/v1/actions/user/get'
+
 module Duse
   module API
     module V1
       module Actions
         module User
-          class GetServer < Actions::Base
-            authenticate
-            status 200
-            render JSONViews::User, type: :full
-
+          class GetServer < User::Get
             def call
               Models::Server.get
             end

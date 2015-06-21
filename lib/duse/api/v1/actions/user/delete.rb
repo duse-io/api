@@ -5,8 +5,7 @@ module Duse
     module V1
       module Actions
         module User
-          class Delete < Actions::Base
-            authenticate
+          class Delete < Actions::Authenticated
             status 204
 
             def call

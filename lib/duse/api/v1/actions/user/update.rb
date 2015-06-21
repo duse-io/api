@@ -3,8 +3,7 @@ module Duse
     module V1
       module Actions
         module User
-          class Update < Actions::Base
-            authenticate
+          class Update < Actions::Authenticated
             status 200
             validate_with JSONSchemas::User
             render JSONViews::User, type: :full

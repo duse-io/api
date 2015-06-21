@@ -1,7 +1,8 @@
 [![Build Status](https://travis-ci.org/duse-io/api.svg)](https://travis-ci.org/duse-io/api)
 [![Test Coverage](https://codeclimate.com/github/duse-io/api/badges/coverage.svg)](https://codeclimate.com/github/duse-io/api/coverage)
 [![Code Climate](https://codeclimate.com/github/duse-io/api/badges/gpa.svg)](https://codeclimate.com/github/duse-io/api)
-[![Dependency Status](https://gemnasium.com/duse-io/api.svg)](https://gemnasium.com/duse-io/api)
+[![Dependency Status](https://www.versioneye.com/user/projects/54de008ac1bbbda0130006d2/badge.svg?style=flat)](https://www.versioneye.com/user/projects/54de008ac1bbbda0130006d2)
+[![security](https://hakiri.io/github/duse-io/api/master.svg)](https://hakiri.io/github/duse-io/api/master)
 
 > This project is still under heavy development, it is not suited for
 > production use!

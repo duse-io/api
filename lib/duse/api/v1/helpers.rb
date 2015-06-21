@@ -25,6 +25,18 @@ module Duse
             raise MalformedJSON
           end
         end
+
+        def json(schema)
+          schema.new(request_json) if !schema.nil?
+        end
+
+        def render(result, view, view_opts)
+          return nil if view.nil?
+          view.new(
+            result,
+            { current_user: current_user, host: request.host }.merge(view_opts)
+          ).render.to_json
+        end
       end
     end
   end

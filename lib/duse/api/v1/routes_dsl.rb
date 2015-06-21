@@ -41,14 +41,8 @@ module Duse
               send(http_method, absolute_route) do
                 authenticate!(action.auth_opts[:with]) if action.auth?
                 status action.status_code
-                json = nil
-                json = action.schema.new(request_json) if !action.schema.nil?
-                result = action.new(current_user, params, json).call
-                if action.view.nil?
-                  nil
-                else
-                  action.view.new(result, { current_user: current_user, host: request.host }.merge(action.view_opts)).render.to_json
-                end
+                result = action.new(current_user, params, json(action.schema)).call
+                render(result, action.view, action.view_opts)
               end
             end
           end

@@ -10,8 +10,8 @@ module Duse
             status 200
             render JSONViews::Secret, type: :full
 
-            def call
-              secret = Models::Secret.find params[:id]
+            def call(secret_id)
+              secret = Models::Secret.find secret_id
               SecretAuthorization.authorize! current_user, :read, secret
               secret
             rescue ActiveRecord::RecordNotFound

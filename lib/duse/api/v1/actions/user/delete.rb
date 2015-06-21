@@ -8,8 +8,8 @@ module Duse
           class Delete < Actions::Authenticated
             status 204
 
-            def call
-              user = Get.new(current_user, params, json).call
+            def call(user_id)
+              user = Get.new(current_user, params, json).call(user_id)
               UserAuthorization.authorize! current_user, :delete, user
               user.destroy
             end

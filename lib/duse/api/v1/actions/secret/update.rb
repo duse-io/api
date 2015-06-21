@@ -8,9 +8,9 @@ module Duse
             validate_with JSONSchemas::Secret
             render JSONViews::Secret
 
-            def call
+            def call(secret_id)
               json = self.json.sanitize strict: false, current_user: current_user
-              secret = Get.new(current_user, params, json).call
+              secret = Get.new(current_user, params, json).call(secret_id)
               SecretAuthorization.authorize! current_user, :update, secret
               if !json[:shares].nil?
                 user_ids = []

@@ -7,8 +7,8 @@ module Duse
             status 200
             render JSONViews::User, type: :full
 
-            def call
-              Models::User.find params[:id]
+            def call(user_id)
+              Models::User.find user_id
             rescue ActiveRecord::RecordNotFound
               raise NotFound
             end

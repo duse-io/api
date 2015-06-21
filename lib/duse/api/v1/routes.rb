@@ -45,23 +45,13 @@ module Duse
             patch '/password'        => Actions::User::ResetPassword
             post  '/token'           => Actions::User::CreateAuthToken
 
-            get    '/'       => Actions::User::List
-            post   '/'       => Actions::User::Create
             get    '/server' => Actions::User::GetServer
             get    '/me'     => Actions::User::GetMyself
-            get    '/:id'    => Actions::User::Get
-            put    '/:id'    => Actions::User::Update
-            patch  '/:id'    => Actions::User::Update
-            delete '/:id'    => Actions::User::Delete
+            crud Actions::User
           end
 
           namespace :secrets do
-            get    '/'    => Actions::Secret::List
-            post   '/'    => Actions::Secret::Create
-            get    '/:id' => Actions::Secret::Get
-            put    '/:id' => Actions::Secret::Update
-            patch  '/:id' => Actions::Secret::Update
-            delete '/:id' => Actions::Secret::Delete
+            crud Actions::Secret
           end
         end
       end

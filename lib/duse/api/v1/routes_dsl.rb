@@ -69,6 +69,14 @@ module Duse
           put(*args)
         end
 
+        def crud(action_group)
+          get    '/'    => action_group.const_get(:List)
+          post   '/'    => action_group.const_get(:Create)
+          get    '/:id' => action_group.const_get(:Get)
+          update '/:id' => action_group.const_get(:Update)
+          delete '/:id' => action_group.const_get(:Delete)
+        end
+
         def route
           '/'
         end

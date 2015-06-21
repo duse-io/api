@@ -4,6 +4,9 @@ module Duse
       module Actions
         module User
           class Confirm < Actions::Base
+            status 204
+            validate_with JSONSchemas::Token
+
             def call
               token = Models::ConfirmationToken.find_by_raw_token json[:token]
               fail NotFound if token.nil?

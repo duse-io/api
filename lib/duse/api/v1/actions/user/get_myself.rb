@@ -4,6 +4,10 @@ module Duse
       module Actions
         module User
           class GetMyself < Actions::Base
+            authenticate
+            status 200
+            render JSONViews::User, type: :full
+
             def call
               current_user
             end

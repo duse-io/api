@@ -4,6 +4,9 @@ module Duse
       module Actions
         module User
           class ResetPassword < Actions::Base
+            status 204
+            validate_with JSONSchemas::Password
+
             def call
               token = Models::ForgotPasswordToken.find_by_raw_token json[:token]
               fail NotFound if token.nil?

@@ -4,6 +4,10 @@ module Duse
       module Actions
         module User
           class CreateAuthToken < Actions::Base
+            status 201
+            render JSONViews::Token
+            authenticate with: :password
+
             def call
               fail UserNotConfirmed unless current_user.confirmed?
               OpenStruct.new api_token: current_user.create_new_token

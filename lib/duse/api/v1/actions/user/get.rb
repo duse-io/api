@@ -4,6 +4,10 @@ module Duse
       module Actions
         module User
           class Get < Actions::Base
+            authenticate
+            status 200
+            render JSONViews::User, type: :full
+
             def call
               Models::User.find params[:id]
             rescue ActiveRecord::RecordNotFound

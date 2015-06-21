@@ -1,6 +1,5 @@
 require 'duse/api/v1/base'
 require 'duse/api/v1/routes_dsl'
-require 'duse/api/v1/json_views/route'
 require 'duse/api/v1/json_views/user'
 require 'duse/api/v1/json_views/token'
 require 'duse/api/v1/json_views/secret'
@@ -35,34 +34,34 @@ module Duse
         extend RoutesDSL
 
         namespace :v1 do
-          add_endpoint get(200, '/', Actions::Routes).render_with(JSONViews::Route)
+          get '/' => Actions::Routes
 
           namespace :users do
             # first match, first hit -> register these routes first, so that
             # /v1/users/:id is not matched
-            add_endpoint post( 204, '/confirm',         Actions::User::ResendConfirmation  ).validate_with(JSONSchemas::Email)
-            add_endpoint patch(204, '/confirm',         Actions::User::Confirm             ).validate_with(JSONSchemas::Token)
-            add_endpoint post( 204, '/forgot_password', Actions::User::RequestPasswordReset).validate_with(JSONSchemas::Email)
-            add_endpoint patch(204, '/password',        Actions::User::ResetPassword       ).validate_with(JSONSchemas::Password)
-            add_endpoint post( 201, '/token',           Actions::User::CreateAuthToken     ).render_with(JSONViews::Token).authenticate(with: :password)
+            post  '/confirm'         => Actions::User::ResendConfirmation
+            patch '/confirm'         => Actions::User::Confirm
+            post  '/forgot_password' => Actions::User::RequestPasswordReset
+            patch '/password'        => Actions::User::ResetPassword
+            post  '/token'           => Actions::User::CreateAuthToken
 
-            add_endpoint get(   200, '/',       Actions::User::List     ).render_with(JSONViews::User).authenticate
-            add_endpoint post(  201, '/',       Actions::User::Create   ).validate_with(JSONSchemas::User).render_with(JSONViews::User, type: :full)
-            add_endpoint get(   200, '/server', Actions::User::GetServer).render_with(JSONViews::User, type: :full).authenticate
-            add_endpoint get(   200, '/me',     Actions::User::GetMyself).render_with(JSONViews::User, type: :full).authenticate
-            add_endpoint get(   200, '/:id',    Actions::User::Get      ).render_with(JSONViews::User, type: :full).authenticate
-            add_endpoint put(   200, '/:id',    Actions::User::Update   ).validate_with(JSONSchemas::User).render_with(JSONViews::User, type: :full).authenticate
-            add_endpoint patch( 200, '/:id',    Actions::User::Update   ).validate_with(JSONSchemas::User).render_with(JSONViews::User, type: :full).authenticate
-            add_endpoint delete(204, '/:id',    Actions::User::Delete   ).authenticate
+            get    '/'       => Actions::User::List
+            post   '/'       => Actions::User::Create
+            get    '/server' => Actions::User::GetServer
+            get    '/me'     => Actions::User::GetMyself
+            get    '/:id'    => Actions::User::Get
+            put    '/:id'    => Actions::User::Update
+            patch  '/:id'    => Actions::User::Update
+            delete '/:id'    => Actions::User::Delete
           end
 
           namespace :secrets do
-            add_endpoint get(   200, '/',    Actions::Secret::List  ).render_with(JSONViews::Secret).authenticate
-            add_endpoint post(  201, '/',    Actions::Secret::Create).validate_with(JSONSchemas::Secret).render_with(JSONViews::Secret).authenticate
-            add_endpoint get(   200, '/:id', Actions::Secret::Get   ).render_with(JSONViews::Secret, type: :full).authenticate
-            add_endpoint put(   200, '/:id', Actions::Secret::Update).validate_with(JSONSchemas::Secret).render_with(JSONViews::Secret).authenticate
-            add_endpoint patch( 200, '/:id', Actions::Secret::Update).validate_with(JSONSchemas::Secret).render_with(JSONViews::Secret).authenticate
-            add_endpoint delete(204, '/:id', Actions::Secret::Delete).authenticate
+            get    '/'    => Actions::Secret::List
+            post   '/'    => Actions::Secret::Create
+            get    '/:id' => Actions::Secret::Get
+            put    '/:id' => Actions::Secret::Update
+            patch  '/:id' => Actions::Secret::Update
+            delete '/:id' => Actions::Secret::Delete
           end
         end
       end

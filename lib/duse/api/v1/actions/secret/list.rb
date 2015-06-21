@@ -6,6 +6,10 @@ module Duse
       module Actions
         module Secret
           class List < Actions::Base
+            authenticate
+            status 200
+            render JSONViews::Secret
+
             def call
               current_user.secrets
             end

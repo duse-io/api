@@ -7,6 +7,10 @@ module Duse
       module Actions
         module Secret
           class Get < Actions::Base
+            authenticate
+            status 200
+            render JSONViews::Secret, type: :full
+
             def call
               secret = Models::Secret.find params[:id]
               SecretAuthorization.authorize! current_user, :read, secret

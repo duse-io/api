@@ -6,6 +6,9 @@ module Duse
       module Actions
         module User
           class Delete < Actions::Base
+            authenticate
+            status 204
+
             def call
               user = Get.new(current_user, params, json).call
               UserAuthorization.authorize! current_user, :delete, user

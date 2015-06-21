@@ -6,6 +6,9 @@ module Duse
       module Actions
         module User
           class List < Actions::Base
+            status 200
+            render JSONViews::User
+
             def call
               Models::User.all
             end

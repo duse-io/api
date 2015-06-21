@@ -22,33 +22,14 @@ module Duse
         end
 
         class HTTPEndpoint
-          attr_reader :http_method, :status_code, :relative_route, :klass, :schema, :schema_opts, :view, :view_opts, :auth, :auth_opts
+          attr_reader :http_method, :relative_route, :action
 
-          def initialize(parent, http_method, status_code, relative_route, klass)
+          def initialize(parent, http_method, relative_route, action)
             @parent = parent
             @http_method = http_method.upcase
-            @status_code = status_code
             @relative_route = relative_route
-            @klass = klass
+            @action = action
             @auth = false
-          end
-
-          def authenticate(opts = {})
-            @auth = true
-            @auth_opts = { with: :api_token }.merge(opts)
-            self
-          end
-
-          def validate_with(schema, opts = {})
-            @schema_opts = opts
-            @schema = schema
-            self
-          end
-
-          def render_with(view, opts = {})
-            @view_opts = opts
-            @view = view
-            self
           end
 
           def absolute_route
@@ -56,18 +37,18 @@ module Duse
           end
 
           def add_to_sinatra(sinatra_class)
-            sinatra_class.instance_exec(http_method, status_code, absolute_route, klass, schema, view, view_opts, auth, auth_opts) do |http_method, status_code, absolute_route, klass, schema, view, view_opts, auth, auth_opts|
+            sinatra_class.instance_exec(http_method, absolute_route, action) do |http_method, absolute_route, action|
               send(http_method.downcase, absolute_route) do
                 begin
-                  authenticate!(auth_opts[:with]) if auth
-                  status status_code
+                  authenticate!(action.auth_opts[:with]) if action.auth?
+                  status action.status_code
                   json = nil
-                  json = schema.new(request_json) if !schema.nil?
-                  result = klass.new(current_user, params, json).call
-                  if view.nil?
+                  json = action.schema.new(request_json) if !action.schema.nil?
+                  result = action.new(current_user, params, json).call
+                  if action.view.nil?
                     nil
                   else
-                    view.new(result, { current_user: current_user, host: request.host }.merge(view_opts)).render.to_json
+                    action.view.new(result, { current_user: current_user, host: request.host }.merge(action.view_opts)).render.to_json
                   end
                 rescue => e
                   raise e
@@ -86,8 +67,10 @@ module Duse
         end
 
         %w(get post patch put delete).each do |http_method|
-          define_method http_method do |*args|
-            HTTPEndpoint.new(self, http_method, *args)
+          define_method http_method do |relative_route_action|
+            relative_route_action.each do |relative_route, action|
+              add_endpoint HTTPEndpoint.new(self, http_method, relative_route, action)
+            end
           end
         end
 
@@ -114,7 +97,7 @@ module Duse
         end
 
         def call(env)
-          @sinatra_instance ||= @sinatra_class.new
+          @sinatra_instance ||= sinatra_class.new
           @sinatra_instance.call(env)
         end
       end

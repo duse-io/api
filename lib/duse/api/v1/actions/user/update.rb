@@ -4,6 +4,11 @@ module Duse
       module Actions
         module User
           class Update < Actions::Base
+            authenticate
+            status 200
+            validate_with JSONSchemas::User
+            render JSONViews::User, type: :full
+
             def call
               user = Get.new(current_user, params, json).call
               UserAuthorization.authorize! current_user, :update, user

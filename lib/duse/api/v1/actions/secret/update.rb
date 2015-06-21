@@ -4,6 +4,11 @@ module Duse
       module Actions
         module Secret
           class Update < Actions::Base
+            authenticate
+            status 200
+            validate_with JSONSchemas::Secret
+            render JSONViews::Secret
+
             def call
               json = self.json.sanitize strict: false, current_user: current_user
               secret = Get.new(current_user, params, json).call

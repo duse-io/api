@@ -4,6 +4,9 @@ module Duse
       module Actions
         module User
           class ResendConfirmation < Actions::Base
+            status 204
+            validate_with JSONSchemas::Email
+
             def call
               user = Models::User.find_by_email json[:email]
               fail NotFound if user.nil?

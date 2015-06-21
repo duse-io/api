@@ -6,6 +6,10 @@ module Duse
       module Actions
         module User
           class Create < Actions::Base
+            status 201
+            validate_with JSONSchemas::User
+            render JSONViews::User, type: :full
+
             def call
               sanitized_json = json.sanitize
               user = Models::User.new sanitized_json

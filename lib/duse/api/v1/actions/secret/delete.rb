@@ -4,6 +4,9 @@ module Duse
       module Actions
         module Secret
           class Delete < Actions::Base
+            authenticate
+            status 204
+
             def call
               secret = Get.new(current_user, params, json).call
               SecretAuthorization.authorize! current_user, :delete, secret

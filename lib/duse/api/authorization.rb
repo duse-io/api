@@ -1,7 +1,5 @@
 module Duse
   module API
-    class InvalidAuthorization < StandardError; end
-
     class Authorization
       def self.allow(action, &block)
         @abilities ||= {}

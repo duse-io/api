@@ -15,7 +15,7 @@ module Duse
               SecretAuthorization.authorize! current_user, :read, secret
               secret
             rescue ActiveRecord::RecordNotFound
-              raise Sinatra::NotFound
+              raise NotFound
             end
           end
         end

@@ -2,9 +2,7 @@ require 'sinatra/base'
 require 'sinatra/activerecord'
 
 require 'duse/api/errors'
-require 'duse/api/authorization'
 require 'duse/api/v1/helpers'
-require 'duse/api'
 
 module Duse
   module API

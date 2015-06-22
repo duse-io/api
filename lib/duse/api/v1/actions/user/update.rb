@@ -10,7 +10,7 @@ module Duse
 
             def call(user_id)
               user = Get.new(current_user, params, json).call(user_id)
-              UserAuthorization.authorize! current_user, :update, user
+              Authorization::User.authorize! current_user, :update, user
               current_password = json[:current_password]
               fail ValidationFailed, { message: 'Wrong current password' }.to_json if !user.try(:authenticate, current_password)
               sanitized_json = json.sanitize(strict: false)

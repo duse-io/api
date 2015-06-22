@@ -12,7 +12,7 @@ module Duse
 
             def call(secret_id)
               secret = Models::Secret.find secret_id
-              SecretAuthorization.authorize! current_user, :read, secret
+              Authorization::Secret.authorize! current_user, :read, secret
               secret
             rescue ActiveRecord::RecordNotFound
               raise NotFound

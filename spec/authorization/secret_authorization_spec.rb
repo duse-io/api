@@ -21,7 +21,7 @@ describe Duse::API::Authorization do
       user: user
     )
 
-    Duse::API::SecretAuthorization.authorize!(user, :read, secret)
+    Duse::API::Authorization::Secret.authorize!(user, :read, secret)
   end
 
   it 'should not allow access for a user the secrets does not belong to' do
@@ -46,18 +46,16 @@ describe Duse::API::Authorization do
     other_user = create(:user)
 
     expect do
-      Duse::API::SecretAuthorization.authorize!(other_user, :read, secret)
+      Duse::API::Authorization::Secret.authorize!(other_user, :read, secret)
     end.to raise_error(Duse::API::InvalidAuthorization)
   end
 
   it 'should allow by default when no block is given' do
-    class TestAuthorization < Duse::API::Authorization
-      allow :create
-    end
-
+    authorization = Class.new(Duse::API::Authorization::Base)
+    authorization.allow :create
     user = create(:user)
 
-    TestAuthorization.authorize! user, :create, {}
+    authorization.authorize! user, :create, {}
   end
 end
 

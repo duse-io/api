@@ -8,7 +8,7 @@ module Duse
 
             def call(secret_id)
               secret = Get.new(current_user, params, json).call(secret_id)
-              SecretAuthorization.authorize! current_user, :delete, secret
+              Authorization::Secret.authorize! current_user, :delete, secret
               secret.destroy
             end
           end

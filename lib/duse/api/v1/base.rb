@@ -23,13 +23,9 @@ module Duse
           halt env['sinatra.error'].status_code, env['sinatra.error'].message
         end
 
-        error APIError do #MalformedJSON, AlreadyConfirmed, InvalidAuthorization, UserNotConfirmed, NotFound do
+        error APIError do
           env['warden'].custom_failure!
           halt env['sinatra.error'].status_code, { message: env['sinatra.error'].message }.to_json
-        end
-
-        not_found do
-          { message: env['sinatra.error'].message }.to_json
         end
 
         error do

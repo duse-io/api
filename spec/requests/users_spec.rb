@@ -16,9 +16,9 @@ describe Duse::API do
 
     expect{
       post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
-    }.to change{Duse::Models::User.all.count}.by(1)
+    }.to change{Duse::API::Models::User.all.count}.by(1)
     expect(last_response.status).to eq(201)
-    user = Duse::Models::User.find_by_username('flower-pot')
+    user = Duse::API::Models::User.find_by_username('flower-pot')
     expect(last_response.body).to eq(
       {
         id: user.id,
@@ -51,7 +51,7 @@ describe Duse::API do
     patch "/v1/users/confirm", { token: confirmation_token }.to_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq 204
-    user = Duse::Models::User.find_by_username('test') # we need the new values
+    user = Duse::API::Models::User.find_by_username('test') # we need the new values
     expect(user.confirmed?).to be true
     expect(user.confirmation_tokens.length).to be 0
   end
@@ -87,7 +87,7 @@ describe Duse::API do
     }.to_json
     post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
 
-    user = Duse::Models::User.find_by_username 'test'
+    user = Duse::API::Models::User.find_by_username 'test'
     post '/v1/users/confirm', { email: user.email }.to_json, 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.status).to eq 204
@@ -108,7 +108,7 @@ describe Duse::API do
 
     patch '/v1/users/password', { token: reset_token, password: 'Passw000rd!' }.to_json, 'CONTENT_TYPE' => 'application/json'
     expect(last_response.status).to eq 204
-    expect(Duse::Models::User.find_by_username(user.username).try(:authenticate, 'Passw000rd!')).to be_truthy
+    expect(Duse::API::Models::User.find_by_username(user.username).try(:authenticate, 'Passw000rd!')).to be_truthy
   end
 
   it 'should error when a username is not given' do
@@ -121,7 +121,7 @@ describe Duse::API do
 
     expect{
       post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
-    }.not_to change{Duse::Models::User.all.count}
+    }.not_to change{Duse::API::Models::User.all.count}
     expect(last_response.status).to eq(422)
     expect(last_response.body).to eq({
       'message' => ['Username must not be blank']
@@ -129,7 +129,7 @@ describe Duse::API do
   end
 
   it 'should error if a username is already taken' do
-    Duse::Models::User.create(username: 'test', email: 'test@example.org', password: 'test')
+    Duse::API::Models::User.create(username: 'test', email: 'test@example.org', password: 'test')
     user_json = {
       username: 'test',
       email: 'test2@example.org',
@@ -140,7 +140,7 @@ describe Duse::API do
 
     expect{
       post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
-    }.not_to change{Duse::Models::User.all.count}
+    }.not_to change{Duse::API::Models::User.all.count}
     expect(last_response.status).to eq(422)
     expect(last_response.body).to eq({
       'message' => ['Username has already been taken']
@@ -157,7 +157,7 @@ describe Duse::API do
 
     expect{
       post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
-    }.not_to change{Duse::Models::User.all.count}
+    }.not_to change{Duse::API::Models::User.all.count}
     expect(last_response.status).to eq(422)
     expect(last_response.body).to eq({
       'message' => ['Email must not be blank']
@@ -165,7 +165,7 @@ describe Duse::API do
   end
 
   it 'should error if an email is already taken' do
-    Duse::Models::User.create(username: 'test', email: 'test@example.org', password: 'test')
+    Duse::API::Models::User.create(username: 'test', email: 'test@example.org', password: 'test')
     user_json = {
       username: 'test2',
       email: 'test@example.org',
@@ -176,7 +176,7 @@ describe Duse::API do
 
     expect{
       post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
-    }.not_to change{Duse::Models::User.all.count}
+    }.not_to change{Duse::API::Models::User.all.count}
     expect(last_response.status).to eq(422)
     expect(last_response.body).to eq({
       'message' => ['Email has already been taken']
@@ -194,7 +194,7 @@ describe Duse::API do
 
     expect{
       post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
-    }.not_to change{Duse::Models::User.all.count}
+    }.not_to change{Duse::API::Models::User.all.count}
     expect(last_response.status).to eq(422)
     expect(last_response.body).to eq({
       'message' => ['Email is not a valid email address']
@@ -212,7 +212,7 @@ describe Duse::API do
 
     expect{
       post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
-    }.not_to change{Duse::Models::User.all.count}
+    }.not_to change{Duse::API::Models::User.all.count}
     expect(last_response.status).to eq(422)
     expect(last_response.body).to eq({
       'message' => ['Username must be only letters, numbers, "-" and "_"']
@@ -230,7 +230,7 @@ describe Duse::API do
 
     expect{
       post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
-    }.not_to change{Duse::Models::User.all.count}
+    }.not_to change{Duse::API::Models::User.all.count}
     expect(last_response.status).to eq(422)
     expect(last_response.body).to eq({
       'message' => ['Public key is not a valid RSA Public Key']
@@ -247,7 +247,7 @@ describe Duse::API do
 
     expect{
       post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
-    }.not_to change{Duse::Models::User.all.count}
+    }.not_to change{Duse::API::Models::User.all.count}
     expect(last_response.status).to eq(422)
     expect(last_response.body).to eq({
       'message' => ['Public key must not be blank']
@@ -257,7 +257,7 @@ describe Duse::API do
   it 'should not validate further than blanks when nothing is given' do
     expect{
       post '/v1/users', '{}', 'CONTENT_TYPE' => 'application/json'
-    }.not_to change{Duse::Models::User.all.count}
+    }.not_to change{Duse::API::Models::User.all.count}
     expect(last_response.status).to eq(422)
     expect(last_response.body).to eq({
       'message' => [
@@ -324,7 +324,7 @@ describe Duse::API do
   it 'should return the correct user when requesting the server user' do
     user = create(:user)
     token = user.create_new_token
-    server_user = Duse::Models::Server.get
+    server_user = Duse::API::Models::Server.get
 
     header 'Authorization', token
     get '/v1/users/server', 'CONTENT_TYPE' => 'application/json'
@@ -400,7 +400,7 @@ describe Duse::API do
 
     expect{
       post '/v1/users', user_json, 'CONTENT_TYPE' => 'application/json'
-    }.not_to change{Duse::Models::User.all.count}
+    }.not_to change{Duse::API::Models::User.all.count}
     expect(last_response.status).to eq(422)
     expect(last_response.body).to eq({
       'message' => ['Public key size must be 2048 bit or larger']

@@ -13,7 +13,7 @@ class ConfirmationEmail < UserEmail
   private
 
   def create_confirmation_token(user)
-    Duse::Models::ConfirmationToken.create_safe_token(user)
+    Duse::API::Models::ConfirmationToken.create_safe_token(user)
   end
 end
 

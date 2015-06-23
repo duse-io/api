@@ -1,4 +1,4 @@
-describe Duse::Models::Share do
+describe Duse::API::Models::Share do
   it 'a correctly encrypted and signed share should not raise errors' do
     secret = create(:secret)
     expect(secret.valid?).to be true

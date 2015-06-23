@@ -45,7 +45,7 @@ class SecretValidator
           unless user_exists? share[:user_id]
             secret.errors[:base] << 'One or more of the provided users do not exist'
           end
-          if user_exists?(share[:user_id]) && !length_matches_key?(share[:content], Duse::Models::User.find(share[:user_id]).public_key)
+          if user_exists?(share[:user_id]) && !length_matches_key?(share[:content], Duse::API::Models::User.find(share[:user_id]).public_key)
             secret.errors[:base] << 'Public key and share content lengths do not match'
           end
           unless @user.verify_authenticity share[:signature], share[:content]
@@ -62,7 +62,7 @@ class SecretValidator
     end
 
     def user_exists?(user_id)
-      Duse::Models::User.exists?(user_id)
+      Duse::API::Models::User.exists?(user_id)
     end
 
     def extract_user_ids(shares)
@@ -92,7 +92,7 @@ class SecretValidator
 
   def initialize(options)
     @user   = options[:current_user]
-    @server = Duse::Models::Server.get
+    @server = Duse::API::Models::Server.get
   end
 
   def validate(secret)

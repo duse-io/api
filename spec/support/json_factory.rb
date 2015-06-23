@@ -15,7 +15,7 @@ module JsonFactory
         title: options[:title] || 'my secret',
         cipher_text: options[:cipher_text] || 'someciphertext==',
         shares: [
-            share(Duse::Models::Server.get.id, 'share1', @key, Duse::Models::Server.public_key),
+            share(Duse::API::Models::Server.get.id, 'share1', @key, Duse::API::Models::Server.public_key),
             share(@user1.id, 'share2', @key, @user1.public_key),
             share(@user2.id, 'share3', @key, @user2.public_key)
         ]

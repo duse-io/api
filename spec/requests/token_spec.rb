@@ -1,4 +1,4 @@
-describe Duse::Models::Token do
+describe Duse::API::Models::Token do
   include Rack::Test::Methods
 
   def app

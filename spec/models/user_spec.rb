@@ -1,4 +1,4 @@
-describe Duse::Models::User do
+describe Duse::API::Models::User do
   it 'should not be valid if a user with the same username already exists' do
     first_user = create(:user)
     user = build(:user, username: first_user.username)

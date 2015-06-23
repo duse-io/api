@@ -76,7 +76,7 @@ describe JSONExtractor do
   it 'should serialize active relations correctly' do
     test_class = Class.new(JSONView)
 
-    subject = Duse::Models::Secret.all
+    subject = Duse::API::Models::Secret.all
 
     expect(test_class.new(subject).render).to eq([])
   end

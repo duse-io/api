@@ -13,7 +13,7 @@ class ForgotPasswordEmail < UserEmail
   private
 
   def create_forgot_password_token(user)
-    Duse::Models::ForgotPasswordToken.create_safe_token(user)
+    Duse::API::Models::ForgotPasswordToken.create_safe_token(user)
   end
 end
 

@@ -3,14 +3,14 @@ require 'duse/api/models/secret'
 require 'duse/api/models/user'
 
 FactoryGirl.define do
-  factory :secret, class: Duse::Models::Secret do
+  factory :secret, class: Duse::API::Models::Secret do
     key = KeyHelper.generate_key
     last_edited_by { create(:user, public_key: key.public_key.to_s) }
     sequence(:title) { |n| "secret#{n}" }
     cipher_text 'someciphertext=='
 
     shares do |shares|
-      server = Duse::Models::Server.get
+      server = Duse::API::Models::Server.get
       other_user = create(:user)
       server_content, server_signature = Encryption.encrypt(key, server.public_key, 'share1')
       user_content, user_signature = Encryption.encrypt(key, last_edited_by.public_key, 'share2')

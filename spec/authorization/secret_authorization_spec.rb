@@ -2,19 +2,19 @@ require 'duse/api/authorization/secret'
 
 describe Duse::API::Authorization do
   it 'should allow access for a user the secrets belongs to' do
-    server = Duse::Models::Server.find_or_create
+    server = Duse::API::Models::Server.find_or_create
     user_key = KeyHelper.generate_key
     user = create(:user, public_key: user_key.public_key)
-    secret = Duse::Models::Secret.create title: 'secret', cipher_text: 'someciphertext==', last_edited_by: user, users: [server, user]
+    secret = Duse::API::Models::Secret.create title: 'secret', cipher_text: 'someciphertext==', last_edited_by: user, users: [server, user]
     content1, signature1 = server.encrypt user_key, 'share1'
     content2, signature2 = user.encrypt user_key, 'share2'
-    Duse::Models::Share.create(
+    Duse::API::Models::Share.create(
       content: content1,
       signature: signature1,
       secret: secret,
       user: server
     )
-    Duse::Models::Share.create(
+    Duse::API::Models::Share.create(
       content: content2,
       signature: signature2,
       secret: secret,
@@ -25,19 +25,19 @@ describe Duse::API::Authorization do
   end
 
   it 'should not allow access for a user the secrets does not belong to' do
-    server = Duse::Models::Server.find_or_create
+    server = Duse::API::Models::Server.find_or_create
     user_key = KeyHelper.generate_key
     user = create(:user, public_key: user_key.public_key)
-    secret = Duse::Models::Secret.create title: 'secret', cipher_text: 'someciphertext==', last_edited_by: user, users: [server, user]
+    secret = Duse::API::Models::Secret.create title: 'secret', cipher_text: 'someciphertext==', last_edited_by: user, users: [server, user]
     content1, signature1 = server.encrypt user_key, 'share1'
     content2, signature2 = user.encrypt user_key, 'share2'
-    Duse::Models::Share.create(
+    Duse::API::Models::Share.create(
       content: content1,
       signature: signature1,
       secret: secret,
       user: server
     )
-    Duse::Models::Share.create(
+    Duse::API::Models::Share.create(
       content: content2,
       signature: signature2,
       secret: secret,

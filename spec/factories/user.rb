@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :user, class: Duse::Models::User do
+  factory :user, class: Duse::API::Models::User do
     sequence(:username) { |n| "user#{n}" }
     email { "#{username}@example.com" }
     password 'Passw0rd!'

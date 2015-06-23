@@ -7,11 +7,19 @@ module Duse
         super(msg)
         @status_code = status_code
       end
+
+      def json
+        { message: message }.to_json
+      end
     end
 
     class ValidationFailed < APIError
       def initialize(msg, status_code = 422)
         super(msg, status_code)
+      end
+
+      def json
+        message
       end
     end
 

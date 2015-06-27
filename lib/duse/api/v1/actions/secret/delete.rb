@@ -1,17 +1,12 @@
+require 'duse/api/v1/actions/generator'
+require 'duse/api/authorization/secret'
+
 module Duse
   module API
     module V1
       module Actions
         module Secret
-          class Delete < Actions::Authenticated
-            status 204
-
-            def call(secret_id)
-              secret = Get.new(current_user, params, json).call(secret_id)
-              Authorization::Secret.authorize! current_user, :delete, secret
-              secret.destroy
-            end
-          end
+          Delete = DeleteGenerator.new(self).build
         end
       end
     end

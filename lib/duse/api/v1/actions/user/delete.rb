@@ -1,19 +1,12 @@
 require 'duse/api/authorization/user'
+require 'duse/api/v1/actions/generator'
 
 module Duse
   module API
     module V1
       module Actions
         module User
-          class Delete < Actions::Authenticated
-            status 204
-
-            def call(user_id)
-              user = Get.new(current_user, params, json).call(user_id)
-              Authorization::User.authorize! current_user, :delete, user
-              user.destroy
-            end
-          end
+          Delete = DeleteGenerator.new(self).build
         end
       end
     end

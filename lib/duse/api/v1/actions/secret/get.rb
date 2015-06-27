@@ -1,3 +1,4 @@
+require 'duse/api/v1/actions/generator'
 require 'duse/api/models/secret'
 require 'duse/api/authorization/secret'
 
@@ -6,18 +7,7 @@ module Duse
     module V1
       module Actions
         module Secret
-          class Get < Actions::Authenticated
-            status 200
-            render JSONViews::Secret, type: :full
-
-            def call(secret_id)
-              secret = Models::Secret.find secret_id
-              Authorization::Secret.authorize! current_user, :read, secret
-              secret
-            rescue ActiveRecord::RecordNotFound
-              raise NotFound
-            end
-          end
+          Get = GetGenerator.new(self).build
         end
       end
     end

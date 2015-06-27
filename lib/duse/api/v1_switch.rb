@@ -31,10 +31,7 @@ module Duse
       end
 
       def ensure_no_trailing_slash(path)
-        if path[-1] == '/'
-          return path[0..-2]
-        end
-        path
+        Pathname.new(path).cleanpath.to_s
       end
     end
   end

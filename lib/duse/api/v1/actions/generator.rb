@@ -26,16 +26,6 @@ module Duse
             @authorization = Authorization.const_get(model_name)
             self
           end
-
-          def no_authentication
-            @base = Actions::Base
-            self
-          end
-
-          def status_code(status_code = nil)
-            @status = status_code if !status_code.nil?
-            self
-          end
         end
 
         class GetGenerator < Generator

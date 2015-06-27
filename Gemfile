@@ -6,14 +6,14 @@ gem 'bundler'
 gem 'rake'
 gem 'sinatra'
 gem 'sinatra-activerecord'
-gem 'activerecord',  require: 'active_record'
+gem 'activerecord'
 gem 'mail'
 gem 'pg'
 gem 'warden'
 gem 'bcrypt'
 gem 'puma'
-gem 'rack-cors', require: 'rack/cors'
-gem 'sentry-raven', require: false
+gem 'rack-cors'
+gem 'sentry-raven'
 
 group :test do
   gem 'rspec'
@@ -21,13 +21,12 @@ group :test do
   gem 'rack-test'
   gem 'climate_control'
   gem 'database_cleaner'
-  gem 'simplecov', require: false
-  gem 'codeclimate-test-reporter', require: false
+  gem 'simplecov'
+  gem 'codeclimate-test-reporter'
 end
 
 group :development do
   gem 'yard'
-  gem 'rubocop', require: false
-  gem 'foreman'
+  gem 'rubocop'
 end
 

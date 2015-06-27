@@ -1,3 +1,5 @@
+require 'rack/cors'
+
 module Duse
   module API
     class Cors

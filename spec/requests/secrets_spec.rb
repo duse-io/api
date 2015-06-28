@@ -67,6 +67,7 @@ describe Duse::API do
     get '/v1/folders', 'CONTENT_TYPE' => 'application/json'
 
     expect(last_response.body).to eq([{
+      id: nil,
       name: @user1.username,
       subfolders: [{
         id: folder.id,

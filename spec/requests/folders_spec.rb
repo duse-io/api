@@ -78,6 +78,7 @@ RSpec.describe Duse::API do
       get '/v1/folders', 'CONTENT_TYPE' => 'application/json'
 
       expect(last_response.body).to eq([{
+        id: nil,
         name: @user.username,
         subfolders: [],
         secrets: []
@@ -91,6 +92,7 @@ RSpec.describe Duse::API do
       get '/v1/folders', 'CONTENT_TYPE' => 'application/json'
 
       expect(last_response.body).to eq([{
+        id: nil,
         name: @user.username,
         subfolders: [{
           id: folder.id,
@@ -110,6 +112,7 @@ RSpec.describe Duse::API do
       get '/v1/folders', 'CONTENT_TYPE' => 'application/json'
 
       expect(last_response.body).to eq([{
+        id: nil,
         name: @user.username,
         subfolders: [],
         secrets: [{
@@ -129,6 +132,7 @@ RSpec.describe Duse::API do
       get '/v1/folders', 'CONTENT_TYPE' => 'application/json'
 
       expect(last_response.body).to eq([{
+        id: nil,
         name: @user.username,
         subfolders: [{
           id: folder.id,
@@ -155,6 +159,7 @@ RSpec.describe Duse::API do
       get '/v1/folders', 'CONTENT_TYPE' => 'application/json'
 
       expect(last_response.body).to eq([{
+        id: nil,
         name: @user.username,
         subfolders: [],
         secrets: [{

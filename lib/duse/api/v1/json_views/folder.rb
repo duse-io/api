@@ -6,7 +6,7 @@ module Duse
     module V1
       module JSONViews
         class Folder < JSONView
-          property :id, if: :not_nil
+          property :id
           property :name
           property :subfolders, as: Folder, type: :full
           property :secrets, as: Secret, render_type: :normal, type: :full

@@ -21,7 +21,7 @@ class JSONValidator
   private
 
   def validate_value(value, schema)
-    return Set.new if value.nil? && !strict?
+    return Set.new if value.nil? && (!strict? || schema.optional?)
 
     if value.nil?
       return Set.new ["#{schema.name} must not be blank"]

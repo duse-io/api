@@ -20,6 +20,14 @@ module Duse
         validates_uniqueness_of :username
         validates_uniqueness_of :email
 
+        def root_folder
+          Folder.new(name: self.username, sub_folders: self.root_folders, secrets: secrets.without_folder(self))
+        end
+
+        def root_folders
+          Folder.where(user: self, parent: nil)
+        end
+
         def public_key
           OpenSSL::PKey::RSA.new read_attribute(:public_key)
         end

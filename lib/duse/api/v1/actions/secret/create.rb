@@ -23,6 +23,9 @@ module Duse
                 shares_attributes: sanitized_json[:shares],
                 user_ids: user_ids
               )
+              secret.user_secrets.each do |user_secret|
+                user_secret.folder_id = sanitized_json[:folder_id] if user_secret.user_id == current_user.id
+              end
 
               if !secret.save
                 raise ValidationFailed, {message: errors.errors.full_messages}.to_json

@@ -74,10 +74,18 @@ class SecretValidator
     end
   end
 
+  class FolderValidator
+    def validate(secret)
+      if !secret.folder_id.nil? && !Duse::API::Models::Folder.exists?(secret.folder_id)
+        secret.errors[:base] << 'Folder does not exist'
+      end
+    end
+  end
+
   class Secret
     include ActiveModel::Model
 
-    attr_accessor :title, :shares, :cipher_text
+    attr_accessor :title, :shares, :cipher_text, :folder_id
 
     def validation_options
       @validation_options ||= {}
@@ -87,6 +95,7 @@ class SecretValidator
       TitleValidator.new.validate(secret)
       CipherTextValidator.new.validate(secret)
       SharesValidator.new(validation_options).validate(secret)
+      FolderValidator.new.validate(secret)
     end
   end
 

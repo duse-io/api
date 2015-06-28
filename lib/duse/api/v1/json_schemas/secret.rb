@@ -14,6 +14,7 @@ module Duse
               properties: {
                 title: { type: String },
                 cipher_text: { type: String },
+                folder_id: { name: 'Folder id', type: Integer, optional: true },
                 shares: {
                   type: Array,
                   allow_empty: false,

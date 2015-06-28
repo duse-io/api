@@ -21,7 +21,11 @@ module Duse
         validates_uniqueness_of :email
 
         def root_folder
-          Folder.new(name: self.username, sub_folders: self.root_folders, secrets: secrets.without_folder(self))
+          Folder.new(
+            name: self.username,
+            subfolders: self.root_folders,
+            secrets: secrets.without_folder(self)
+          )
         end
 
         def root_folders

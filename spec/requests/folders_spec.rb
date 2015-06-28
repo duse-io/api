@@ -50,11 +50,11 @@ RSpec.describe Duse::API do
       expect(last_response.body).to eq({
         id: first.id,
         name: 'testFolder',
-        sub_folders: [
+        subfolders: [
           {
             id: second.id,
             name: 'innerFolder',
-            sub_folders: [],
+            subfolders: [],
             secrets: [],
             url: "http://example.org/v1/folders/#{second.id}"
           }
@@ -79,7 +79,7 @@ RSpec.describe Duse::API do
 
       expect(last_response.body).to eq({
         name: @user.username,
-        sub_folders: [],
+        subfolders: [],
         secrets: []
       }.to_json)
     end
@@ -92,10 +92,10 @@ RSpec.describe Duse::API do
 
       expect(last_response.body).to eq({
         name: @user.username,
-        sub_folders: [{
+        subfolders: [{
           id: folder.id,
           name: 'testFolder',
-          sub_folders: [],
+          subfolders: [],
           secrets: [],
           url: "http://example.org/v1/folders/#{folder.id}"
         }],
@@ -111,7 +111,7 @@ RSpec.describe Duse::API do
 
       expect(last_response.body).to eq({
         name: @user.username,
-        sub_folders: [],
+        subfolders: [],
         secrets: [{
           id: secret.id,
           title: secret.title,
@@ -130,10 +130,10 @@ RSpec.describe Duse::API do
 
       expect(last_response.body).to eq({
         name: @user.username,
-        sub_folders: [{
+        subfolders: [{
           id: folder.id,
           name: 'testFolder',
-          sub_folders: [],
+          subfolders: [],
           secrets: [{
             id: secret.id,
             title: secret.title,
@@ -156,7 +156,7 @@ RSpec.describe Duse::API do
 
       expect(last_response.body).to eq({
         name: @user.username,
-        sub_folders: [],
+        subfolders: [],
         secrets: [{
           id: secret.id,
           title: secret.title,

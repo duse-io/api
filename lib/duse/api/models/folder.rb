@@ -8,7 +8,7 @@ module Duse
         has_many :secrets, through: :user_secrets
         belongs_to :user
         belongs_to :parent, class_name: 'Folder'
-        has_many :sub_folders, class_name: 'Folder', foreign_key: :parent_id
+        has_many :subfolders, class_name: 'Folder', foreign_key: :parent_id
       end
     end
   end

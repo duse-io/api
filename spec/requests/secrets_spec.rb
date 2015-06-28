@@ -68,10 +68,10 @@ describe Duse::API do
 
     expect(last_response.body).to eq({
       name: @user1.username,
-      sub_folders: [{
+      subfolders: [{
         id: folder.id,
         name: 'testFolder',
-        sub_folders: [],
+        subfolders: [],
         secrets: [secret],
         url: "http://example.org/v1/folders/#{folder.id}"
       }],

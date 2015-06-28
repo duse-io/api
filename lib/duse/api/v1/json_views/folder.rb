@@ -8,7 +8,7 @@ module Duse
         class Folder < JSONView
           property :id, if: :not_nil
           property :name
-          property :sub_folders, as: Folder, type: :full
+          property :subfolders, as: Folder, type: :full
           property :secrets, as: Secret, render_type: :normal, type: :full
           property :url, if: ->(folder){ !folder.id.nil? } do |secret, options|
             "http://#{options[:host]}/v1/folders/#{secret.id}"

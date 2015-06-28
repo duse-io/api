@@ -77,11 +77,11 @@ RSpec.describe Duse::API do
       header 'Authorization', @user.create_new_token
       get '/v1/folders', 'CONTENT_TYPE' => 'application/json'
 
-      expect(last_response.body).to eq({
+      expect(last_response.body).to eq([{
         name: @user.username,
         subfolders: [],
         secrets: []
-      }.to_json)
+      }].to_json)
     end
 
     it 'returns a default folder containing all other folders owned by the user' do
@@ -90,7 +90,7 @@ RSpec.describe Duse::API do
       header 'Authorization', @user.create_new_token
       get '/v1/folders', 'CONTENT_TYPE' => 'application/json'
 
-      expect(last_response.body).to eq({
+      expect(last_response.body).to eq([{
         name: @user.username,
         subfolders: [{
           id: folder.id,
@@ -100,7 +100,7 @@ RSpec.describe Duse::API do
           url: "http://example.org/v1/folders/#{folder.id}"
         }],
         secrets: []
-      }.to_json)
+      }].to_json)
     end
 
     it 'puts secrets without a folder in the default folder' do
@@ -109,7 +109,7 @@ RSpec.describe Duse::API do
       header 'Authorization', @user.create_new_token
       get '/v1/folders', 'CONTENT_TYPE' => 'application/json'
 
-      expect(last_response.body).to eq({
+      expect(last_response.body).to eq([{
         name: @user.username,
         subfolders: [],
         secrets: [{
@@ -117,7 +117,7 @@ RSpec.describe Duse::API do
           title: secret.title,
           url: "http://example.org/v1/secrets/#{secret.id}"
         }]
-      }.to_json)
+      }].to_json)
     end
 
     it 'correctly nests secrets' do
@@ -128,7 +128,7 @@ RSpec.describe Duse::API do
       header 'Authorization', @user.create_new_token
       get '/v1/folders', 'CONTENT_TYPE' => 'application/json'
 
-      expect(last_response.body).to eq({
+      expect(last_response.body).to eq([{
         name: @user.username,
         subfolders: [{
           id: folder.id,
@@ -142,7 +142,7 @@ RSpec.describe Duse::API do
           url: "http://example.org/v1/folders/#{folder.id}"
         }],
         secrets: []
-      }.to_json)
+      }].to_json)
     end
 
     it 'puts a secret in the default folder if the folder it lies in is deleted' do
@@ -154,7 +154,7 @@ RSpec.describe Duse::API do
       header 'Authorization', @user.create_new_token
       get '/v1/folders', 'CONTENT_TYPE' => 'application/json'
 
-      expect(last_response.body).to eq({
+      expect(last_response.body).to eq([{
         name: @user.username,
         subfolders: [],
         secrets: [{
@@ -162,7 +162,7 @@ RSpec.describe Duse::API do
           title: secret.title,
           url: "http://example.org/v1/secrets/#{secret.id}"
         }]
-      }.to_json)
+      }].to_json)
     end
   end
 

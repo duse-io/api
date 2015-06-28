@@ -10,7 +10,7 @@ module Duse
             render JSONViews::Folder, type: :full
 
             def call
-              current_user.root_folder
+              [current_user.root_folder]
             end
           end
         end

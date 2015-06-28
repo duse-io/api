@@ -66,7 +66,7 @@ describe Duse::API do
     header 'Authorization', token
     get '/v1/folders', 'CONTENT_TYPE' => 'application/json'
 
-    expect(last_response.body).to eq({
+    expect(last_response.body).to eq([{
       name: @user1.username,
       subfolders: [{
         id: folder.id,
@@ -76,7 +76,7 @@ describe Duse::API do
         url: "http://example.org/v1/folders/#{folder.id}"
       }],
       secrets: []
-    }.to_json)
+    }].to_json)
   end
 
   it 'it renders the secret correctly when getting it' do

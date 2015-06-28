@@ -12,11 +12,12 @@ class JSONView
 
     def value_for(subject, options)
       value = @value_block.call(subject, options)
-      return nested_view.new(value, options).render if nested?
+      return render_nested_view(value, options) if nested?
       value
     end
 
     def show?(subject, options)
+      return eval_if_condition(subject) if @options.key?(:if)
       return true if type.nil?
       return type == options[:type]
     end
@@ -25,12 +26,24 @@ class JSONView
       @options[:type]
     end
 
+    def eval_if_condition(subject)
+      if @options.key?(:if) && @options[:if] == :not_nil
+        return !subject[name].nil?
+      end
+      @options[:if].call(subject)
+    end
+
     def nested?
       !!nested_view
     end
 
     def nested_view
       @options[:as]
+    end
+
+    def render_nested_view(value, options)
+      options = options.merge({ type: @options[:render_type] }) if @options.key? :render_type
+      nested_view.new(value, options).render
     end
   end
 

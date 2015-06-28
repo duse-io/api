@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 20150609193142) do
   create_table "folders", force: :cascade do |t|
     t.string  "name"
     t.integer "parent_id"
+    t.integer "user_id"
   end
 
   create_table "secrets", force: :cascade do |t|
@@ -51,10 +52,12 @@ ActiveRecord::Schema.define(version: 20150609193142) do
   create_table "user_secrets", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "secret_id"
+    t.integer  "folder_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
+  add_index "user_secrets", ["folder_id"], name: "index_user_secrets_on_folder_id", using: :btree
   add_index "user_secrets", ["secret_id"], name: "index_user_secrets_on_secret_id", using: :btree
   add_index "user_secrets", ["user_id"], name: "index_user_secrets_on_user_id", using: :btree
 

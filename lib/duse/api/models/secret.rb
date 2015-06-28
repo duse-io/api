@@ -13,6 +13,9 @@ module Duse
         has_many :users, -> { uniq.order :id }, through: :user_secrets
         belongs_to :last_edited_by, class_name: 'User', foreign_key: :last_edited_by_id
 
+        scope :zombies, -> { joins("LEFT JOIN user_secrets ON user_secrets.secret_id = secrets.id").where("user_secrets.user_id IS NULL") }
+        scope :without_folder, ->(user) { joins("LEFT JOIN user_secrets us ON us.secret_id = secrets.id").where("us.folder_id IS NULL AND us.user_id = ?", user.id) }
+
         def shares_for(user)
           server_share = shares.where(user: Server.get).first
           server_share = Encryption.decrypt(

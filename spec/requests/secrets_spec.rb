@@ -40,6 +40,45 @@ describe Duse::API do
     }.to_json)
   end
 
+  it 'ensures the specified folder exists' do
+    secret_json = default_secret(folder_id: 10000).to_json
+    token = @user1.create_new_token
+
+    header 'Authorization', token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.body).to eq({
+      message: ['Folder does not exist']
+    }.to_json)
+  end
+
+  it 'puts the secret in the specified folder' do
+    @key = KeyHelper.generate_key
+    @user1 = FactoryGirl.create(:user, public_key: @key.public_key)
+    folder = FactoryGirl.create(:folder, user: @user1)
+    secret_json = default_secret(folder_id: folder.id).to_json
+    token = @user1.create_new_token
+
+    header 'Authorization', token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+    secret = JSON.parse(last_response.body)
+
+    header 'Authorization', token
+    get '/v1/folders', 'CONTENT_TYPE' => 'application/json'
+
+    expect(last_response.body).to eq({
+      name: @user1.username,
+      sub_folders: [{
+        id: folder.id,
+        name: 'testFolder',
+        sub_folders: [],
+        secrets: [secret],
+        url: "http://example.org/v1/folders/#{folder.id}"
+      }],
+      secrets: []
+    }.to_json)
+  end
+
   it 'it renders the secret correctly when getting it' do
     secret_json = default_secret.to_json
     token = @user1.create_new_token

@@ -32,6 +32,10 @@ class JSONSchema
     @schema.fetch :allow_empty, true
   end
 
+  def optional?
+    @schema.fetch :optional, false
+  end
+
   def properties
     @schema[:properties]
   end

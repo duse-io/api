@@ -1,6 +1,10 @@
 language: ruby
 rvm:
   - 2.2.2
+  - rbx-2
+matrix:
+  allow_failures:
+    - rvm: rbx-2
 cache: bundler
 bundler_args: "--without development"
 sudo: false

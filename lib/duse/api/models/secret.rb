@@ -1,4 +1,5 @@
 require 'duse/api/models/user'
+require 'duse/api/models/share'
 require 'duse/api/models/user_secret'
 require 'duse/encryption'
 require 'ostruct'
@@ -9,7 +10,7 @@ module Duse
       class Secret < ActiveRecord::Base
         has_many :shares, dependent: :destroy
         accepts_nested_attributes_for :shares
-        has_many :user_secrets
+        has_many :user_secrets, autosave: true
         has_many :users, -> { uniq.order :id }, through: :user_secrets
         belongs_to :last_edited_by, class_name: 'User', foreign_key: :last_edited_by_id
 

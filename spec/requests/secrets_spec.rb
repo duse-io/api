@@ -80,6 +80,24 @@ describe Duse::API do
     }].to_json)
   end
 
+  it 'allows updating the folder the secret lies in' do
+    secret_json = default_secret.to_json
+    token = @user1.create_new_token
+
+    header 'Authorization', token
+    post '/v1/secrets', secret_json, 'CONTENT_TYPE' => 'application/json'
+
+    secret = Duse::API::Models::Secret.find(JSON.parse(last_response.body)['id'])
+    folder = FactoryGirl.create(:folder, user: @user1)
+
+    header 'Authorization', token
+    patch "/v1/secrets/#{secret.id}", { folder_id: folder.id }.to_json, 'CONTENT_TYPE' => 'application/json'
+
+    secret.reload
+    folder.reload
+    expect(folder.secrets).to include(secret)
+  end
+
   it 'it renders the secret correctly when getting it' do
     secret_json = default_secret.to_json
     token = @user1.create_new_token

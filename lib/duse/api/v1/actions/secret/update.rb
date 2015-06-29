@@ -25,8 +25,14 @@ module Duse
               if json.key?(:title) || json.key?(:cipher_text)
                 secret.last_edited_by = current_user
               end
+              if !json[:folder_id].nil?
+                secret.user_secrets.where(user_id: current_user.id).first.update_attributes(
+                  folder_id: json.delete(:folder_id)
+                )
+              end
 
-              if !secret.update(json)
+              secret.assign_attributes json
+              if !secret.save
                 fail ValidationFailed, {message: secret.errors.full_messages}.to_json
               end
               secret

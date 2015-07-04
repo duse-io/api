@@ -39,10 +39,16 @@ module Duse
           def add_to_sinatra(sinatra_class)
             sinatra_class.instance_exec(http_method, absolute_route, action) do |http_method, absolute_route, action|
               send(http_method, absolute_route) do |*args|
-                authenticate!(action.auth_opts[:with]) if action.auth?
-                status action.status_code
-                result = action.new(current_user, params, json(action.schema)).call(*args)
-                render(result, action.view, action.view_opts)
+                begin
+                  authenticate!(action.auth_opts[:with]) if action.auth?
+                  status action.status_code
+                  result = action.new(current_user, params, json(action.schema)).call(*args)
+                  logger.info "[AUDIT_LOG] #{current_user} successfully executed #{action} with args: #{action.arg_value_list(args)}."
+                  render(result, action.view, action.view_opts)
+                rescue => e
+                  logger.info "[AUDIT_LOG] #{current_user} failed to execute #{action} with args: #{action.arg_value_list(args)} due to #{e}."
+                  raise e
+                end
               end
             end
           end

@@ -39,6 +39,14 @@ module Duse
             def set(option, value)
               define_singleton_method(option) { value }
             end
+
+            def arg_value_list(args)
+              parameters = self.instance_method(:call).parameters
+              parameters.map.with_index do |parameter, index|
+                _, name, *_ = parameter
+                [name, args[index]]
+              end
+            end
           end
         end
       end

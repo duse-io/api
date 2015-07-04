@@ -10,6 +10,7 @@ module Duse
       class Base < Sinatra::Base
         set :database, ENV['DATABASE_URL']
         set :database_extras, { pool: 5, timeout: 3000, encoding: 'unicode' }
+        enable :logging
         disable :raise_errors, :show_exceptions
 
         helpers Helpers

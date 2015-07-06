@@ -1,11 +1,5 @@
-files:
-  image: ubuntu
 db:
   image: postgres:9.4
-  volumes_from:
-    - files
-  volumes:
-    - /var/lib/postgresql/data/
   ports:
     - "5432"
   environment:

@@ -13,7 +13,7 @@ before_script:
 - psql -c 'create database duse_api_test;' -U postgres
 - bundle exec rake db:migrate
 addons:
-  postgresql: '9.3'
+  postgresql: '9.4'
   code_climate:
     repo_token: 95dadd634113f433549fa05c72fde190477a1373c10b57c4f5c7ba32dfacb7ec
 notifications:

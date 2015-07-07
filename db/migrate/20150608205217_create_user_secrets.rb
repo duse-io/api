@@ -5,7 +5,7 @@ class CreateUserSecrets < ActiveRecord::Migration
       t.integer :secret_id, index: true
       t.integer :folder_id, index: true
 
-      t.timestamps
+      t.timestamps null: false
     end
   end
 end

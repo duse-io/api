@@ -53,8 +53,8 @@ ActiveRecord::Schema.define(version: 20150609193142) do
     t.integer  "user_id"
     t.integer  "secret_id"
     t.integer  "folder_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_index "user_secrets", ["folder_id"], name: "index_user_secrets_on_folder_id", using: :btree

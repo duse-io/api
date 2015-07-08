@@ -26,8 +26,23 @@ module Duse
           end
         end
 
+        def audit_logger
+          @audit_logger ||= Logger.new(STDOUT)
+        end
+
+        def audit_log(options)
+          msg = "log_type=AUDIT_LOG timestamp=#{Time.now.strftime('%FT%T%:z')} user_id=#{user_id(current_user)} action=#{options[:action]} args=#{options[:action].arg_value_list(options[:args])} result=#{options[:result]}"
+          msg = "#{msg} error=#{options[:error].class}" if options.key?(:result) == 'failed'
+          audit_logger << "#{msg}\n"
+        end
+
         def json(schema)
           schema.new(request_json) if !schema.nil?
+        end
+
+        def user_id(current_user)
+          return '<Unauthenticated>' if current_user.nil?
+          current_user.id
         end
 
         def render(result, view, view_opts)

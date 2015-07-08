@@ -43,10 +43,10 @@ module Duse
                   authenticate!(action.auth_opts[:with]) if action.auth?
                   status action.status_code
                   result = action.new(current_user, params, json(action.schema)).call(*args)
-                  logger.info "[AUDIT_LOG] #{current_user} successfully executed #{action} with args: #{action.arg_value_list(args)}."
+                  audit_log(action: action, args: args, result: 'success')
                   render(result, action.view, action.view_opts)
                 rescue => e
-                  logger.info "[AUDIT_LOG] #{current_user} failed to execute #{action} with args: #{action.arg_value_list(args)} due to #{e}."
+                  audit_log(action: action, args: args, result: 'failed', error: e)
                   raise e
                 end
               end

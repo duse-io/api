@@ -3,12 +3,14 @@ require 'duse/api/authentication'
 require 'duse/api/cors'
 require 'duse/api/v1/routes'
 require 'duse/api/config'
+require 'duse/api/common_logger'
 
 module Duse
   module API
     class App
       def initialize
         @app = Rack::Builder.app do
+          use CommonLogger, Logger.new(STDOUT)
           use Cors
           use Authentication
           use V1Switch

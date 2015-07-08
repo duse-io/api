@@ -45,7 +45,7 @@ module Duse
               parameters.map.with_index do |parameter, index|
                 _, name, *_ = parameter
                 [name, args[index]]
-              end
+              end.to_h.to_json
             end
           end
         end

@@ -1,3 +1,5 @@
+require 'stringio'
+
 module Duse
   module API
     module V1
@@ -27,7 +29,7 @@ module Duse
         end
 
         def audit_logger
-          @audit_logger ||= Logger.new(STDOUT)
+          @audit_logger ||= Logger.new(ENV['RACK_ENV'] == 'test' ? StringIO.new : STDOUT)
         end
 
         def audit_log(options)

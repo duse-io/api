@@ -1,3 +1,5 @@
+require 'duse/api/audit_logger'
+
 module Duse
   module API
     module V1
@@ -13,26 +15,19 @@ module Duse
 
           def run(args)
             result = call(*args)
-            audit_log(action: self.class, args: args, result: 'success')
+            audit_log(args: args, result: 'success')
             result
           rescue => e
-            audit_log(action: self.class, args: args, result: 'failed', error: e)
+            audit_log(args: args, result: 'failed', error: e)
             raise e
           end
 
           def audit_logger
-            @audit_logger ||= Logger.new(ENV['RACK_ENV'] == 'test' ? StringIO.new : STDOUT)
+            @audit_logger ||= AuditLogger.new
           end
 
           def audit_log(options)
-            msg = "log_type=AUDIT_LOG timestamp=#{Time.now.strftime('%FT%T%:z')} user_id=#{user_id(current_user)} action=#{options[:action]} args=#{options[:action].arg_value_list(options[:args])} result=#{options[:result]}"
-            msg = "#{msg} error=#{options[:error].class}" if options.key?(:result) == 'failed'
-            audit_logger << "#{msg}\n"
-          end
-
-          def user_id(current_user)
-            return '<Unauthenticated>' if current_user.nil?
-            current_user.id
+            audit_logger.log(options.merge(action: self.class, current_user: current_user))
           end
 
           class << self

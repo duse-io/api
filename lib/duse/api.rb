@@ -10,7 +10,7 @@ module Duse
     class App
       def initialize
         @app = Rack::Builder.app do
-          use CommonLogger, Logger.new(STDOUT)
+          use CommonLogger
           use Cors
           use Authentication
           use V1Switch

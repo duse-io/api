@@ -9,7 +9,7 @@ module Duse
             render JSONViews::Folder
 
             def call(secret_id)
-              folder = Get.new(current_user, params, json).call(secret_id)
+              folder = Get.new(env, current_user, params, json).call(secret_id)
               Authorization::Folder.authorize! current_user, :update, folder
               json = self.json.sanitize(strict: false, user: current_user)
               if !folder.update(json)

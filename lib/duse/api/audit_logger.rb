@@ -3,8 +3,10 @@ module Duse
     class AuditLogger
       FORMAT = %{log_type=AUDIT_LOG timestamp=%s user_id=%s action=%s args=%s result=%s error=%s\n}
 
-      def initialize
-        @logger = Logger.new(ENV['RACK_ENV'] == 'test' ? StringIO.new : STDOUT)
+      attr_reader :logger
+
+      def initialize(logger)
+        @logger = logger
       end
 
       def log(options)
@@ -16,7 +18,12 @@ module Duse
           options[:result],
           error(options[:error])
         ]
-        @logger << msg
+
+        if logger.respond_to?(:write)
+          logger.write(msg)
+        else
+          logger << msg
+        end
       end
 
       def user_id(current_user)

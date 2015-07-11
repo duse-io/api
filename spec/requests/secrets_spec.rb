@@ -1,5 +1,4 @@
-describe Duse::API do
-  include Rack::Test::Methods
+describe Duse::API, type: :request do
   include JsonFactory
 
   def app

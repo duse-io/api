@@ -1,6 +1,4 @@
-describe Duse::API::Models::Token do
-  include Rack::Test::Methods
-
+describe Duse::API::Models::Token, type: :request do
   def app
     Duse::API::App.new
   end

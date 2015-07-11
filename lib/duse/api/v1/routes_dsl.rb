@@ -41,7 +41,7 @@ module Duse
               send(http_method, absolute_route) do |*args|
                 authenticate!(action.auth_opts[:with]) if action.auth?
                 status action.status_code
-                result = action.new(current_user, params, json(action.schema)).run(args)
+                result = action.new(env, current_user, params, json(action.schema)).run(args)
                 render(result, action.view, action.view_opts)
               end
             end

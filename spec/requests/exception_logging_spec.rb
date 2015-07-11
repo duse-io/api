@@ -1,6 +1,4 @@
-describe Duse::API::V1::Base do
-  include Rack::Test::Methods
-
+describe Duse::API::V1::Base, type: :request do
   def app
     app = Class.new(Duse::API::V1::Base)
     app.get '/error' do 

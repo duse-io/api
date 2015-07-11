@@ -5,9 +5,10 @@ module Duse
     module V1
       module Actions
         class Base
-          attr_reader :current_user, :params, :json
+          attr_reader :env, :current_user, :params, :json
 
-          def initialize(current_user, params, json)
+          def initialize(env, current_user, params, json)
+            @env = env
             @current_user = current_user
             @params = params
             @json = json
@@ -23,7 +24,7 @@ module Duse
           end
 
           def audit_logger
-            @audit_logger ||= AuditLogger.new
+            @audit_logger ||= AuditLogger.new(env['rack.errors'])
           end
 
           def audit_log(options)

@@ -67,7 +67,7 @@ module Duse
             action.status status
             action.instance_exec(namespace, model, authorization) do |namespace, model, authorization|
               define_method :call do |id|
-                entity = namespace.const_get(:Get).new(current_user, params, json).call(id)
+                entity = namespace.const_get(:Get).new(env, current_user, params, json).call(id)
                 authorization.authorize!(current_user, :delete, entity) if !authorization.nil?
                 entity.destroy
               end

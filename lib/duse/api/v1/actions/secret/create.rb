@@ -9,7 +9,7 @@ module Duse
             render JSONViews::Secret
 
             def call
-              fail ValidationFailed, {message: ['Your limit of secrets has been reached']}.to_json if @current_user.secrets.length >= 10
+              fail ValidationFailed, {message: ['Your limit of secrets has been reached']}.to_json if @current_user.secrets.length >= @current_user.secret_limit
               sanitized_json = json.sanitize current_user: @current_user
               user_ids = []
               sanitized_json[:shares].each do |s| 

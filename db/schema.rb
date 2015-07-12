@@ -69,6 +69,7 @@ ActiveRecord::Schema.define(version: 20150609193142) do
     t.string   "type"
     t.text     "public_key"
     t.text     "private_key"
+    t.integer  "secret_limit",    default: 10
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree

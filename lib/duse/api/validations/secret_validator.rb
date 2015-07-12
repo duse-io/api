@@ -39,7 +39,6 @@ class SecretValidator
         secret.errors[:base] << 'Each user must only have one share'    unless user_ids_unique?(user_ids)
         secret.errors[:base] << 'Shares for the server must be present' unless user_ids.include? @server.id
         secret.errors[:base] << 'Shares for your user must be present'  unless user_ids.include? @user.id
-        secret.errors[:base] << 'Number of participants must be ten or less' if shares.length > 10
 
         shares.each do |share|
           unless user_exists? share[:user_id]

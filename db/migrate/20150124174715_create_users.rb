@@ -8,6 +8,7 @@ class CreateUsers < ActiveRecord::Migration
       t.string :type
       t.text   :public_key
       t.text   :private_key
+      t.integer :secret_limit, default: 10
     end
 
     add_index :users, :username, unique: true

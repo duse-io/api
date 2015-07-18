@@ -27,6 +27,15 @@ RSpec.describe Duse::API, type: :request do
         post '/v1/folders', folder_json, 'CONTENT_TYPE' => 'application/json'
       }.to change{ Duse::API::Models::Folder.count }.by(1)
     end
+
+    it 'errors when the folder contains illegal characters' do
+      folder_json = { name: '???' }.to_json
+
+      header 'Authorization', @user.create_new_token
+      post '/v1/folders', folder_json, 'CONTENT_TYPE' => 'application/json'
+
+      expect(last_response.status).to eq(422)
+    end
   end
 
   describe 'GET /folders/:id' do

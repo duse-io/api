@@ -11,7 +11,7 @@ fi
 
 ping_postgres_successful()
 {
-  pg_isready --host=$HOST > /dev/null 2>&1
+  pg_isready --host=$HOST --port=$PORT > /dev/null 2>&1
   return $?
 }
 

@@ -1,6 +1,6 @@
 require 'duse/api/json_models'
 require 'duse/api/json_schema'
-require 'duse/api/validations/secret_validator'
+require 'duse/api/validations/secret_validation'
 
 module Duse
   module API
@@ -8,7 +8,7 @@ module Duse
       module JSONSchemas
         class Secret < DefaultJSON
           def initialize(json)
-            super(json, SecretValidator, JSONSchema.new({
+            super(json, SecretValidation, JSONSchema.new({
               type: Hash,
               message: 'Secret must be an object',
               properties: {

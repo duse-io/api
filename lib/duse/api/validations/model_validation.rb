@@ -1,8 +1,8 @@
 require 'duse/api/validations/validation'
 
 class ModelValidation < Validation
-  def self.validate(subject, validation)
-    validations << [subject, validation]
+  def self.validate(validation, attribute, options = {})
+    validations << [validation, attribute, options]
   end
 
   def self.validations
@@ -10,8 +10,10 @@ class ModelValidation < Validation
   end
 
   def validate(subject)
-    validations.map do |(attribute, validation)|
-      validation.validate(subject.public_send(attribute))
+    validations.map do |(validation, attribute, options)|
+      validation.new(attribute, {
+        subject_name: attribute.to_s.capitalize
+      }.merge(@options).merge(options)).validate(subject)
     end.flatten
   end
 

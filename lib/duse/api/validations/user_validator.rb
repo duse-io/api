@@ -90,7 +90,7 @@ class UserValidator
   end
 
   def validate(user)
-    user = User.new(user)
+    user = User.new(user.to_h)
     user.valid?
     user.errors.full_messages
   end

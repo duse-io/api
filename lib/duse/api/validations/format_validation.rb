@@ -2,7 +2,7 @@ require 'duse/api/validations/single_validation'
 
 class FormatValidation < SingleValidation
   def invalid?(subject)
-    !subject.nil? && subject !~ format
+    !subject.nil? && !subject.empty? && subject !~ format
   end
 
   def error_msg

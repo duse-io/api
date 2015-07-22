@@ -5,10 +5,10 @@ require 'duse/api/validations/length_between_validation'
 
 class FolderValidation < ModelValidation
   class NameValidation < MultiValidation
-    validate FormatValidation.new(subject_name: 'Folder name', format: /[a-zA-Z0-9]/)
-    validate LengthBetweenValidator.new(subject_name: 'Folder name', min: 1, max: 50)
+    validate FormatValidation, format: /[a-zA-Z0-9]/
+    validate LengthBetweenValidation, min: 1, max: 50
   end
 
-  validate :name, NameValidation.new
+  validate NameValidation, :name, subject_name: 'Folder name'
 end
 

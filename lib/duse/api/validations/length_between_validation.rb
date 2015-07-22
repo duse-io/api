@@ -1,8 +1,8 @@
 require 'duse/api/validations/single_validation'
 
-class LengthBetweenValidator < SingleValidation
+class LengthBetweenValidation < SingleValidation
   def invalid?(subject)
-    !subject.nil? && !subject.length.between?(min, max)
+    !subject.nil? && !subject.empty? && !subject.length.between?(min, max)
   end
 
   def error_msg

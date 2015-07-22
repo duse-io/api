@@ -1,8 +1,8 @@
 require 'duse/api/validations/validation'
 
 class SingleValidation < Validation
-  def validate(subject)
-    return [error_msg] if invalid?(subject)
+  def validate(*subjects)
+    return [(options[:msg] || error_msg)] if invalid?(*subjects)
     []
   end
 

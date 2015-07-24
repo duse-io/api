@@ -9,7 +9,7 @@ module Duse
             render JSONViews::Secret
 
             def call(secret_id)
-              json = self.json.sanitize strict: false, current_user: current_user
+              json = sanitized_json(strict: false)
               secret = Get.new(env, current_user, params, json).call(secret_id)
               Authorization::Secret.authorize! current_user, :update, secret
               if !json[:shares].nil?

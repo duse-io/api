@@ -31,6 +31,14 @@ module Duse
             audit_logger.log(options.merge(action: self.class, current_user: current_user))
           end
 
+          def action_name
+            self.class.name.split('::').last.downcase.to_sym
+          end
+
+          def sanitized_json(options = {})
+            self.json.sanitize({current_user: current_user, action: action_name}.merge(options))
+          end
+
           class << self
             attr_reader :view, :view_opts, :schema, :status_code, :auth, :auth_opts
 

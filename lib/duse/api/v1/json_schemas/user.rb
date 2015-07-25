@@ -1,5 +1,5 @@
 require 'duse/api/json_models'
-require 'duse/api/validations/user_validation'
+require 'duse/api/validations/user'
 
 module Duse
   module API
@@ -7,7 +7,7 @@ module Duse
       module JSONSchemas
         class User < DefaultJSON
           def initialize(json)
-            super(json, UserValidation, JSONSchema.new({
+            super(json, Validations::User, JSONSchema.new({
               type: Hash,
               message: 'User must be an object',
               properties: {

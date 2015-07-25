@@ -1,4 +1,4 @@
-describe UserValidation do
+describe Duse::API::Validations::User do
   context :password do
     it 'should prevent weak passwords' do
       key = KeyHelper.generate_key
@@ -8,7 +8,7 @@ describe UserValidation do
         password_confirmation: 'password',
         public_key: key.public_key.to_s
       )
-      expect(UserValidation.new(action: :create).validate(user).to_a).to eq(['Password too weak'])
+      expect(Duse::API::Validations::User.new(action: :create).validate(user).to_a).to eq(['Password too weak'])
     end
 
     it 'should view "_" as a special character' do
@@ -20,7 +20,7 @@ describe UserValidation do
         password_confirmation: password,
         public_key: key.public_key.to_s
       )
-      expect(UserValidation.new(action: :create).validate(user).to_a).to eq([])
+      expect(Duse::API::Validations::User.new(action: :create).validate(user).to_a).to eq([])
     end
 
     it 'should check that passwords are at least 8 characters long' do
@@ -31,7 +31,7 @@ describe UserValidation do
         password_confirmation: 'Psw0rd!',
         public_key: key.public_key.to_s
       )
-      expect(UserValidation.new(action: :create).validate(user).to_a).to eq([
+      expect(Duse::API::Validations::User.new(action: :create).validate(user).to_a).to eq([
         'Password must be between 8 and 128 characters long'
       ])
     end
@@ -43,7 +43,7 @@ describe UserValidation do
         password_confirmation: 'Passw0rd!',
         public_key: 'not a valid key'
       )
-      expect(UserValidation.new.validate(user).to_a).to eq([
+      expect(Duse::API::Validations::User.new.validate(user).to_a).to eq([
         'Public key is not a valid RSA Public Key'
       ])
     end
@@ -56,7 +56,7 @@ describe UserValidation do
         password_confirmation: 'Passw0rd!',
         public_key: key.public_key.to_s
       )
-      expect(UserValidation.new.validate(user).to_a).to eq([
+      expect(Duse::API::Validations::User.new.validate(user).to_a).to eq([
         'Username must be only letters, numbers, "-" and "_"'
       ])
     end
@@ -69,7 +69,7 @@ describe UserValidation do
         password_confirmation: 'Passw0rd!',
         public_key: key.public_key.to_s
       )
-      expect(UserValidation.new.validate(user).to_a).to eq([
+      expect(Duse::API::Validations::User.new.validate(user).to_a).to eq([
         'Username must be between 4 and 30 characters long'
       ])
     end
@@ -82,7 +82,7 @@ describe UserValidation do
         password_confirmation: 'Passw0rd!',
         public_key: key.public_key.to_s
       )
-      expect(UserValidation.new.validate(user).to_a).to eq([
+      expect(Duse::API::Validations::User.new.validate(user).to_a).to eq([
         'Username must be between 4 and 30 characters long'
       ])
     end

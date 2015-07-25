@@ -1,5 +1,5 @@
 require 'duse/api/json_models'
-require 'duse/api/validations/folder_validation'
+require 'duse/api/validations/folder'
 
 module Duse
   module API
@@ -7,7 +7,7 @@ module Duse
       module JSONSchemas
         class Folder < DefaultJSON
           def initialize(json)
-            super(json, FolderValidation, JSONSchema.new({
+            super(json, Validations::Folder, JSONSchema.new({
               type: Hash,
               message: 'Folder must be an object',
               properties: {

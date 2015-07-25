@@ -4,45 +4,8 @@ require 'duse/api/validations/multi_validation'
 require 'duse/api/validations/format_validation'
 require 'duse/api/validations/max_length_validation'
 require 'duse/api/validations/length_between_validation'
-
-class PasswordComplexityValidation < Validation
-  def validate(password)
-    if (/.*[[:punct:]\W]+.*/ =~ password).nil? || # special chars
-        (/.*[[:upper:]]+.*/  =~ password).nil? || # upper chars
-        (/.*[[:lower:]]+.*/  =~ password).nil? || # lower chars
-        (/.*\d+.*/           =~ password).nil?    # digits
-      return ['Password too weak']
-    end
-    []
-  end
-end
-
-class PublicKeyValidityAndSizeValidation < Validation
-  def validate(public_key)
-    errors = []
-    if !public_key.nil? && !is_valid_public_key?(public_key)
-      errors << 'Public key is not a valid RSA Public Key'
-    end
-    if !public_key.nil? && is_valid_public_key?(public_key) && key_size(public_key) < 2048
-      errors << 'Public key size must be 2048 bit or larger'
-    end
-    errors
-  end
-
-  private
-
-  def key_size(public_key)
-    key = OpenSSL::PKey::RSA.new public_key
-    key.n.num_bytes * 8
-  end
-
-  def is_valid_public_key?(public_key)
-    key = OpenSSL::PKey::RSA.new public_key
-    key.public?
-  rescue OpenSSL::PKey::RSAError
-    false
-  end
-end
+require 'duse/api/validations/password_complexity_validation'
+require 'duse/api/validations/public_key_validity_and_size_validation'
 
 class UserValidation < ModelValidation
   class PasswordValidation < MultiValidation

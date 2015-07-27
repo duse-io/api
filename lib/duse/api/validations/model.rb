@@ -15,13 +15,21 @@ module Duse
         end
 
         def validate(subject)
-          validations.map do |(validation, attribute, options)|
-            if options[:on].nil? || options[:on] == @options[:action]
-              validation.new(attribute, {
-                subject_name: attribute.to_s.capitalize
-              }.merge(@options).merge(options)).validate(subject)
-            end
+          validations.map do |args|
+            run_single_validation(subject, *args)
           end.flatten.compact
+        end
+
+        def run_single_validation(subject, validation, attribute, config_options)
+          if run_validation?(config_options, @options)
+            validation.new(attribute, {
+              subject_name: attribute.to_s.capitalize
+            }.merge(@options).merge(config_options)).validate(subject)
+          end
+        end
+
+        def run_validation?(config_options, execution_options)
+          config_options[:on].nil? || config_options[:on] == execution_options[:action]
         end
 
         def validations

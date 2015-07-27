@@ -39,25 +39,30 @@ module Duse
           def validate(secret)
             shares = secret.public_send(@shares_sym)
             errors = []
+
             if !shares.nil?
               user_ids = extract_user_ids(shares)
               errors << 'Each user must only have one share'    unless user_ids_unique?(user_ids)
               errors << 'Shares for the server must be present' unless user_ids.include? @server.id
               errors << 'Shares for your user must be present'  unless user_ids.include? @user.id
+              validate_shares(shares, errors)
+            end
 
-              shares.each do |share|
-                unless user_exists? share[:user_id]
-                  errors << 'One or more of the provided users do not exist'
-                end
-                if user_exists?(share[:user_id]) && !length_matches_key?(share[:content], Duse::API::Models::User.find(share[:user_id]).public_key)
-                  errors << 'Public key and share content lengths do not match'
-                end
-                unless @user.verify_authenticity share[:signature], share[:content]
-                  errors << 'Authenticity could not be verified. Wrong signature.'
-                end
+            errors
+          end
+
+          def validate_shares(shares, errors)
+            shares.each do |share|
+              unless user_exists? share[:user_id]
+                errors << 'One or more of the provided users do not exist'
+              end
+              if user_exists?(share[:user_id]) && !length_matches_key?(share[:content], Duse::API::Models::User.find(share[:user_id]).public_key)
+                errors << 'Public key and share content lengths do not match'
+              end
+              unless @user.verify_authenticity share[:signature], share[:content]
+                errors << 'Authenticity could not be verified. Wrong signature.'
               end
             end
-            errors
           end
 
           private

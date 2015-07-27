@@ -3,7 +3,9 @@ require 'duse/api/validations/single'
 module Duse
   module API
     module Validations
-      class ModelExists < Single
+      class ModelExists
+        include Single
+
         def invalid?(subject)
           !subject.nil? && !model_class.exists?(subject)
         end

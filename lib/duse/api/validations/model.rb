@@ -3,7 +3,9 @@ require 'duse/api/validations/base'
 module Duse
   module API
     module Validations
-      class Model < Base
+      class Model
+        include Base
+
         def self.validate(validation, attribute, options = {})
           validations << [validation, attribute, options]
         end

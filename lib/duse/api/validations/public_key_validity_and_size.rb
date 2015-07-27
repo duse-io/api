@@ -3,7 +3,9 @@ require 'duse/api/validations/base'
 module Duse
   module API
     module Validations
-      class PublicKeyValidityAndSize < Base
+      class PublicKeyValidityAndSize
+        include Base
+
         def validate(public_key)
           errors = []
           if !public_key.nil? && !is_valid_public_key?(public_key)

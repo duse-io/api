@@ -3,7 +3,9 @@ require 'duse/api/validations/single'
 module Duse
   module API
     module Validations
-      class LengthBetween < Single
+      class LengthBetween
+        include Single
+
         def invalid?(subject)
           !subject.nil? && !subject.empty? && !subject.length.between?(min, max)
         end

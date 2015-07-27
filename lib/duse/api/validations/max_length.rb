@@ -3,7 +3,9 @@ require 'duse/api/validations/single'
 module Duse
   module API
     module Validations
-      class MaxLength < Single
+      class MaxLength
+        include Single
+
         def invalid?(subject)
           !subject.nil? && subject.length > max
         end

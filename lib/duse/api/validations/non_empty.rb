@@ -3,7 +3,9 @@ require 'duse/api/validations/single'
 module Duse
   module API
     module Validations
-      class NonEmpty < Single
+      class NonEmpty
+        include Single
+
         def invalid?(subject)
           !subject.nil? && subject.empty?
         end

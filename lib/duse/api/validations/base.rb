@@ -1,11 +1,13 @@
 module Duse
   module API
     module Validations
-      class Base
-        attr_reader :options
-
+      module Base
         def initialize(options = {})
           @options = options
+        end
+
+        def options
+          @options
         end
       end
     end

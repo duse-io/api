@@ -18,11 +18,11 @@ module Duse
 
         class Username < Multi
           validate LengthBetween, min: 4, max: 30
-          validate Format, format: /[a-zA-Z0-9_-]+$/, msg: 'Username must be only letters, numbers, "-" and "_"'
+          validate Format, format: /\A[a-zA-Z0-9_-]+\z/, msg: 'Username must be only letters, numbers, "-" and "_"'
         end
 
         class Email < Multi
-          validate MaxLength, max: 128
+          validate LengthBetween, min: 3, max: 128
           validate Format, format: /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/, msg: 'Email is not a valid email address'
         end
 

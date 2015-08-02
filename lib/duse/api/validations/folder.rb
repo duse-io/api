@@ -8,7 +8,7 @@ module Duse
     module Validations
       class Folder < Model
         class Name < Multi
-          validate Format, format: /[a-zA-Z0-9]/
+          validate Format, format: /\A[a-zA-Z0-9]+\z/
           validate LengthBetween, min: 1, max: 50
         end
 

@@ -33,7 +33,7 @@ module Duse
           def initialize(shares_sym, options)
             @shares_sym = shares_sym
             @user   = options[:current_user]
-            @server = Duse::API::Models::Server.get
+            @server = options[:server_user] || Duse::API::Models::Server.get
           end
 
           def validate(secret)

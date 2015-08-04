@@ -11,7 +11,6 @@ module Duse
             render JSONViews::User, type: :full
 
             def call
-              sanitized_json = json.sanitize
               user = Models::User.new sanitized_json
               fail ValidationFailed, { message: user.errors.full_messages }.to_json if !user.valid?
               user.save

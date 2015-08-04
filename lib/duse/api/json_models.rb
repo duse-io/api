@@ -26,7 +26,7 @@ class DefaultJSON
   end
 
   def semantic_errors(options)
-    validator.new(options).validate(extract)
+    validator.new(options).validate(OpenStruct.new(extract))
   end
 
   def extract

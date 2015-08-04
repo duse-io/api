@@ -9,7 +9,6 @@ module Duse
             render JSONViews::Folder
 
             def call
-              sanitized_json = json.sanitize current_user: @current_user
               folder = Models::Folder.new({ user: current_user }.merge(sanitized_json))
 
               if !folder.save

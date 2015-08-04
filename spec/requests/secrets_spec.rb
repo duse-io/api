@@ -479,7 +479,7 @@ describe Duse::API, type: :request do
 
     expect(last_response.status).to eq 422
     expect(JSON.parse(last_response.body)['message']).to eq [
-      'Cipher text must not be blank'
+      'Cipher must not be blank'
     ]
   end
 
@@ -492,7 +492,7 @@ describe Duse::API, type: :request do
 
     expect(last_response.status).to eq 422
     expect(JSON.parse(last_response.body)['message']).to eq [
-      'Secret too long'
+      'Secret is too long'
     ]
   end
 

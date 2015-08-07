@@ -71,8 +71,7 @@ module Duse
             def arg_value_list(args)
               parameters = self.instance_method(:call).parameters
               parameters.map.with_index do |parameter, index|
-                _, name, *_ = parameter
-                [name, args[index]]
+                [parameter[1], args[index]]
               end.to_h.to_json
             end
           end

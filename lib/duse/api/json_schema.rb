@@ -1,11 +1,13 @@
 class JSONSchema
+  attr_reader :items
+
   def initialize(schema, name = nil)
     @schema = schema
     @name = name
 
     if nested?
       if hash?
-        properties.keys.each do |key|
+        properties.each_key do |key|
           name = key.to_s.capitalize
           properties[key] = JSONSchema.new properties[key], name
         end
@@ -38,10 +40,6 @@ class JSONSchema
 
   def properties
     @schema[:properties]
-  end
-
-  def items
-    @items
   end
 
   def type

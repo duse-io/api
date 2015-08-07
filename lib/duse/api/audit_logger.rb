@@ -36,7 +36,7 @@ module Duse
 
       def if_not_nil(subject, &block)
         return '-' if subject.nil?
-        block.call
+        yield
       end
     end
   end

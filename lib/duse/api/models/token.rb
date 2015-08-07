@@ -31,13 +31,13 @@ module Duse
               token_hash = Encryption.hmac(Duse::API.config.secret_key, token)
               break if find_by_token_hash(token_hash).nil?
             end
-            [token, token_hash]
+            { content: token, hash: token_hash }
           end
 
           def create_safe_token(user)
-            raw_token, hash = generate_safe_token
-            token = create(token_hash: hash, user: user)
-            raw_token
+            safe_token = generate_safe_token
+            token = create(token_hash: safe_token.fetch(:hash), user: user)
+            safe_token.fetch(:content)
           end
 
           def find_by_raw_token(raw_token)

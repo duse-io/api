@@ -127,11 +127,11 @@ describe Duse::API, type: :request do
     })
 
     expect(shares[0]['last_edited_by_id']).to eq Duse::API::Models::Server.get.id
-    expect(Encryption.decrypt(@key, shares[0]['content'])).to eq 'share1'
-    expect(Encryption.verify(Duse::API::Models::Server.public_key, shares[0]['signature'], shares[0]['content'])).to be true
+    expect(Duse::Encryption::Asymmetric.decrypt(@key, shares[0]['content'])).to eq 'share1'
+    expect(Duse::Encryption::Asymmetric.verify(Duse::API::Models::Server.public_key, shares[0]['signature'], shares[0]['content'])).to be true
     expect(shares[1]['last_edited_by_id']).to eq @user1.id
-    expect(Encryption.decrypt(@key, shares[1]['content'])).to eq 'share2'
-    expect(Encryption.verify(@key.public_key, shares[1]['signature'], shares[1]['content'])).to be true
+    expect(Duse::Encryption::Asymmetric.decrypt(@key, shares[1]['content'])).to eq 'share2'
+    expect(Duse::Encryption::Asymmetric.verify(@key.public_key, shares[1]['signature'], shares[1]['content'])).to be true
   end
 
   it 'lists secrets correctly after they have been created' do
@@ -261,7 +261,7 @@ describe Duse::API, type: :request do
         {
           user_id: 3,
           content: 'share3',
-          signature: Encryption.sign(key, 'share3')
+          signature: Duse::Encryption::Asymmetric.sign(key, 'share3')
         }
       ]
     }.to_json
@@ -456,7 +456,7 @@ describe Duse::API, type: :request do
   it 'validates the length of the cipher text against the key size' do
     secret_json = default_secret
     # since its a 256 bytes or 2048 bits key any length but 256 bytes will fail
-    secret_json[:shares].first[:content] = Encryption.encode(Random.new.bytes(129))
+    secret_json[:shares].first[:content] = Duse::Encryption.encode(Random.new.bytes(129))
     secret_json = secret_json.to_json
     token = @user1.create_new_token
 

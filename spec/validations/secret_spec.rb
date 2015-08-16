@@ -145,8 +145,8 @@ RSpec.describe Duse::API::Validations::Secret do
         share(1, 'share', private_key, server_user.public_key),
         {
           user_id: 2,
-          content: Encryption.encode('a'),
-          signature: Encryption.sign(private_key, 'a')
+          content: Duse::Encryption.encode('a'),
+          signature: Duse::Encryption::Asymmetric.sign(private_key, 'a')
         }
       ])
       validator = Duse::API::Validations::Secret.new(current_user: current_user, server_user: server_user)

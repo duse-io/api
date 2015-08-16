@@ -1,6 +1,6 @@
 module JsonFactory
   def share(user_id, raw_share, private_key, public_key)
-    encrypted_share, signature = Encryption.encrypt(
+    encrypted_share, signature = Duse::Encryption::Asymmetric.encrypt(
         private_key, public_key, raw_share
     )
     { user_id: user_id, content: encrypted_share, signature: signature }

@@ -14,6 +14,7 @@ gem 'bcrypt'
 gem 'puma'
 gem 'rack-cors'
 gem 'sentry-raven'
+gem 'duse', git: 'https://github.com/duse-io/duse.rb'
 
 group :test do
   gem 'rspec'

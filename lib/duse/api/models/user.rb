@@ -37,11 +37,11 @@ module Duse
         end
 
         def encrypt(signing_key, text)
-          Encryption.encrypt(signing_key, public_key, text)
+          Encryption::Asymmetric.encrypt(signing_key, public_key, text)
         end
 
         def verify_authenticity(signature, text)
-          Encryption.verify(public_key, signature, text)
+          Encryption::Asymmetric.verify(public_key, signature, text)
         end
 
         def has_access_to_secret?(secret)

@@ -11,11 +11,10 @@ WORKDIR /usr/src/app
 
 COPY Gemfile /usr/src/app/
 COPY Gemfile.lock /usr/src/app/
-RUN bundle install --without development test
+RUN bundle install
 
 COPY . /usr/src/app
 
 EXPOSE 5000
-ENV RACK_ENV=production
 CMD ./docker-entrypoint.sh
 

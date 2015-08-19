@@ -62,14 +62,15 @@ ActiveRecord::Schema.define(version: 20150609193142) do
   add_index "user_secrets", ["user_id"], name: "index_user_secrets_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
-    t.string   "username",        default: "", null: false
-    t.string   "email",           default: "", null: false
-    t.string   "password_digest",              null: false
+    t.string   "username",        default: "",    null: false
+    t.string   "email",           default: "",    null: false
+    t.string   "password_digest",                 null: false
     t.datetime "confirmed_at"
     t.string   "type"
     t.text     "public_key"
     t.text     "private_key"
     t.integer  "secret_limit",    default: 10
+    t.boolean  "admin",           default: false, null: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree

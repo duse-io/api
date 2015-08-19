@@ -60,3 +60,13 @@ task :exchange_server_keypair => 'db:load_config' do
   end
 end
 
+task :make_admin, [:id] => ['db:load_config'] do |t, args|
+  if Duse::API::Models::User.exists? args.id
+    user = Duse::API::Models::User.find(args.id)
+    user.update(admin: true)
+    puts "User with ID #{args.id} is now an admin."
+  else
+    puts "User with ID #{args.id} does not exist."
+  end
+end
+

@@ -9,6 +9,7 @@ module Duse
         end
 
         def self.authorize!(user, action, object)
+          return if user.admin? # admin can do everything
           block  = @abilities[action]
           result = block.call(user, object)
           fail InvalidAuthorization unless result

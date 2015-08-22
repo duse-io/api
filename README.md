@@ -67,10 +67,6 @@ Now setup the database
 	sudo docker-compose run web rake db:create
 	sudo docker-compose run web rake db:migrate
 
-And initialize the environment
-
-	sudo docker-compose run web rake env
-
 Done! Start the api with the `sudo docker-compose up` command.
 
 Setup (production)

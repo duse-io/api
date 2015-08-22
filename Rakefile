@@ -34,14 +34,11 @@ namespace :config do
     end
   end
 
-  task :generate do
+  task :secret do
     require 'securerandom'
 
     secret_key = SecureRandom.base64(64)
-    File.open '.env', 'w' do |f|
-      f.write "export SECRET_KEY=\"#{secret_key}\""
-      f.write "\n"
-    end
+    puts secret_key
   end
 end
 

@@ -37,6 +37,9 @@ ENV['SENTRY_DSN'] = 'http://public:secret@example.com/project-id'
 require 'raven/base'
 Raven.configuration.logger = Logger.new(StringIO.new)
 
+require 'active_record'
+ActiveRecord::Migration.maintain_test_schema!
+
 require File.expand_path("../../config/environment", __FILE__)
 require 'database_cleaner'
 require 'climate_control'

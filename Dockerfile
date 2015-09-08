@@ -1,4 +1,4 @@
-FROM ruby:2.2.2
+FROM ruby:2.2.3
 
 RUN apt-get update -qq
 RUN apt-get install -y build-essential libpq-dev postgresql-client-9.4

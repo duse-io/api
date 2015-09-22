@@ -1,7 +1,7 @@
 FROM ruby:2.2.3
 
 RUN apt-get update -qq
-RUN apt-get install -y build-essential libpq-dev postgresql-client-9.4
+RUN apt-get install -y build-essential libpq-dev postgresql-client-9.4 postgresql-client-common
 
 # throw errors if Gemfile has been modified since Gemfile.lock
 RUN bundle config --global frozen 1

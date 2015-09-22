@@ -1,7 +1,7 @@
 db:
   image: postgres:9.4
   ports:
-    - "5432"
+    - "5432:5432"
   environment:
     - POSTGRES_USER=duse
     - POSTGRES_PASSWORD=supersave
@@ -13,7 +13,7 @@ web:
   ports:
     - "5000:5000"
   links:
-    - db
+    - db:db
   environment:
     - RACK_ENV=development
     - EMAIL=noreply@duse.io

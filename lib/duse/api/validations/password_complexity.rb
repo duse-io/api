@@ -1,4 +1,4 @@
-require 'duse/api/validations/base'
+require "duse/api/validations/base"
 
 module Duse
   module API
@@ -11,7 +11,7 @@ module Duse
               (/.*[[:upper:]]+.*/  =~ password).nil? || # upper chars
               (/.*[[:lower:]]+.*/  =~ password).nil? || # lower chars
               (/.*\d+.*/           =~ password).nil?    # digits
-            return ['Password too weak']
+            return ["Password too weak"]
           end
           []
         end

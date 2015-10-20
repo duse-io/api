@@ -1,4 +1,4 @@
-require 'duse/api/emails/forgot_password_email'
+require "duse/api/emails/forgot_password_email"
 
 module Duse
   module API

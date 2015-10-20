@@ -1,6 +1,6 @@
-require 'duse/api/json_validator'
-require 'duse/api/json_extractor'
-require 'forwardable'
+require "duse/api/json_validator"
+require "duse/api/json_extractor"
+require "forwardable"
 
 class DefaultJSON
   extend Forwardable

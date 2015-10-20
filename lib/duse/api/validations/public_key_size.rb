@@ -1,5 +1,5 @@
-require 'duse/api/validations/single'
-require 'duse/api/validations/public_key_validity'
+require "duse/api/validations/single"
+require "duse/api/validations/public_key_validity"
 
 module Duse
   module API
@@ -12,7 +12,7 @@ module Duse
         end
 
         def error_msg
-          'Public key size must be 2048 bit or larger'
+          "Public key size must be 2048 bit or larger"
         end
 
         def key_size(public_key)

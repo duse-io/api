@@ -1,4 +1,5 @@
-require 'duse/api/v1/actions/authenticated'
+require "duse/api/v1/actions/authenticated"
+require "duse/api/v1/json_views/user"
 
 module Duse
   module API

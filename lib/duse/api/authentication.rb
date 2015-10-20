@@ -1,5 +1,5 @@
-require 'duse/api/api_token_strategy'
-require 'duse/api/password_strategy'
+require "duse/api/api_token_strategy"
+require "duse/api/password_strategy"
 
 module Duse
   module API
@@ -7,19 +7,19 @@ module Duse
       def initialize(app)
         @app = Warden::Manager.new(app) do |config|
           config.default_scope = :api
-          config.failure_app = -> _ { [401, { 'Content-Length' => '0' }, ['']] }
+          config.failure_app = -> _ { [401, { "Content-Length" => "0" }, [""]] }
           config.scope_defaults(
             :password,
             strategies: [:password],
             store: false,
-            action: 'unauthenticated'
+            action: "unauthenticated"
           )
 
           config.scope_defaults(
             :api,
             strategies: [:api_token],
             store: false,
-            action: 'unauthenticated'
+            action: "unauthenticated"
           )
         end
       end

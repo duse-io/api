@@ -1,4 +1,4 @@
-require 'duse/api/json_view'
+require "duse/api/json_view"
 
 module Duse
   module API

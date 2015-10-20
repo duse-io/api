@@ -1,3 +1,7 @@
+require "duse/api/v1/json_schemas/secret"
+require "duse/api/v1/json_views/secret"
+require "duse/api/authorization/secret"
+
 module Duse
   module API
     module V1

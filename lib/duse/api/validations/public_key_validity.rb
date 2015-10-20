@@ -1,4 +1,4 @@
-require 'duse/api/validations/single'
+require "duse/api/validations/single"
 
 module Duse
   module API
@@ -11,7 +11,7 @@ module Duse
         end
 
         def error_msg
-          'Public key is not a valid RSA Public Key'
+          "Public key is not a valid RSA Public Key"
         end
 
         def is_valid?(public_key)

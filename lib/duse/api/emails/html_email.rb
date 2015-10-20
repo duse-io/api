@@ -1,5 +1,5 @@
-require 'duse/api'
-require 'mail'
+require "duse/api"
+require "mail"
 
 class HtmlEmail
   def initialize(options)
@@ -8,7 +8,7 @@ class HtmlEmail
     @mail.subject options[:subject]
     @mail.to options[:recipient]
     @mail.html_part = Mail::Part.new
-    @mail.html_part.content_type 'text/html; charset=UTF-8'
+    @mail.html_part.content_type "text/html; charset=UTF-8"
     @mail.html_part.body options[:html_body]
     @mail
   end

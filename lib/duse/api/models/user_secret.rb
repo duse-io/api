@@ -1,5 +1,5 @@
-require 'duse/api/models/user'
-require 'duse/api/models/secret'
+require "duse/api/models/user"
+require "duse/api/models/secret"
 
 module Duse
   module API

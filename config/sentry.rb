@@ -1,4 +1,4 @@
-require 'raven'
+require "raven"
 
 if Duse::API.config.use_sentry?
   Raven.configure do |config|

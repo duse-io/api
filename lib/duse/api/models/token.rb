@@ -1,6 +1,6 @@
-require 'openssl'
-require 'securerandom'
-require 'duse/api'
+require "openssl"
+require "securerandom"
+require "duse/api"
 
 module Duse
   module API
@@ -27,7 +27,7 @@ module Duse
             token = nil
             token_hash = nil
             loop do
-              token = SecureRandom.urlsafe_base64(15).tr('lIO0', 'sxyz')
+              token = SecureRandom.urlsafe_base64(15).tr("lIO0", "sxyz")
               token_hash = Encryption.hmac(Duse::API.config.secret_key, token)
               break if find_by_token_hash(token_hash).nil?
             end

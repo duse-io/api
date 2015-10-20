@@ -1,3 +1,5 @@
+require "duse/api/v1/actions/authenticated"
+
 module Duse
   module API
     module V1
@@ -9,7 +11,7 @@ module Duse
             @base = Actions::Authenticated
             @status = status
             @namespace = namespace
-            @model_name = @namespace.name.split('::').last
+            @model_name = @namespace.name.split("::").last
           end
 
           def default_model

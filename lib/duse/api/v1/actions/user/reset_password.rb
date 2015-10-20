@@ -1,3 +1,5 @@
+require "duse/api/v1/json_schemas/password"
+
 module Duse
   module API
     module V1

@@ -1,4 +1,4 @@
-require 'rack/cors'
+require "rack/cors"
 
 module Duse
   module API
@@ -6,8 +6,8 @@ module Duse
       def initialize(app)
         @app = Rack::Cors.new(app) do
           allow do
-            origins '*'
-            resource '*', headers: :any, methods: [:get, :post, :patch, :put, :delete]
+            origins "*"
+            resource "*", headers: :any, methods: [:get, :post, :patch, :put, :delete]
           end
         end
       end

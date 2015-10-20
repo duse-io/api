@@ -1,3 +1,6 @@
+require "duse/api/v1/actions/base"
+require "duse/api/v1/json_views/token"
+
 module Duse
   module API
     module V1

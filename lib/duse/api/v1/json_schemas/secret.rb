@@ -1,6 +1,6 @@
-require 'duse/api/json_models'
-require 'duse/api/json_schema'
-require 'duse/api/validations/secret'
+require "duse/api/json_models"
+require "duse/api/json_schema"
+require "duse/api/validations/secret"
 
 module Duse
   module API
@@ -10,19 +10,19 @@ module Duse
           def initialize(json)
             super(json, Validations::Secret, JSONSchema.new({
               type: Hash,
-              message: 'Secret must be an object',
+              message: "Secret must be an object",
               properties: {
                 title: { type: String },
                 cipher_text: { type: String },
-                folder_id: { name: 'Folder id', type: Integer, optional: true },
+                folder_id: { name: "Folder id", type: Integer, optional: true },
                 shares: {
                   type: Array,
                   allow_empty: false,
                   items: {
-                    name: 'Share',
+                    name: "Share",
                     type: Hash,
                     properties: {
-                      user_id:   { name: 'User id', type: Integer },
+                      user_id:   { name: "User id", type: Integer },
                       content:   { type: String },
                       signature: { type: String }
                     }

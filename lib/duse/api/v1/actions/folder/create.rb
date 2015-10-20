@@ -1,3 +1,7 @@
+require "duse/api/v1/json_schemas/folder"
+require "duse/api/v1/json_views/folder"
+require "duse/api/models/folder"
+
 module Duse
   module API
     module V1

@@ -1,11 +1,11 @@
-require 'duse/api/models/token'
-require 'duse/api/emails/user_email'
+require "duse/api/models/token"
+require "duse/api/emails/user_email"
 
 class ConfirmationEmail < UserEmail
   def initialize(user)
     super(
       user,
-      'Confirm your signup',
+      "Confirm your signup",
       "Use the following command to confirm your account: \"duse account confirm #{create_confirmation_token(user)}\""
     )
   end

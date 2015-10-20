@@ -1,11 +1,11 @@
-require 'duse/api/models/token'
-require 'duse/api/emails/user_email'
+require "duse/api/models/token"
+require "duse/api/emails/user_email"
 
 class ForgotPasswordEmail < UserEmail
   def initialize(user)
     super(
       user,
-      'Reset your password',
+      "Reset your password",
       "Use the following command to set a new password: duse account password change --token #{create_forgot_password_token(user)}"
     )
   end

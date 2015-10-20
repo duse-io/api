@@ -1,4 +1,4 @@
-require 'uri'
+require "uri"
 
 module Duse
   module API
@@ -26,20 +26,20 @@ module Duse
       end
 
       def ssl?
-        ssl == 'true'
+        ssl == "true"
       end
 
       def protocol
-        return 'https' if ssl?
-        'http'
+        return "https" if ssl?
+        "http"
       end
 
       def smtp
-        host   = ENV['SMTP_HOST'] || 'smtp.mandrillapp.com'
-        port   = ENV['SMTP_PORT'] || '587'
-        user   = ENV['SMTP_USER'] || ENV['MANDRILL_USERNAME']
-        pass   = ENV['SMTP_PASSWORD'] || ENV['MANDRILL_APIKEY']
-        domain = ENV['EMAIL'].nil? ? nil : ENV['EMAIL'].split('@').last
+        host   = ENV["SMTP_HOST"] || "smtp.mandrillapp.com"
+        port   = ENV["SMTP_PORT"] || "587"
+        user   = ENV["SMTP_USER"] || ENV["MANDRILL_USERNAME"]
+        pass   = ENV["SMTP_PASSWORD"] || ENV["MANDRILL_APIKEY"]
+        domain = ENV["EMAIL"].nil? ? nil : ENV["EMAIL"].split("@").last
 
         @smtp ||= SMTP.new(
           host: host,

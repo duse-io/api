@@ -11,7 +11,7 @@ module Duse
 
       def log(options)
         msg = FORMAT % [
-          Time.now.strftime('%FT%T%:z'),
+          Time.now.strftime("%FT%T%:z"),
           user_id(options[:current_user]),
           options[:action],
           options[:action].arg_value_list(options[:args]),
@@ -35,7 +35,7 @@ module Duse
       end
 
       def if_not_nil(subject, &block)
-        return '-' if subject.nil?
+        return "-" if subject.nil?
         yield
       end
     end

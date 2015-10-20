@@ -1,5 +1,5 @@
-require 'duse/api/json_view'
-require 'duse/api/v1/json_views/secret'
+require "duse/api/json_view"
+require "duse/api/v1/json_views/secret"
 
 module Duse
   module API

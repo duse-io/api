@@ -1,6 +1,6 @@
-require 'duse/api/json_view'
-require 'duse/api/v1/json_views/user'
-require 'duse/api/v1/json_views/share'
+require "duse/api/json_view"
+require "duse/api/v1/json_views/user"
+require "duse/api/v1/json_views/share"
 
 module Duse
   module API

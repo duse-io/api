@@ -1,4 +1,4 @@
-require 'duse/api/v1/actions/base'
+require "duse/api/v1/actions/base"
 
 module Duse
   module API

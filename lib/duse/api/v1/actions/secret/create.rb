@@ -1,3 +1,8 @@
+require "duse/api/v1/actions/authenticated"
+require "duse/api/v1/json_schemas/secret"
+require "duse/api/v1/json_views/secret"
+require "duse/api/models/secret"
+
 module Duse
   module API
     module V1
@@ -9,7 +14,7 @@ module Duse
             render JSONViews::Secret
 
             def call
-              fail ValidationFailed, {message: ['Your limit of secrets has been reached']}.to_json if @current_user.secrets.length >= @current_user.secret_limit
+              fail ValidationFailed, {message: ["Your limit of secrets has been reached"]}.to_json if @current_user.secrets.length >= @current_user.secret_limit
               params = sanitized_json
               user_ids = []
               params[:shares].each do |s| 

@@ -17,38 +17,38 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-unless ENV['CI']
-  require 'simplecov'
+unless ENV["CI"]
+  require "simplecov"
   SimpleCov.start
 end
 
-if ENV['CI']
-  require 'codeclimate-test-reporter'
+if ENV["CI"]
+  require "codeclimate-test-reporter"
   CodeClimate::TestReporter.start
 end
 
-ENV['SECRET_KEY'] = 'le_super_secret_key'
-ENV['RACK_ENV'] = 'test'
-ENV['EMAIL'] = 'noreply@example.org'
-ENV['HOST'] = 'example.org'
-ENV['SSL'] = 'false'
-ENV['SENTRY_DSN'] = 'http://public:secret@example.com/project-id'
+ENV["SECRET_KEY"] = "le_super_secret_key"
+ENV["RACK_ENV"] = "test"
+ENV["EMAIL"] = "noreply@example.org"
+ENV["HOST"] = "example.org"
+ENV["SSL"] = "false"
+ENV["SENTRY_DSN"] = "http://public:secret@example.com/project-id"
 
-require 'raven/base'
+require "raven/base"
 Raven.configuration.logger = Logger.new(StringIO.new)
 
-require 'active_record'
+require "active_record"
 ActiveRecord::Migration.maintain_test_schema!
 
 require File.expand_path("../../config/environment", __FILE__)
-require 'database_cleaner'
-require 'climate_control'
-require 'rack/test'
-require 'json'
-require 'openssl'
-require 'factory_girl'
+require "database_cleaner"
+require "climate_control"
+require "rack/test"
+require "json"
+require "openssl"
+require "factory_girl"
 
-Dir[File.join(File.expand_path('../', __FILE__), 'support/*.rb')].each { |f| require f }
+Dir[File.join(File.expand_path("../", __FILE__), "support/*.rb")].each { |f| require f }
 
 DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.strategy = :transaction

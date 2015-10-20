@@ -1,5 +1,5 @@
-require 'warden'
-require 'duse/api/models/token'
+require "warden"
+require "duse/api/models/token"
 
 module Duse
   module API
@@ -11,7 +11,7 @@ module Duse
       def authenticate!
         token = Models::ApiToken.find_by_raw_token api_token
         if token.nil? || !token.user.confirmed?
-          return fail! 'Unauthenticated'
+          return fail! "Unauthenticated"
         end
         if token.still_valid?
           token.use!
@@ -22,7 +22,7 @@ module Duse
       private
 
       def api_token
-        request.env['HTTP_AUTHORIZATION']
+        request.env["HTTP_AUTHORIZATION"]
       end
     end
   end

@@ -1,7 +1,7 @@
-require 'duse/api/models/folder'
+require "duse/api/models/folder"
 
 FactoryGirl.define do
   factory :folder, class: Duse::API::Models::Folder do
-    name 'testFolder'
+    name "testFolder"
   end
 end

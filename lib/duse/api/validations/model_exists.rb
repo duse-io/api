@@ -1,4 +1,4 @@
-require 'duse/api/validations/single'
+require "duse/api/validations/single"
 
 module Duse
   module API

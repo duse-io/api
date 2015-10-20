@@ -1,5 +1,5 @@
-require 'duse/api/v1/actions/generator'
-require 'duse/api/authorization/secret'
+require "duse/api/v1/actions/generator"
+require "duse/api/authorization/secret"
 
 module Duse
   module API

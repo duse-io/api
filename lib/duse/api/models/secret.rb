@@ -1,7 +1,7 @@
-require 'duse/api/models/user'
-require 'duse/api/models/share'
-require 'duse/api/models/user_secret'
-require 'ostruct'
+require "duse/api/models/user"
+require "duse/api/models/share"
+require "duse/api/models/user_secret"
+require "ostruct"
 
 module Duse
   module API
@@ -11,7 +11,7 @@ module Duse
         accepts_nested_attributes_for :shares
         has_many :user_secrets, autosave: true
         has_many :users, -> { uniq.order :id }, through: :user_secrets
-        belongs_to :last_edited_by, class_name: 'User', foreign_key: :last_edited_by_id
+        belongs_to :last_edited_by, class_name: "User", foreign_key: :last_edited_by_id
 
         scope :zombies, -> { joins("LEFT JOIN user_secrets ON user_secrets.secret_id = secrets.id").where("user_secrets.user_id IS NULL") }
         scope :without_folder, ->(user) { joins("LEFT JOIN user_secrets us ON us.secret_id = secrets.id").where("us.folder_id IS NULL AND us.user_id = ?", user.id) }

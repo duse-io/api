@@ -24,31 +24,31 @@ module Duse
     end
 
     class MalformedJSON < APIError
-      def initialize(msg = 'Invalid json', status_code = 400)
+      def initialize(msg = "Invalid json", status_code = 400)
         super(msg, status_code)
       end
     end
 
     class AlreadyConfirmed < APIError
-      def initialize(msg = 'Account already confirmed', status_code = 400)
+      def initialize(msg = "Account already confirmed", status_code = 400)
         super(msg, status_code)
       end
     end
 
     class InvalidAuthorization < APIError
-      def initialize(msg = 'You are not authorized to access a resource', status_code = 403)
+      def initialize(msg = "You are not authorized to access a resource", status_code = 403)
         super(msg, status_code)
       end
     end
 
     class UserNotConfirmed < APIError
-      def initialize(msg = 'User not confirmed', status_code = 401)
+      def initialize(msg = "User not confirmed", status_code = 401)
         super(msg, status_code)
       end
     end
 
     class NotFound < APIError
-      def initialize(msg = 'Not found', status_code = 404)
+      def initialize(msg = "Not found", status_code = 404)
         super(msg, status_code)
       end
     end

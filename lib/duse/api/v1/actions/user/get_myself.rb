@@ -1,4 +1,4 @@
-require 'duse/api/v1/actions/user/get'
+require "duse/api/v1/actions/user/get"
 
 module Duse
   module API

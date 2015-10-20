@@ -1,4 +1,7 @@
-require 'pathname'
+require "pathname"
+
+require "duse/api/v1/action_endpoint"
+require "duse/api/v1/base"
 
 module Duse
   module API
@@ -29,7 +32,6 @@ module Duse
             @http_method = http_method
             @relative_route = relative_route
             @action = action
-            @auth = false
           end
 
           def absolute_route
@@ -39,10 +41,7 @@ module Duse
           def add_to_sinatra(sinatra_class)
             sinatra_class.instance_exec(http_method, absolute_route, action) do |http_method, absolute_route, action|
               send(http_method, absolute_route) do |*args|
-                authenticate!(action.auth_opts[:with]) if action.auth?
-                status action.status_code
-                result = action.new(env, current_user, params, json(action.schema)).run(args)
-                render(result, action.view, action.view_opts)
+                ActionEndpoint.new(action, env).call(*args)
               end
             end
           end
@@ -51,8 +50,8 @@ module Duse
         def namespace(name, &block)
           n = Namespace.new(self, name)
           n.instance_eval(&block)
-          n.endpoints.each do |e|
-            add_endpoint e
+          n.endpoints.each do |endpoint|
+            add_endpoint endpoint
           end
         end
 
@@ -70,15 +69,15 @@ module Duse
         end
 
         def crud(action_group)
-          get    '/'    => action_group.const_get(:List)
-          post   '/'    => action_group.const_get(:Create)
-          get    '/:id' => action_group.const_get(:Get)
-          update '/:id' => action_group.const_get(:Update)
-          delete '/:id' => action_group.const_get(:Delete)
+          get    "/"    => action_group.const_get(:List)
+          post   "/"    => action_group.const_get(:Create)
+          get    "/:id" => action_group.const_get(:Get)
+          update "/:id" => action_group.const_get(:Update)
+          delete "/:id" => action_group.const_get(:Delete)
         end
 
         def route
-          '/'
+          "/"
         end
 
         def add_endpoint(http_endpoint)
@@ -91,7 +90,7 @@ module Duse
         end
 
         def sinatra_class
-          @sinatra_class ||= Class.new(Base)
+          @sinatra_class ||= Class.new(V1::Base)
         end
 
         def call(env)

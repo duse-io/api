@@ -1,5 +1,5 @@
-require 'duse/api/v1/actions/base'
-require 'duse/api/v1/json_views/route'
+require "duse/api/v1/actions/base"
+require "duse/api/v1/json_views/route"
 
 module Duse
   module API

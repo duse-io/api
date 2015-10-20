@@ -1,4 +1,4 @@
-require 'mail'
+require "mail"
 
 Mail.defaults do
   delivery_method :sendmail
@@ -12,7 +12,7 @@ if Duse::API.config.smtp.enabled?
       user_name: Duse::API.config.smtp.user,
       password: Duse::API.config.smtp.password,
       domain: Duse::API.config.smtp.domain,
-      authentication: 'plain'
+      authentication: "plain"
     }
   end
 end

@@ -1,6 +1,6 @@
-require 'duse/api/v1/actions/generator'
-require 'duse/api/models/folder'
-require 'duse/api/authorization/folder'
+require "duse/api/v1/actions/generator"
+require "duse/api/models/folder"
+require "duse/api/authorization/folder"
 
 module Duse
   module API

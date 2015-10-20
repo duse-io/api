@@ -13,19 +13,19 @@ module JsonFactory
     @user2 ||= FactoryGirl.create(:user)
 
     {
-      title: 'my secret',
-      cipher_text: 'someciphertext==',
+      title: "my secret",
+      cipher_text: "someciphertext==",
       shares: [
-        share(Duse::API::Models::Server.get.id, 'share1', @key, Duse::API::Models::Server.public_key),
-        share(@user1.id, 'share2', @key, @user1.public_key),
-        share(@user2.id, 'share3', @key, @user2.public_key)
+        share(Duse::API::Models::Server.get.id, "share1", @key, Duse::API::Models::Server.public_key),
+        share(@user1.id, "share2", @key, @user1.public_key),
+        share(@user2.id, "share3", @key, @user2.public_key)
       ]
     }.merge(options)
   end
 
   def default_folder
     {
-      name: 'testFolder'
+      name: "testFolder"
     }
   end
 end

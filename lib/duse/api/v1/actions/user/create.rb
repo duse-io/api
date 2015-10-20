@@ -1,4 +1,6 @@
-require 'duse/api/emails/confirmation_email'
+require "duse/api/emails/confirmation_email"
+require "duse/api/v1/json_schemas/user"
+require "duse/api/v1/json_views/user"
 
 module Duse
   module API

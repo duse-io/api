@@ -1,5 +1,5 @@
-require 'warden'
-require 'duse/api/models/user'
+require "warden"
+require "duse/api/models/user"
 
 module Duse
   module API
@@ -13,15 +13,15 @@ module Duse
         if !user.nil? && user.try(:authenticate, password)
           return success! user
         end
-        fail! 'Username or password incorrect.'
+        fail! "Username or password incorrect."
       end
 
       def username
-        post_params['username']
+        post_params["username"]
       end
 
       def password
-        post_params['password']
+        post_params["password"]
       end
 
       def post_params

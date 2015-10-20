@@ -1,5 +1,5 @@
-require 'duse/api/emails/html_email'
-require 'forwardable'
+require "duse/api/emails/html_email"
+require "forwardable"
 
 class UserEmail
   extend Forwardable

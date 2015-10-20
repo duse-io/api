@@ -1,12 +1,12 @@
-require 'duse/api/validations/model'
-require 'duse/api/validations/multi'
-require 'duse/api/validations/non_empty'
-require 'duse/api/validations/length_between'
-require 'duse/api/validations/format'
-require 'duse/api/validations/max_length'
-require 'duse/api/validations/model_exists'
-require 'duse/api/models/folder'
-require 'duse/api/models/user'
+require "duse/api/validations/model"
+require "duse/api/validations/multi"
+require "duse/api/validations/non_empty"
+require "duse/api/validations/length_between"
+require "duse/api/validations/format"
+require "duse/api/validations/max_length"
+require "duse/api/validations/model_exists"
+require "duse/api/models/folder"
+require "duse/api/models/user"
 
 module Duse
   module API
@@ -20,13 +20,13 @@ module Duse
         class CipherText < Multi
           BASE64_REGEX = /^([A-Za-z0-9+\/]{4})*([A-Za-z0-9+\/]{4}|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{2}==)$/
 
-          validate NonEmpty, subject_name: 'Cipher'
-          validate Format, format: BASE64_REGEX, msg: 'Cipher is expected to be base64 encoded'
-          validate MaxLength, max: 5000, msg: 'Secret is too long'
+          validate NonEmpty, subject_name: "Cipher"
+          validate Format, format: BASE64_REGEX, msg: "Cipher is expected to be base64 encoded"
+          validate MaxLength, max: 5000, msg: "Secret is too long"
         end
 
         class Folder < Multi
-          validate ModelExists, model_class: Duse::API::Models::Folder, subject_name: 'Folder'
+          validate ModelExists, model_class: Duse::API::Models::Folder, subject_name: "Folder"
         end
 
         class Share
@@ -42,9 +42,9 @@ module Duse
 
             if !shares.nil?
               user_ids = extract_user_ids(shares)
-              errors << 'Each user must only have one share'    unless user_ids_unique?(user_ids)
-              errors << 'Shares for the server must be present' unless user_ids.include? @server.id
-              errors << 'Shares for your user must be present'  unless user_ids.include? @user.id
+              errors << "Each user must only have one share"    unless user_ids_unique?(user_ids)
+              errors << "Shares for the server must be present" unless user_ids.include? @server.id
+              errors << "Shares for your user must be present"  unless user_ids.include? @user.id
               validate_shares(shares, errors)
             end
 
@@ -54,13 +54,13 @@ module Duse
           def validate_shares(shares, errors)
             shares.each do |share|
               unless user_exists? share[:user_id]
-                errors << 'One or more of the provided users do not exist'
+                errors << "One or more of the provided users do not exist"
               end
               if user_exists?(share[:user_id]) && !length_matches_key?(share[:content], Duse::API::Models::User.find(share[:user_id]).public_key)
-                errors << 'Public key and share content lengths do not match'
+                errors << "Public key and share content lengths do not match"
               end
               unless @user.verify_authenticity share[:signature], share[:content]
-                errors << 'Authenticity could not be verified. Wrong signature.'
+                errors << "Authenticity could not be verified. Wrong signature."
               end
             end
           end

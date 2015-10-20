@@ -1,9 +1,9 @@
-require 'duse/api/v1_switch'
-require 'duse/api/authentication'
-require 'duse/api/cors'
-require 'duse/api/v1/routes'
-require 'duse/api/config'
-require 'duse/api/common_logger'
+require "duse/api/v1_switch"
+require "duse/api/authentication"
+require "duse/api/cors"
+require "duse/api/v1/routes"
+require "duse/api/config"
+require "duse/api/common_logger"
 
 module Duse
   module API
@@ -27,11 +27,11 @@ module Duse
 
     def config
       @config ||= Config.new(
-        sentry_dsn: ENV['SENTRY_DSN'],
-        secret_key: ENV['SECRET_KEY'],
-        ssl: ENV['SSL'],
-        host: ENV['HOST'],
-        email: ENV['EMAIL']
+        sentry_dsn: ENV["SENTRY_DSN"],
+        secret_key: ENV["SECRET_KEY"],
+        ssl: ENV["SSL"],
+        host: ENV["HOST"],
+        email: ENV["EMAIL"]
       )
     end
   end

@@ -1,4 +1,4 @@
-require 'duse/api/audit_logger'
+require "duse/api/audit_logger"
 
 module Duse
   module API
@@ -16,15 +16,15 @@ module Duse
 
           def run(args)
             result = call(*args)
-            audit_log(args: args, result: 'success')
+            audit_log(args: args, result: "success")
             result
           rescue => e
-            audit_log(args: args, result: 'failed', error: e)
+            audit_log(args: args, result: "failed", error: e)
             raise e
           end
 
           def audit_logger
-            @audit_logger ||= AuditLogger.new(env['rack.errors'])
+            @audit_logger ||= AuditLogger.new(env["rack.errors"])
           end
 
           def audit_log(options)
@@ -32,7 +32,7 @@ module Duse
           end
 
           def action_name
-            self.class.name.split('::').last.downcase.to_sym
+            self.class.name.split("::").last.downcase.to_sym
           end
 
           def sanitized_json(options = {})

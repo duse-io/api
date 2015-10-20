@@ -1,4 +1,4 @@
-require 'duse/api/authorization/base'
+require "duse/api/authorization/base"
 
 module Duse
   module API

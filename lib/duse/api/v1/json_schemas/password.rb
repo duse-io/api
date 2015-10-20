@@ -1,5 +1,5 @@
-require 'duse/api/json_models'
-require 'duse/api/json_schema'
+require "duse/api/json_models"
+require "duse/api/json_schema"
 
 module Duse
   module API
@@ -9,7 +9,7 @@ module Duse
           def initialize(json)
             super(json, nil, JSONSchema.new({
               type: Hash,
-              message: 'Password reset must be an object',
+              message: "Password reset must be an object",
               properties: {
                 token: { type: String },
                 password: { type: String }

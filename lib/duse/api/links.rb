@@ -1,4 +1,4 @@
-require 'uri'
+require "uri"
 
 module Duse
   module API
@@ -6,7 +6,7 @@ module Duse
       module_function
 
       def base_url
-        Duse::API.config.protocol + '://' + Duse::API.config.host
+        Duse::API.config.protocol + "://" + Duse::API.config.host
       end
 
       def build_url(target)

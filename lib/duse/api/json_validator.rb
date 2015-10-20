@@ -1,4 +1,4 @@
-require 'set'
+require "set"
 
 class JSONValidator
   def initialize(schema, options = {})
@@ -50,7 +50,7 @@ class JSONValidator
     name = schema.name
     type = schema.type
     type_string = type.to_s.downcase
-    article = 'aeiou'.include?(type_string[0]) ? 'an' : 'a'
+    article = "aeiou".include?(type_string[0]) ? "an" : "a"
     "#{name} must be #{article} #{type_string}"
   end
 

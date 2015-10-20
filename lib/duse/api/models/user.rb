@@ -1,8 +1,8 @@
-require 'openssl'
-require 'securerandom'
+require "openssl"
+require "securerandom"
 
-require 'duse/api/models/token'
-require 'duse/api/models/user_secret'
+require "duse/api/models/token"
+require "duse/api/models/user_secret"
 
 module Duse
   module API
@@ -82,8 +82,8 @@ module Duse
             key      = OpenSSL::PKey::RSA.generate(2048)
             password = SecureRandom.base64(32)
             Server.create(
-              username: 'server',
-              email: 'server@localhost',
+              username: "server",
+              email: "server@localhost",
               password: password,
               public_key: key.public_key.to_s,
               private_key: key.to_pem

@@ -1,6 +1,7 @@
 language: ruby
 rvm:
   - 2.2.2
+  - rbx
 cache: bundler
 bundler_args: "--without development"
 sudo: false

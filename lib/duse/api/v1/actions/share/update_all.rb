@@ -16,7 +16,7 @@ module Duse
               ActiveRecord::Base.transaction do
                 shares = sanitized_json.each do |share_json|
                   share = Models::Share.find(share_json[:id])
-                  share.update(share_json)
+                  share.update(share_json.merge(last_edited_by: current_user))
                 end
               end
             end

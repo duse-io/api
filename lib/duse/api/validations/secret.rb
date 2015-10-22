@@ -56,7 +56,7 @@ module Duse
               unless user_exists? share[:user_id]
                 errors << "One or more of the provided users do not exist"
               end
-              if user_exists?(share[:user_id]) && !length_matches_key?(share[:content], Duse::API::Models::User.find(share[:user_id]).public_key)
+              if user_exists?(share[:user_id]) && !Duse::API::Models::User.find(share[:user_id]).length_matches_key?(share[:content])
                 errors << "Public key and share content lengths do not match"
               end
               unless @user.verify_authenticity share[:signature], share[:content]
@@ -66,10 +66,6 @@ module Duse
           end
 
           private
-
-          def length_matches_key?(share_content, public_key)
-            public_key.n.num_bytes == Encryption.decode(share_content).bytes.length
-          end
 
           def user_exists?(user_id)
             Duse::API::Models::User.exists?(user_id)

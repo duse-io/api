@@ -26,9 +26,12 @@ RSpec.describe Duse::API, type: :request do
   end
 
   describe "PUT/PATCH /shares" do
-    context "when all given shares exist and are accessible to the user" do
-      it "updates all given shares" do
-        content, signature = user.encrypt(user.private_key, "test")
+    context "when all given shares exist, are valid and are accessible to the user" do
+      let!(:cipher_combo) { user.encrypt(user.private_key, "test") }
+      let(:content) { cipher_combo[0] }
+      let(:signature) { cipher_combo[1] }
+
+      before :each do
         updated_shares = [{
           id: share.id,
           content: content,
@@ -39,20 +42,28 @@ RSpec.describe Duse::API, type: :request do
         put "/v1/shares", updated_shares, "CONTENT_TYPE" => "application/json"
 
         share.reload
-        expect(share.content).to eq content
-        expect(share.signature).to eq signature
       end
 
-      it "validates the shares"
-      it "updates who last updated the share"
+      it "updates the given shares" do
+        expect(share.content).to eq content
+        expect(share.signature).to eq signature
+        expect(share.last_edited_by).to eq user
+      end
     end
 
-    context "when trying to update non existing shares" do
-      it "returns a bad request status code"
-    end
+    context "when updated attributes are invalid" do
+      it "validates and errors" do
+        updated_shares = {
+          id: share.id,
+          content: "test",
+          signature: "bad signature",
+        }.to_json
 
-    context "when trying to update a share the user does not own" do
-      it "returns a forbidden status code"
+        header "Authorization", user.create_new_token
+        put "/v1/shares", updated_shares, "CONTENT_TYPE" => "application/json"
+
+        expect(last_response.status).to eq 422
+      end
     end
   end
 end

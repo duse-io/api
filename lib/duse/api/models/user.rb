@@ -42,6 +42,10 @@ module Duse
           OpenSSL::PKey::RSA.new read_attribute(:public_key)
         end
 
+        def length_matches_key?(content)
+          public_key.n.num_bytes == Encryption.decode(content).bytes.length
+        end
+
         def encrypt(signing_key, text)
           Encryption::Asymmetric.encrypt(signing_key, public_key, text)
         end

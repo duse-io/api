@@ -17,7 +17,9 @@ module Duse
 
         def validate(subject)
           validations.map do |(validation, inner_options)|
-            validation.new(@options.merge(inner_options)).validate(subject.public_send(@subject_symbol))
+            validation.new({
+              subject_name: @subject_symbol.to_s.capitalize
+            }.merge(@options).merge(inner_options)).validate(subject.public_send(@subject_symbol))
           end.flatten
         end
 

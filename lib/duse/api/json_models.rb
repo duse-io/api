@@ -26,7 +26,12 @@ class DefaultJSON
   end
 
   def semantic_errors(options)
-    validator.new(options).validate(OpenStruct.new(extract))
+    extracted_json = extract
+    extracted_json = [extracted_json] if !schema.array?
+
+    extracted_json.map do |hash|
+      validator.new(options).validate(OpenStruct.new(hash))
+    end.flatten.uniq
   end
 
   def extract

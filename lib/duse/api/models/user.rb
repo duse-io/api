@@ -32,6 +32,12 @@ module Duse
           Folder.where(user: self, parent: nil)
         end
 
+        # never set or use a private key this is only used by the
+        # admin user and for testing purposes
+        def private_key
+          OpenSSL::PKey::RSA.new read_attribute(:private_key)
+        end
+
         def public_key
           OpenSSL::PKey::RSA.new read_attribute(:public_key)
         end
@@ -62,10 +68,6 @@ module Duse
       end
 
       class Server < User
-        def private_key
-          OpenSSL::PKey::RSA.new read_attribute(:private_key)
-        end
-
         class << self
           def get
             Server.find_or_create

@@ -12,7 +12,7 @@ describe Duse::API, type: :request do
     expect(last_response.status).to eq 200
     response = JSON.parse(last_response.body)
     expect(response.is_a?(Array)).to be true
-    expect(response.length).to eq 26
+    expect(response.length).to eq Duse::API::V1::Routes.endpoints.length
   end
 
   it "should use the api version specified in the path" do
@@ -23,7 +23,7 @@ describe Duse::API, type: :request do
     expect(last_response.status).to eq 200
     response = JSON.parse(last_response.body)
     expect(response.is_a?(Array)).to be true
-    expect(response.length).to eq 26
+    expect(response.length).to eq Duse::API::V1::Routes.endpoints.length
   end
 
   it "should not default to any api version" do
@@ -43,7 +43,7 @@ describe Duse::API, type: :request do
     expect(last_response.status).to eq 200
     response = JSON.parse(last_response.body)
     expect(response.is_a?(Array)).to be true
-    expect(response.length).to eq 26
+    expect(response.length).to eq Duse::API::V1::Routes.endpoints.length
   end
 
   it "should return the correct cors headers" do

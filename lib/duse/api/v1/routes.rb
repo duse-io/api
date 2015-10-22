@@ -18,6 +18,8 @@ require "duse/api/v1/actions/secret/create"
 require "duse/api/v1/actions/secret/get"
 require "duse/api/v1/actions/secret/update"
 require "duse/api/v1/actions/secret/delete"
+require "duse/api/v1/actions/share/list"
+require "duse/api/v1/actions/share/update_all"
 require "duse/api/v1/actions/folder/list"
 require "duse/api/v1/actions/folder/create"
 require "duse/api/v1/actions/folder/get"
@@ -49,6 +51,11 @@ module Duse
 
           namespace :secrets do
             crud Actions::Secret
+          end
+
+          namespace :shares do
+            get "/" => Actions::Share::List
+            update "/" => Actions::Share::UpdateAll
           end
 
           namespace :folders do

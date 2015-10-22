@@ -6,8 +6,8 @@ module Duse
       class Model
         include Base
 
-        def self.validate(validation, attribute, options = {})
-          validations << [validation, attribute, options]
+        def self.validate(validation, *attributes, **options)
+          validations << [validation, attributes, options]
         end
 
         def self.validations
@@ -20,11 +20,9 @@ module Duse
           end.flatten.compact
         end
 
-        def run_single_validation(subject, validation, attribute, config_options)
+        def run_single_validation(subject, validation, attributes, config_options)
           if run_validation?(config_options, @options)
-            validation.new(attribute, {
-              subject_name: attribute.to_s.capitalize
-            }.merge(@options).merge(config_options)).validate(subject)
+            validation.new(*attributes, @options.merge(config_options)).validate(subject)
           end
         end
 

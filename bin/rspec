@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+
+./script/wait_for_dependencies.sh
+bundle exec rake db:migrate
+bundle exec rspec ${@:2} # allow handing arguments

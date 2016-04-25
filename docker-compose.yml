@@ -1,22 +1,25 @@
-db:
-  image: postgres:9.4
-  ports:
-    - "5432:5432"
-  environment:
-    - POSTGRES_USER=duse
-    - POSTGRES_PASSWORD=supersave
-web:
-  build: .
-  dockerfile: Dockerfile.dev
-  volumes:
-    - .:/usr/src/app
-  ports:
-    - "5000:5000"
-  links:
-    - db:db
-  environment:
-    - RACK_ENV=development
-    - EMAIL=noreply@duse.io
-    - SECRET_KEY=somesupersecretkey
-    - DATABASE_URL=postgres://duse:supersave@db/duse
+version: "2"
+services:
+  db:
+    image: postgres:9.4
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=duse
+      - POSTGRES_PASSWORD=supersave
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "5000:5000"
+    links:
+      - db:db
+    environment:
+      - RACK_ENV=development
+      - EMAIL=noreply@duse.io
+      - SECRET_KEY=somesupersecretkey
+      - DATABASE_URL=postgres://duse:supersave@db/duse
 

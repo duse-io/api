@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3.3
 
 RUN apk --update add bash build-base postgresql-client postgresql-dev ruby ruby-dev ruby-json ruby-irb ruby-bundler ruby-rdoc ruby-doc ruby-bigdecimal ruby-io-console && \
     rm -rf /var/cache/apk/*
@@ -17,5 +17,6 @@ COPY . /usr/src/app
 
 EXPOSE 5000
 ENV RACK_ENV=production
-CMD ./docker-entrypoint.sh
+ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]
+CMD bundle exec rackup -p ${PORT:-5000} --host 0.0.0.0
 

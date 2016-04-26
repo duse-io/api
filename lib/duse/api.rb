@@ -1,9 +1,12 @@
+require "rack/urlmap"
+
 require "duse/api/v1_switch"
 require "duse/api/authentication"
 require "duse/api/cors"
 require "duse/api/v1/routes"
 require "duse/api/config"
 require "duse/api/common_logger"
+require "duse/api/health_check"
 
 module Duse
   module API
@@ -14,7 +17,10 @@ module Duse
           use Cors
           use Authentication
           use V1Switch
-          run V1::Routes
+          run Rack::URLMap.new(
+            '/health-check' => HealthCheck.new,
+            '/' => V1::Routes,
+          )
         end
       end
 
